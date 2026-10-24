@@ -47,7 +47,6 @@
     .touch-btn:active {
       transform: scale(0.97);
     }
-    /* Hide scrollbar for preset chips horizontal scroll */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -97,7 +96,7 @@
     <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm sm:p-5">
       <form id="txForm" onsubmit="handleFormSubmit(event)">
 
-        <!-- Type Selector (Pengeluaran vs Pemasukan) -->
+        <!-- Type Selector (Pengeluaran vs Pemasukan vs Transfer) -->
         <div class="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/60">
           <button type="button" onclick="setType('Pengeluaran')" id="btnTypeExpense" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all bg-sage-800 text-white shadow-xs">
             Pengeluaran
@@ -110,20 +109,20 @@
           </button>
         </div>
 
-        <!-- Scope / Peruntukan (Kas Bersama vs Pribadi) -->
-        <div class="mb-4">
-          <label class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Peruntukan Dana</label>
-          <div class="grid grid-cols-3 gap-2">
-            <button type="button" onclick="setScope('Kas Bersama')" id="scopeJoint" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all">
-              Kas Bersama
+        <!-- Scope / Peruntukan (Hanya Muncul saat Pengeluaran atau Pemasukan) -->
+        <div id="sectionScope" class="mb-4">
+          <label id="labelScope" class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Peruntukan Pengeluaran</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="setScopeChoice('bersama')" id="btnScopeBersama" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all">
+              <span id="textScopeBersama">🏠 Kebutuhan Bersama</span>
             </button>
-            <button type="button" onclick="setScope('Pribadi Suami')" id="scopeSuami" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
-              Suami
-            </button>
-            <button type="button" onclick="setScope('Pribadi Istri')" id="scopeIstri" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
-              Istri
+            <button type="button" onclick="setScopeChoice('pribadi')" id="btnScopePribadi" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
+              <span id="textScopePribadi">👤 Pribadi Saya</span>
             </button>
           </div>
+          <p id="scopeHelpText" class="mt-1.5 text-[11px] text-muted">
+            Mencatat belanja untuk keperluan rumah tangga bersama.
+          </p>
         </div>
 
         <!-- Amount Input Field -->
@@ -145,8 +144,8 @@
           <input type="hidden" id="rawAmount" name="amount" value="0">
         </div>
 
-        <!-- Quick Preset Chips -->
-        <div class="mb-4">
+        <!-- Quick Preset Chips (Hanya muncul saat Pengeluaran) -->
+        <div id="sectionPresets" class="mb-4">
           <div class="mb-1.5 flex items-center justify-between">
             <span class="text-xs font-semibold text-ink">Tombol Cepat</span>
             <span class="text-[11px] text-muted">1 tap isi otomatis</span>
@@ -156,18 +155,34 @@
           </div>
         </div>
 
-        <!-- Category & Wallet Grid -->
-        <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
+        <!-- Category & Wallet Grid (Untuk Pengeluaran & Pemasukan) -->
+        <div id="sectionCatAndWallet" class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div id="colCategory">
             <label for="categorySelect" class="mb-1.5 block text-xs font-semibold text-ink">Kategori</label>
-            <select id="categorySelect" required class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+            <select id="categorySelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
               <option value="">Pilih Kategori...</option>
             </select>
           </div>
-          <div>
-            <label for="walletSelect" class="mb-1.5 block text-xs font-semibold text-ink">Rekening / Dompet</label>
-            <select id="walletSelect" required class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+          <div id="colWallet">
+            <label for="walletSelect" id="labelWallet" class="mb-1.5 block text-xs font-semibold text-ink">Sumber Rekening / Dompet</label>
+            <select id="walletSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
               <option value="">Pilih Dompet...</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Transfer Routing Fields (Khusus Mode Transfer Kas) -->
+        <div id="sectionTransfer" class="mb-4 hidden grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label for="transferFromSelect" class="mb-1.5 block text-xs font-semibold text-ink">Dari Rekening (Sumber)</label>
+            <select id="transferFromSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+              <option value="">Pilih Sumber...</option>
+            </select>
+          </div>
+          <div>
+            <label for="transferToSelect" class="mb-1.5 block text-xs font-semibold text-ink">Ke Rekening (Tujuan)</label>
+            <select id="transferToSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+              <option value="">Pilih Tujuan...</option>
             </select>
           </div>
         </div>
@@ -190,7 +205,7 @@
           id="btnSubmit"
           class="touch-btn flex w-full items-center justify-center gap-2 rounded-xl bg-sage-800 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-sage-700 focus:outline-none focus:ring-3 focus:ring-sage-500/30 transition-all"
         >
-          <span id="btnSubmitText">Simpan Transaksi</span>
+          <span id="btnSubmitText">Simpan Pengeluaran</span>
           <svg id="btnSpinner" class="hidden h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
@@ -223,7 +238,8 @@
   <script>
     // State Management
     var currentType = 'Pengeluaran';
-    var currentScope = 'Kas Bersama';
+    var currentScopeChoice = 'bersama'; // 'bersama' atau 'pribadi'
+
     var appData = {
       categories: [
         'Belanja Pasar & Dapur',
@@ -238,6 +254,14 @@
         'Sedekah & Orang Tua',
         'Darurat & Tabungan',
         'Lain-lain'
+      ],
+      incomeCategories: [
+        'Gaji Suami',
+        'Gaji Istri',
+        'Bonus & THR',
+        'Hasil Usaha / Bisnis',
+        'Investasi & Dividen',
+        'Pemberian / Lainnya'
       ],
       wallets: [
         'Kas Tunai Rumah',
@@ -267,6 +291,7 @@
       loadCachedData();
       renderOptions();
       renderPresets();
+      updateDynamicUI();
       fetchServerData();
     });
 
@@ -305,26 +330,95 @@
       var btnSubmit = document.getElementById('btnSubmitText');
       if (type === 'Pengeluaran') btnSubmit.innerText = 'Simpan Pengeluaran';
       else if (type === 'Pemasukan') btnSubmit.innerText = 'Simpan Pemasukan';
-      else btnSubmit.innerText = 'Simpan Transfer Saldo';
+      else btnSubmit.innerText = 'Simpan Transfer Kas';
+
+      updateDynamicUI();
     }
 
-    function setScope(scope) {
-      currentScope = scope;
-      var sJoint = document.getElementById('scopeJoint');
-      var sSuami = document.getElementById('scopeSuami');
-      var sIstri = document.getElementById('scopeIstri');
+    function setScopeChoice(choice) {
+      currentScopeChoice = choice;
+      var sBersama = document.getElementById('btnScopeBersama');
+      var sPribadi = document.getElementById('btnScopePribadi');
 
-      var setStyle = function(elem, isActive) {
-        if (isActive) {
-          elem.className = 'touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all';
+      var activeStyle = 'touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all';
+      var inactiveStyle = 'touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all';
+
+      sBersama.className = choice === 'bersama' ? activeStyle : inactiveStyle;
+      sPribadi.className = choice === 'pribadi' ? activeStyle : inactiveStyle;
+
+      var helpText = document.getElementById('scopeHelpText');
+      if (currentType === 'Pengeluaran') {
+        if (choice === 'bersama') {
+          helpText.textContent = 'Mencatat belanja untuk operasional rumah tangga bersama.';
         } else {
-          elem.className = 'touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all';
+          helpText.textContent = 'Mencatat pengeluaran pribadi Anda (tidak memotong kuota kas bersama).';
         }
-      };
+      } else if (currentType === 'Pemasukan') {
+        if (choice === 'bersama') {
+          helpText.textContent = 'Uang masuk disetor untuk menambah saldo Kas Bersama rumah tangga.';
+        } else {
+          helpText.textContent = 'Uang masuk ke rekening pribadi Anda.';
+        }
+      }
+    }
 
-      setStyle(sJoint, scope === 'Kas Bersama');
-      setStyle(sSuami, scope === 'Pribadi Suami');
-      setStyle(sIstri, scope === 'Pribadi Istri');
+    function updateDynamicUI() {
+      var sectionScope = document.getElementById('sectionScope');
+      var sectionPresets = document.getElementById('sectionPresets');
+      var sectionCatAndWallet = document.getElementById('sectionCatAndWallet');
+      var sectionTransfer = document.getElementById('sectionTransfer');
+      var labelScope = document.getElementById('labelScope');
+      var textScopeBersama = document.getElementById('textScopeBersama');
+      var textScopePribadi = document.getElementById('textScopePribadi');
+      var labelWallet = document.getElementById('labelWallet');
+
+      var isAyah = (appData.userRole === 'Ayah' || (appData.userEmail && appData.userEmail.includes('suami')));
+
+      if (currentType === 'Pengeluaran') {
+        sectionScope.classList.remove('hidden');
+        sectionPresets.classList.remove('hidden');
+        sectionCatAndWallet.classList.remove('hidden');
+        sectionTransfer.classList.add('hidden');
+
+        labelScope.textContent = 'Peruntukan Pengeluaran';
+        textScopeBersama.textContent = '🏠 Kebutuhan Bersama';
+        textScopePribadi.textContent = isAyah ? '👤 Pribadi Suami' : '👤 Pribadi Istri';
+        labelWallet.textContent = 'Sumber Rekening / Dompet';
+        
+        renderOptions();
+        setScopeChoice(currentScopeChoice);
+
+      } else if (currentType === 'Pemasukan') {
+        sectionScope.classList.remove('hidden');
+        sectionPresets.classList.add('hidden'); // Sembunyikan tombol cepat belanja saat input pemasukan
+        sectionCatAndWallet.classList.remove('hidden');
+        sectionTransfer.classList.add('hidden');
+
+        labelScope.textContent = 'Tujuan Alokasi Pemasukan';
+        textScopeBersama.textContent = '🏠 Masuk Kas Bersama';
+        textScopePribadi.textContent = isAyah ? '👤 Rekening Suami' : '👤 Rekening Istri';
+        labelWallet.textContent = 'Rekening Penerima';
+
+        renderOptions();
+        setScopeChoice(currentScopeChoice);
+
+      } else if (currentType === 'Transfer') {
+        // Mode Transfer Kas: Sembunyikan Peruntukan & Presets & Kategori!
+        sectionScope.classList.add('hidden');
+        sectionPresets.classList.add('hidden');
+        sectionCatAndWallet.classList.add('hidden');
+        sectionTransfer.classList.remove('hidden');
+      }
+    }
+
+    function resolveResolvedScope() {
+      if (currentType === 'Transfer') return 'Transfer';
+      var isAyah = (appData.userRole === 'Ayah' || (appData.userEmail && appData.userEmail.includes('suami')));
+      if (currentScopeChoice === 'bersama') {
+        return 'Kas Bersama';
+      } else {
+        return isAyah ? 'Pribadi Suami' : 'Pribadi Istri';
+      }
     }
 
     function applyPreset(p) {
@@ -336,11 +430,10 @@
         document.getElementById('categorySelect').value = p.category;
       }
       if (p.scope) {
-        setScope(p.scope);
+        setScopeChoice(p.scope === 'Kas Bersama' ? 'bersama' : 'pribadi');
       }
       setType('Pengeluaran');
 
-      // Subtle pulse feedback
       displayInput.classList.add('ring-2', 'ring-sage-500');
       setTimeout(function() {
         displayInput.classList.remove('ring-2', 'ring-sage-500');
@@ -363,12 +456,17 @@
     function renderOptions() {
       var catSelect = document.getElementById('categorySelect');
       var walSelect = document.getElementById('walletSelect');
+      var trFrom = document.getElementById('transferFromSelect');
+      var trTo = document.getElementById('transferToSelect');
 
       var prevCat = catSelect.value;
       var prevWal = walSelect.value;
+      var prevFrom = trFrom.value;
+      var prevTo = trTo.value;
 
       catSelect.innerHTML = '<option value="">Pilih Kategori...</option>';
-      appData.categories.forEach(function(c) {
+      var activeCatList = (currentType === 'Pemasukan') ? appData.incomeCategories : appData.categories;
+      activeCatList.forEach(function(c) {
         var opt = document.createElement('option');
         opt.value = c;
         opt.textContent = c;
@@ -376,14 +474,20 @@
       });
       if (prevCat) catSelect.value = prevCat;
 
-      walSelect.innerHTML = '<option value="">Pilih Dompet...</option>';
-      appData.wallets.forEach(function(w) {
-        var opt = document.createElement('option');
-        opt.value = w;
-        opt.textContent = w;
-        walSelect.appendChild(opt);
-      });
-      if (prevWal) walSelect.value = prevWal;
+      var populateWallets = function(selectEl, prevVal) {
+        selectEl.innerHTML = '<option value="">Pilih Dompet...</option>';
+        appData.wallets.forEach(function(w) {
+          var opt = document.createElement('option');
+          opt.value = w;
+          opt.textContent = w;
+          selectEl.appendChild(opt);
+        });
+        if (prevVal) selectEl.value = prevVal;
+      };
+
+      populateWallets(walSelect, prevWal);
+      populateWallets(trFrom, prevFrom);
+      populateWallets(trTo, prevTo);
     }
 
     function renderSummary() {
@@ -397,6 +501,7 @@
         document.getElementById('userEmailBadge').textContent = 'Mode Terhubung Google';
       }
       document.getElementById('userRoleBadge').textContent = appData.userRole || 'Keluarga';
+      updateDynamicUI();
     }
 
     function renderRecent() {
@@ -412,8 +517,9 @@
         card.className = 'flex items-center justify-between rounded-xl border border-borderline bg-white p-3 shadow-xs';
         
         var isIncome = tx.type === 'Pemasukan';
-        var sign = isIncome ? '+' : '-';
-        var amountClass = isIncome ? 'text-sage-700' : 'text-ink';
+        var isTransfer = tx.type === 'Transfer';
+        var sign = isIncome ? '+' : (isTransfer ? '⇄' : '-');
+        var amountClass = isIncome ? 'text-sage-700' : (isTransfer ? 'text-slate-600' : 'text-ink');
 
         var authorShort = tx.author ? tx.author.split('@')[0] : 'Keluarga';
 
@@ -441,6 +547,7 @@
         if (cached) {
           var parsed = JSON.parse(cached);
           if (parsed.categories) appData.categories = parsed.categories;
+          if (parsed.incomeCategories) appData.incomeCategories = parsed.incomeCategories;
           if (parsed.wallets) appData.wallets = parsed.wallets;
           if (parsed.presets) appData.presets = parsed.presets;
           if (parsed.summary) appData.summary = parsed.summary;
@@ -455,6 +562,7 @@
       try {
         localStorage.setItem('family_finance_cache', JSON.stringify({
           categories: appData.categories,
+          incomeCategories: appData.incomeCategories,
           wallets: appData.wallets,
           presets: appData.presets,
           summary: appData.summary,
@@ -500,15 +608,43 @@
         return;
       }
 
-      var category = document.getElementById('categorySelect').value;
-      var wallet = document.getElementById('walletSelect').value;
+      var category = '';
+      var wallet = '';
       var date = document.getElementById('txDate').value;
       var note = document.getElementById('txNote').value;
+      var scope = resolveResolvedScope();
+
+      if (currentType === 'Transfer') {
+        var fromW = document.getElementById('transferFromSelect').value;
+        var toW = document.getElementById('transferToSelect').value;
+        if (!fromW || !toW) {
+          showToast('Pilih rekening asal dan tujuan transfer', false);
+          return;
+        }
+        if (fromW === toW) {
+          showToast('Rekening asal dan tujuan tidak boleh sama', false);
+          return;
+        }
+        category = 'Transfer Kas';
+        wallet = fromW + ' ➔ ' + toW;
+        if (!note) note = 'Transfer dari ' + fromW + ' ke ' + toW;
+      } else {
+        category = document.getElementById('categorySelect').value;
+        wallet = document.getElementById('walletSelect').value;
+        if (!category) {
+          showToast('Silakan pilih kategori', false);
+          return;
+        }
+        if (!wallet) {
+          showToast('Silakan pilih dompet / rekening', false);
+          return;
+        }
+      }
 
       var payload = {
         amount: rawVal,
         type: currentType,
-        scope: currentScope,
+        scope: scope,
         category: category,
         wallet: wallet,
         date: date,
@@ -535,7 +671,7 @@
           })
           .submitTransaction(payload);
       } else {
-        // Fallback demo mode for local preview / offline
+        // Fallback simulation mode
         setTimeout(function() {
           setLoading(false);
           appData.recent.unshift({
@@ -561,7 +697,7 @@
           saveCachedData();
           showToast('Transaksi disimpan (Mode Demo Lokal)', true);
           resetForm();
-        }, 300);
+        }, 250);
       }
     }
 

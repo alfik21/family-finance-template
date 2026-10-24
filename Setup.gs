@@ -155,7 +155,7 @@ function createTransactionsSheet(ss, palette) {
   sheet.getRange('D2:D5000').setDataValidation(typeRule);
 
   var scopeRule = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['Kas Bersama', 'Pribadi Suami', 'Pribadi Istri'], true)
+    .requireValueInList(['Kas Bersama', 'Pribadi Suami', 'Pribadi Istri', 'Transfer'], true)
     .build();
   sheet.getRange('F2:F5000').setDataValidation(scopeRule);
 
