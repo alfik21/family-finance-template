@@ -8,7 +8,10 @@ Sistem pencatatan dan pemantauan keuangan rumah tangga berbasis **Google Sheets*
 
 - **Model Hybrid**: Membedakan pos Kas Bersama rumah tangga (dapur, tagihan, sekolah anak, cicilan) dan pengeluaran pribadi masing-masing tanpa saling membatasi.
 - **Deteksi Akun Otomatis**: Mengenali email Google suami atau istri secara otomatis saat membuka Web App di smartphone.
-- **Ultra-Fast Mobile Web App (PWA)**: Form ringan dengan local caching (< 100ms) dan tombol preset cepat (Bensin, Kopi, Belanja Pasar, Token Listrik) untuk pengisian 1x tap di kasir.
+- **3 Menu Utama di Web App**:
+  1. `Catat`: Form cepat mobile-first dengan local caching (< 100ms), preset 1-tap, dan selector peruntukan cerdas (Bersama vs Pribadi).
+  2. `Rekap Siklus`: Menarik rekap kas berdasarkan **Siklus Gajian** (misal tgl 25 s/d 24), Bulan Kalender, atau rentang kustom dengan breakdown beban pasangan.
+  3. `Kelola`: Tambah/hapus Kategori Belanja dan Dompet / Rekening langsung dari HP tanpa perlu membuka spreadsheet di laptop.
 - **Google Sheets Minimalist (Sage Green)**: Tab Dashboard, Transaksi, Budget & Pos, serta Config yang otomatis digenerate tanpa perlu mendesain manual.
 - **Anti-AI Slop**: Tanpa gradien ungu generik, tanpa hiasan emoji berlebihan, dan angka rupiah menggunakan *tabular numerals* yang sejajar dan nyaman dibaca.
 

@@ -27,9 +27,10 @@ function getInitialData() {
   var wallets = [];
   var presets = [];
   var userRole = 'Keluarga';
+  var salaryDate = 25;
 
   if (configSheet) {
-    var catValues = configSheet.getRange('C2:C20').getValues();
+    var catValues = configSheet.getRange('C2:C50').getValues();
     for (var i = 0; i < catValues.length; i++) {
       var cat = catValues[i][0];
       if (cat && cat.toString().trim() !== '') {
@@ -37,7 +38,7 @@ function getInitialData() {
       }
     }
 
-    var walValues = configSheet.getRange('E2:E20').getValues();
+    var walValues = configSheet.getRange('E2:E50').getValues();
     for (var j = 0; j < walValues.length; j++) {
       var wal = walValues[j][0];
       if (wal && wal.toString().trim() !== '') {
@@ -45,7 +46,7 @@ function getInitialData() {
       }
     }
 
-    var preValues = configSheet.getRange('F2:G15').getValues();
+    var preValues = configSheet.getRange('F2:G20').getValues();
     for (var k = 0; k < preValues.length; k++) {
       var pName = preValues[k][0];
       var pAmount = preValues[k][1];
@@ -55,6 +56,11 @@ function getInitialData() {
           amount: Number(pAmount) || 0
         });
       }
+    }
+
+    var valSal = configSheet.getRange('B6').getValue();
+    if (valSal && !isNaN(Number(valSal))) {
+      salaryDate = Number(valSal);
     }
 
     var suamiEmail = configSheet.getRange('B3').getValue();
@@ -124,6 +130,7 @@ function getInitialData() {
     categories: categories,
     wallets: wallets,
     presets: presets,
+    salaryDate: salaryDate,
     recent: recent,
     summary: summary
   };
@@ -192,5 +199,133 @@ function submitTransaction(payload) {
     return { success: false, message: error.toString() };
   } finally {
     lock.releaseLock();
+  }
+}
+
+function saveConfigData(payload) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+  } catch (e) {
+    return { success: false, message: 'Server sedang sibuk.' };
+  }
+
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var configSheet = ss.getSheetByName('CONFIG');
+    if (!configSheet) return { success: false, message: 'Sheet CONFIG tidak ditemukan.' };
+
+    if (payload.categories && Array.isArray(payload.categories)) {
+      configSheet.getRange('C2:C50').clearContent();
+      var catRows = payload.categories.map(function(c) { return [c]; });
+      if (catRows.length > 0) {
+        configSheet.getRange(2, 3, catRows.length, 1).setValues(catRows);
+      }
+    }
+
+    if (payload.wallets && Array.isArray(payload.wallets)) {
+      configSheet.getRange('E2:E50').clearContent();
+      var walRows = payload.wallets.map(function(w) { return [w]; });
+      if (walRows.length > 0) {
+        configSheet.getRange(2, 5, walRows.length, 1).setValues(walRows);
+      }
+    }
+
+    if (payload.salaryDate) {
+      configSheet.getRange('A6').setValue('Siklus Gajian (Tgl)');
+      configSheet.getRange('B6').setValue(Number(payload.salaryDate) || 25);
+    }
+
+    SpreadsheetApp.flush();
+    return { success: true, message: 'Pengaturan kategori & dompet berhasil diperbarui.' };
+  } catch (err) {
+    return { success: false, message: err.toString() };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function getPeriodSummary(startDateStr, endDateStr) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var transSheet = ss.getSheetByName('TRANSAKSI');
+    if (!transSheet) return { success: false, message: 'Sheet TRANSAKSI tidak ditemukan.' };
+
+    var lastRow = transSheet.getLastRow();
+    if (lastRow <= 1) {
+      return {
+        success: true,
+        totalIncome: 0,
+        totalExpense: 0,
+        netCashflow: 0,
+        byScope: { 'Kas Bersama': 0, 'Pribadi Suami': 0, 'Pribadi Istri': 0 },
+        byCategory: [],
+        txCount: 0
+      };
+    }
+
+    var data = transSheet.getRange(2, 1, lastRow - 1, 11).getValues();
+    var start = new Date(startDateStr + 'T00:00:00');
+    var end = new Date(endDateStr + 'T23:59:59');
+
+    var totalIncome = 0;
+    var totalExpense = 0;
+    var byScope = { 'Kas Bersama': 0, 'Pribadi Suami': 0, 'Pribadi Istri': 0 };
+    var catMap = {};
+    var count = 0;
+
+    for (var i = 0; i < data.length; i++) {
+      var row = data[i];
+      var rawDate = row[1];
+      if (!rawDate) continue;
+
+      var txDate = (rawDate instanceof Date) ? rawDate : new Date(rawDate);
+      if (txDate >= start && txDate <= end) {
+        count++;
+        var type = row[3];
+        var category = row[4] || 'Lain-lain';
+        var scope = row[5] || 'Kas Bersama';
+        var amount = Number(row[7]) || 0;
+
+        if (type === 'Pengeluaran') {
+          totalExpense += amount;
+          if (byScope[scope] !== undefined) {
+            byScope[scope] += amount;
+          } else {
+            byScope[scope] = amount;
+          }
+
+          catMap[category] = (catMap[category] || 0) + amount;
+        } else if (type === 'Pemasukan') {
+          totalIncome += amount;
+        }
+      }
+    }
+
+    var byCategory = [];
+    for (var catName in catMap) {
+      var amt = catMap[catName];
+      byCategory.push({
+        category: catName,
+        amount: amt,
+        percentage: totalExpense > 0 ? (amt / totalExpense) * 100 : 0
+      });
+    }
+
+    byCategory.sort(function(a, b) { return b.amount - a.amount; });
+
+    return {
+      success: true,
+      startDate: startDateStr,
+      endDate: endDateStr,
+      totalIncome: totalIncome,
+      totalExpense: totalExpense,
+      netCashflow: totalIncome - totalExpense,
+      byScope: byScope,
+      byCategory: byCategory,
+      txCount: count
+    };
+  } catch (err) {
+    return { success: false, message: err.toString() };
   }
 }

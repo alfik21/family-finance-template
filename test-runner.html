@@ -85,19 +85,19 @@
         <ul class="text-xs space-y-1.5 text-slate-700">
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">1.</span>
-            <span>Uji <strong>Peruntukan Pintar</strong>: Di mode Pengeluaran, hanya ada 2 pilihan: <code>🏠 Kebutuhan Bersama</code> vs <code>👤 Pribadi Saya</code>.</span>
+            <span>Uji <strong>Tab 'Rekap Siklus'</strong>: Klik tab kedua di Web App untuk menarik rekap kas berdasarkan siklus gajian atau bulan kalender.</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">2.</span>
-            <span>Uji <strong>Ganti Akun</strong>: Klik tombol Suami / Istri di atas. Label tombol otomatis berubah jadi "Pribadi Suami" atau "Pribadi Istri".</span>
+            <span>Uji <strong>Tab 'Kelola'</strong>: Tambah atau hapus Kategori / Dompet baru langsung dari HP dan simpan perubahannya.</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">3.</span>
-            <span>Uji <strong>Transfer Kas</strong>: Klik tab "Transfer Kas". Tombol peruntukan otomatis hilang dan berganti menjadi <code>Dari Rekening ➔ Ke Rekening</code>.</span>
+            <span>Uji <strong>Transfer Kas</strong>: Klik tab "Transfer Kas" untuk memindahkan saldo antar-rekening tanpa tombol peruntukan rancu.</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">4.</span>
-            <span>Uji <strong>Pemasukan</strong>: Klik tab "Pemasukan", opsi berganti jadi "Masuk Kas Bersama" atau "Rekening Pribadi".</span>
+            <span>Uji <strong>Ganti Akun</strong>: Beralih antara Suami dan Istri untuk memeriksa adaptasi data dan isolasi pencatat.</span>
           </li>
         </ul>
       </div>
@@ -328,6 +328,59 @@
                           message: 'Transaksi berhasil disimpan ke simulasi sheet'
                         });
                       }, 200);
+                    },
+                    saveConfigData: function(payload) {
+                      setTimeout(function() {
+                        if (payload.categories) mockDatabase.categories = payload.categories;
+                        if (payload.wallets) mockDatabase.wallets = payload.wallets;
+                        if (payload.salaryDate) mockDatabase.salaryDate = payload.salaryDate;
+                        onSuccess({ success: true, message: 'Konfigurasi tersimpan di simulasi sheet' });
+                      }, 150);
+                    },
+                    getPeriodSummary: function(startDate, endDate) {
+                      setTimeout(function() {
+                        var start = new Date(startDate + 'T00:00:00');
+                        var end = new Date(endDate + 'T23:59:59');
+                        var totalInc = 0;
+                        var totalExp = 0;
+                        var scopes = { 'Kas Bersama': 0, 'Pribadi Suami': 0, 'Pribadi Istri': 0 };
+                        var catMap = {};
+                        var count = 0;
+
+                        mockDatabase.transactions.forEach(function(tx) {
+                          var tDate = new Date(tx.date + 'T00:00:00');
+                          if (tDate >= start && tDate <= end) {
+                            count++;
+                            if (tx.type === 'Pengeluaran') {
+                              totalExp += tx.amount;
+                              scopes[tx.scope] = (scopes[tx.scope] || 0) + tx.amount;
+                              catMap[tx.category] = (catMap[tx.category] || 0) + tx.amount;
+                            } else if (tx.type === 'Pemasukan') {
+                              totalInc += tx.amount;
+                            }
+                          }
+                        });
+
+                        var cats = [];
+                        for (var c in catMap) {
+                          cats.push({
+                            category: c,
+                            amount: catMap[c],
+                            percentage: totalExp > 0 ? (catMap[c] / totalExp) * 100 : 0
+                          });
+                        }
+                        cats.sort(function(a, b) { return b.amount - a.amount; });
+
+                        onSuccess({
+                          success: true,
+                          totalIncome: totalInc,
+                          totalExpense: totalExp,
+                          netCashflow: totalInc - totalExp,
+                          byScope: scopes,
+                          byCategory: cats,
+                          txCount: count
+                        });
+                      }, 150);
                     }
                   };
                 }
