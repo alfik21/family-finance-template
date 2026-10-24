@@ -56,291 +56,320 @@
     }
   </style>
 </head>
-<body class="min-h-screen pb-24 antialiased selection:bg-sage-100 selection:text-sage-900">
+<body class="min-h-screen pb-20 antialiased selection:bg-sage-100 selection:text-sage-900">
 
-  <!-- Mobile Container Wrapper -->
-  <main class="mx-auto w-full max-w-lg px-4 pt-3 sm:px-6">
+  <!-- Responsive Container (Mobile centered max-w-lg, Desktop expands to max-w-6xl) -->
+  <main class="mx-auto w-full max-w-lg lg:max-w-6xl px-4 pt-3 sm:px-6 lg:pt-6">
 
-    <!-- Top Identity Bar -->
-    <header class="mb-3 flex items-center justify-between border-b border-borderline/80 pb-3">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="inline-block h-2.5 w-2.5 rounded-full bg-sage-500"></span>
-          <h1 class="text-base font-bold tracking-tight text-ink sm:text-lg">Kas Keluarga</h1>
+    <!-- Top Identity & Navigation Bar -->
+    <header class="mb-5 flex flex-col md:flex-row md:items-center md:justify-between border-b border-borderline/80 pb-3 gap-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-block h-2.5 w-2.5 rounded-full bg-sage-500"></span>
+            <h1 class="text-base font-bold tracking-tight text-ink sm:text-lg">Kas Keluarga</h1>
+          </div>
+          <p id="userEmailBadge" class="text-xs text-muted">Memuat akun Google...</p>
         </div>
-        <p id="userEmailBadge" class="text-xs text-muted">Memuat akun Google...</p>
+
+        <div class="md:hidden flex items-center gap-1.5 rounded-full bg-sage-100 px-3 py-1 text-xs font-semibold text-sage-800">
+          <span id="userRoleBadge">Pasangan</span>
+        </div>
       </div>
 
-      <div class="flex items-center gap-1.5 rounded-full bg-sage-100 px-3 py-1 text-xs font-semibold text-sage-800">
-        <span id="userRoleBadge">Pasangan</span>
+      <!-- Navigation Tabs & Desktop Role Badge -->
+      <div class="flex items-center gap-3">
+        <nav class="grid grid-cols-3 gap-1 rounded-xl bg-white p-1 border border-borderline shadow-2xs w-full sm:w-auto">
+          <button type="button" onclick="switchMainTab('record')" id="navTabRecord" class="touch-btn rounded-lg px-4 py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs">
+            Catat
+          </button>
+          <button type="button" onclick="switchMainTab('summary')" id="navTabSummary" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+            Rekap Siklus
+          </button>
+          <button type="button" onclick="switchMainTab('manage')" id="navTabManage" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+            Kelola
+          </button>
+        </nav>
+
+        <div class="hidden md:flex items-center gap-1.5 rounded-full bg-sage-100 px-3.5 py-1.5 text-xs font-semibold text-sage-800 shrink-0">
+          <span id="userRoleBadgeDesktop">Pasangan</span>
+        </div>
       </div>
     </header>
 
-    <!-- Top Navigation Tabs (Catat | Rekap Siklus | Kelola) -->
-    <nav class="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-white p-1 border border-borderline shadow-2xs">
-      <button type="button" onclick="switchMainTab('record')" id="navTabRecord" class="touch-btn rounded-lg py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs">
-        Catat
-      </button>
-      <button type="button" onclick="switchMainTab('summary')" id="navTabSummary" class="touch-btn rounded-lg py-2 text-xs font-medium transition-all text-muted hover:text-ink">
-        Rekap Siklus
-      </button>
-      <button type="button" onclick="switchMainTab('manage')" id="navTabManage" class="touch-btn rounded-lg py-2 text-xs font-medium transition-all text-muted hover:text-ink">
-        Kelola
-      </button>
-    </nav>
-
-    <!-- ==================== VIEW 1: CATAT TRANSAKSI ==================== -->
+    <!-- ==================== VIEW 1: CATAT TRANSAKSI (RESPONSIVE GRID) ==================== -->
     <div id="viewRecord">
-      <!-- Monthly Summary Bar -->
-      <section class="mb-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-        <div class="rounded-xl border border-borderline bg-white p-3 shadow-xs">
-          <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Pengeluaran Bulan Ini</span>
-          <div id="statMonthExpense" class="num-tabular mt-1 text-lg font-bold text-ink">Rp 0</div>
-        </div>
-        <div class="rounded-xl border border-borderline bg-white p-3 shadow-xs">
-          <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Sisa Kas Berjalan</span>
-          <div id="statJointBalance" class="num-tabular mt-1 text-lg font-bold text-sage-700">Rp 0</div>
-        </div>
-        <div class="col-span-2 rounded-xl border border-borderline bg-white p-3 shadow-xs sm:col-span-1">
-          <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Pemasukan Bulan Ini</span>
-          <div id="statMonthIncome" class="num-tabular mt-1 text-lg font-bold text-ink">Rp 0</div>
-        </div>
-      </section>
+      <div class="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
 
-      <!-- Main Transaction Form Card -->
-      <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm sm:p-5">
-        <form id="txForm" onsubmit="handleFormSubmit(event)">
+        <!-- Left Column: Form Input (Mobile full, Desktop 5 cols) -->
+        <div class="lg:col-span-5 mb-5 lg:mb-0">
+          <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm sm:p-5">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-muted mb-3">Input Transaksi Baru</h2>
 
-          <!-- Type Selector (Pengeluaran vs Pemasukan vs Transfer) -->
-          <div class="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/60">
-            <button type="button" onclick="setType('Pengeluaran')" id="btnTypeExpense" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all bg-sage-800 text-white shadow-xs">
-              Pengeluaran
-            </button>
-            <button type="button" onclick="setType('Pemasukan')" id="btnTypeIncome" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all text-muted hover:text-ink">
-              Pemasukan
-            </button>
-            <button type="button" onclick="setType('Transfer')" id="btnTypeTransfer" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all text-muted hover:text-ink">
-              Transfer Kas
-            </button>
-          </div>
+            <form id="txForm" onsubmit="handleFormSubmit(event)">
 
-          <!-- Scope / Peruntukan (Hanya Muncul saat Pengeluaran atau Pemasukan) -->
-          <div id="sectionScope" class="mb-4">
-            <label id="labelScope" class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Peruntukan Pengeluaran</label>
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" onclick="setScopeChoice('bersama')" id="btnScopeBersama" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all">
-                <span id="textScopeBersama">🏠 Kebutuhan Bersama</span>
+              <!-- Type Selector (Pengeluaran vs Pemasukan vs Transfer) -->
+              <div class="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/60">
+                <button type="button" onclick="setType('Pengeluaran')" id="btnTypeExpense" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all bg-sage-800 text-white shadow-xs">
+                  Pengeluaran
+                </button>
+                <button type="button" onclick="setType('Pemasukan')" id="btnTypeIncome" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all text-muted hover:text-ink">
+                  Pemasukan
+                </button>
+                <button type="button" onclick="setType('Transfer')" id="btnTypeTransfer" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all text-muted hover:text-ink">
+                  Transfer Kas
+                </button>
+              </div>
+
+              <!-- Scope / Peruntukan (Hanya Muncul saat Pengeluaran atau Pemasukan) -->
+              <div id="sectionScope" class="mb-4">
+                <label id="labelScope" class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Peruntukan Pengeluaran</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" onclick="setScopeChoice('bersama')" id="btnScopeBersama" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all">
+                    <span id="textScopeBersama">🏠 Kebutuhan Bersama</span>
+                  </button>
+                  <button type="button" onclick="setScopeChoice('pribadi')" id="btnScopePribadi" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
+                    <span id="textScopePribadi">👤 Pribadi Saya</span>
+                  </button>
+                </div>
+                <p id="scopeHelpText" class="mt-1.5 text-[11px] text-muted">
+                  Mencatat belanja untuk keperluan rumah tangga bersama.
+                </p>
+              </div>
+
+              <!-- Amount Input Field -->
+              <div class="mb-4">
+                <label for="displayAmount" class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Nominal</label>
+                <div class="relative flex items-center">
+                  <span class="absolute left-3.5 text-base font-bold text-muted">Rp</span>
+                  <input 
+                    type="text" 
+                    inputmode="numeric" 
+                    id="displayAmount" 
+                    placeholder="0" 
+                    required
+                    autocomplete="off"
+                    oninput="handleAmountInput(this)"
+                    class="num-tabular w-full rounded-xl border border-borderline bg-surface py-3 pl-12 pr-4 text-xl font-bold text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200 transition-all"
+                  />
+                </div>
+                <input type="hidden" id="rawAmount" name="amount" value="0">
+              </div>
+
+              <!-- Quick Preset Chips (Hanya muncul saat Pengeluaran) -->
+              <div id="sectionPresets" class="mb-4">
+                <div class="mb-1.5 flex items-center justify-between">
+                  <span class="text-xs font-semibold text-ink">Tombol Cepat</span>
+                  <span class="text-[11px] text-muted">1 tap isi otomatis</span>
+                </div>
+                <div id="presetsList" class="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+                  <!-- Preset items rendered via JS -->
+                </div>
+              </div>
+
+              <!-- Category & Wallet Grid (Untuk Pengeluaran & Pemasukan) -->
+              <div id="sectionCatAndWallet" class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div id="colCategory">
+                  <label for="categorySelect" class="mb-1.5 block text-xs font-semibold text-ink">Kategori</label>
+                  <select id="categorySelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+                    <option value="">Pilih Kategori...</option>
+                  </select>
+                </div>
+                <div id="colWallet">
+                  <label for="walletSelect" id="labelWallet" class="mb-1.5 block text-xs font-semibold text-ink">Sumber Dompet</label>
+                  <select id="walletSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+                    <option value="">Pilih Dompet...</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Transfer Routing Fields (Khusus Mode Transfer Kas) -->
+              <div id="sectionTransfer" class="mb-4 hidden grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label for="transferFromSelect" class="mb-1.5 block text-xs font-semibold text-ink">Dari Rekening (Sumber)</label>
+                  <select id="transferFromSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+                    <option value="">Pilih Sumber...</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="transferToSelect" class="mb-1.5 block text-xs font-semibold text-ink">Ke Rekening (Tujuan)</label>
+                  <select id="transferToSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+                    <option value="">Pilih Tujuan...</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Date & Notes -->
+              <div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label for="txDate" class="mb-1.5 block text-xs font-semibold text-ink">Tanggal</label>
+                  <input type="date" id="txDate" required class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+                </div>
+                <div>
+                  <label for="txNote" class="mb-1.5 block text-xs font-semibold text-ink">Catatan (Opsional)</label>
+                  <input type="text" id="txNote" placeholder="Keterangan singkat..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button 
+                type="submit" 
+                id="btnSubmit"
+                class="touch-btn flex w-full items-center justify-center gap-2 rounded-xl bg-sage-800 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-sage-700 focus:outline-none focus:ring-3 focus:ring-sage-500/30 transition-all"
+              >
+                <span id="btnSubmitText">Simpan Pengeluaran</span>
+                <svg id="btnSpinner" class="hidden h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
               </button>
-              <button type="button" onclick="setScopeChoice('pribadi')" id="btnScopePribadi" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
-                <span id="textScopePribadi">👤 Pribadi Saya</span>
-              </button>
-            </div>
-            <p id="scopeHelpText" class="mt-1.5 text-[11px] text-muted">
-              Mencatat belanja untuk keperluan rumah tangga bersama.
-            </p>
-          </div>
 
-          <!-- Amount Input Field -->
-          <div class="mb-4">
-            <label for="displayAmount" class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Nominal</label>
-            <div class="relative flex items-center">
-              <span class="absolute left-3.5 text-base font-bold text-muted">Rp</span>
-              <input 
-                type="text" 
-                inputmode="numeric" 
-                id="displayAmount" 
-                placeholder="0" 
-                required
-                autocomplete="off"
-                oninput="handleAmountInput(this)"
-                class="num-tabular w-full rounded-xl border border-borderline bg-surface py-3.5 pl-12 pr-4 text-2xl font-bold text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200 transition-all"
-              />
-            </div>
-            <input type="hidden" id="rawAmount" name="amount" value="0">
-          </div>
-
-          <!-- Quick Preset Chips (Hanya muncul saat Pengeluaran) -->
-          <div id="sectionPresets" class="mb-4">
-            <div class="mb-1.5 flex items-center justify-between">
-              <span class="text-xs font-semibold text-ink">Tombol Cepat</span>
-              <span class="text-[11px] text-muted">1 tap isi otomatis</span>
-            </div>
-            <div id="presetsList" class="no-scrollbar flex gap-2 overflow-x-auto pb-1">
-              <!-- Preset items rendered via JS -->
-            </div>
-          </div>
-
-          <!-- Category & Wallet Grid (Untuk Pengeluaran & Pemasukan) -->
-          <div id="sectionCatAndWallet" class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div id="colCategory">
-              <label for="categorySelect" class="mb-1.5 block text-xs font-semibold text-ink">Kategori</label>
-              <select id="categorySelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
-                <option value="">Pilih Kategori...</option>
-              </select>
-            </div>
-            <div id="colWallet">
-              <label for="walletSelect" id="labelWallet" class="mb-1.5 block text-xs font-semibold text-ink">Sumber Rekening / Dompet</label>
-              <select id="walletSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
-                <option value="">Pilih Dompet...</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Transfer Routing Fields (Khusus Mode Transfer Kas) -->
-          <div id="sectionTransfer" class="mb-4 hidden grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div>
-              <label for="transferFromSelect" class="mb-1.5 block text-xs font-semibold text-ink">Dari Rekening (Sumber)</label>
-              <select id="transferFromSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
-                <option value="">Pilih Sumber...</option>
-              </select>
-            </div>
-            <div>
-              <label for="transferToSelect" class="mb-1.5 block text-xs font-semibold text-ink">Ke Rekening (Tujuan)</label>
-              <select id="transferToSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
-                <option value="">Pilih Tujuan...</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Date & Notes -->
-          <div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div>
-              <label for="txDate" class="mb-1.5 block text-xs font-semibold text-ink">Tanggal</label>
-              <input type="date" id="txDate" required class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
-            </div>
-            <div>
-              <label for="txNote" class="mb-1.5 block text-xs font-semibold text-ink">Catatan (Opsional)</label>
-              <input type="text" id="txNote" placeholder="Keterangan singkat..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
-            </div>
-          </div>
-
-          <!-- Submit Button -->
-          <button 
-            type="submit" 
-            id="btnSubmit"
-            class="touch-btn flex w-full items-center justify-center gap-2 rounded-xl bg-sage-800 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-sage-700 focus:outline-none focus:ring-3 focus:ring-sage-500/30 transition-all"
-          >
-            <span id="btnSubmitText">Simpan Pengeluaran</span>
-            <svg id="btnSpinner" class="hidden h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-          </button>
-
-        </form>
-      </section>
-
-      <!-- Recent Transactions Section -->
-      <section class="mt-6">
-        <div class="mb-2.5 flex items-center justify-between">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-muted">Transaksi Terakhir</h2>
-          <span class="text-[11px] text-muted">Sinkronisasi Realtime</span>
+            </form>
+          </section>
         </div>
-        <div id="recentTxContainer" class="space-y-2">
-          <div class="rounded-xl border border-borderline bg-white p-3 text-center text-xs text-muted">
-            Memuat riwayat transaksi...
-          </div>
+
+        <!-- Right Column on Desktop: Summary Cards & Live Transactions Feed (7 cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          <!-- Monthly Summary Bar -->
+          <section class="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+            <div class="rounded-xl border border-borderline bg-white p-3.5 shadow-xs">
+              <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Pengeluaran Bulan Ini</span>
+              <div id="statMonthExpense" class="num-tabular mt-1 text-lg lg:text-xl font-bold text-ink">Rp 0</div>
+            </div>
+            <div class="rounded-xl border border-borderline bg-white p-3.5 shadow-xs">
+              <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Sisa Kas Berjalan</span>
+              <div id="statJointBalance" class="num-tabular mt-1 text-lg lg:text-xl font-bold text-sage-700">Rp 0</div>
+            </div>
+            <div class="col-span-2 rounded-xl border border-borderline bg-white p-3.5 shadow-xs sm:col-span-1">
+              <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Pemasukan Bulan Ini</span>
+              <div id="statMonthIncome" class="num-tabular mt-1 text-lg lg:text-xl font-bold text-ink">Rp 0</div>
+            </div>
+          </section>
+
+          <!-- Recent Transactions Section -->
+          <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
+            <div class="mb-3 flex items-center justify-between border-b border-borderline pb-2.5">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-muted">Buku Transaksi Terakhir</h2>
+              <span class="text-[11px] text-muted">Sinkronisasi Realtime</span>
+            </div>
+            <div id="recentTxContainer" class="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+              <div class="rounded-xl border border-borderline bg-surface p-4 text-center text-xs text-muted">
+                Memuat riwayat transaksi...
+              </div>
+            </div>
+          </section>
         </div>
-      </section>
+
+      </div>
     </div>
 
-    <!-- ==================== VIEW 2: REKAP SIKLUS PERIODE ==================== -->
+    <!-- ==================== VIEW 2: REKAP SIKLUS PERIODE (RESPONSIVE GRID) ==================== -->
     <div id="viewSummary" class="hidden">
-      <!-- Period Selector Controls -->
-      <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm mb-4">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-ink mb-2.5">Pilih Periode Siklus</h2>
+      <div class="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
         
-        <div class="grid grid-cols-3 gap-1.5 mb-3">
-          <button type="button" onclick="setPeriodFilter('salary')" id="btnPeriodSalary" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2 text-center text-xs font-bold text-sage-800">
-            Siklus Gajian
-          </button>
-          <button type="button" onclick="setPeriodFilter('this_month')" id="btnPeriodThisMonth" class="touch-btn rounded-xl border border-borderline bg-white py-2 text-center text-xs font-medium text-muted hover:border-slate-400">
-            Bulan Ini
-          </button>
-          <button type="button" onclick="setPeriodFilter('last_month')" id="btnPeriodLastMonth" class="touch-btn rounded-xl border border-borderline bg-white py-2 text-center text-xs font-medium text-muted hover:border-slate-400">
-            Bulan Lalu
-          </button>
+        <!-- Left Column: Controls & Family Allocation (5 cols) -->
+        <div class="lg:col-span-5 space-y-4 mb-4 lg:mb-0">
+          <!-- Period Selector Controls -->
+          <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-ink mb-2.5">Pilih Periode Siklus</h2>
+            
+            <div class="grid grid-cols-3 gap-1.5 mb-3">
+              <button type="button" onclick="setPeriodFilter('salary')" id="btnPeriodSalary" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2 text-center text-xs font-bold text-sage-800">
+                Siklus Gajian
+              </button>
+              <button type="button" onclick="setPeriodFilter('this_month')" id="btnPeriodThisMonth" class="touch-btn rounded-xl border border-borderline bg-white py-2 text-center text-xs font-medium text-muted hover:border-slate-400">
+                Bulan Ini
+              </button>
+              <button type="button" onclick="setPeriodFilter('last_month')" id="btnPeriodLastMonth" class="touch-btn rounded-xl border border-borderline bg-white py-2 text-center text-xs font-medium text-muted hover:border-slate-400">
+                Bulan Lalu
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="block text-[11px] font-semibold text-muted mb-1">Mulai</label>
+                <input type="date" id="summaryStartDate" onchange="fetchCustomPeriodSummary()" class="w-full rounded-xl border border-borderline bg-surface p-2 font-medium text-ink focus:outline-none focus:border-sage-700">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-muted mb-1">Sampai</label>
+                <input type="date" id="summaryEndDate" onchange="fetchCustomPeriodSummary()" class="w-full rounded-xl border border-borderline bg-surface p-2 font-medium text-ink focus:outline-none focus:border-sage-700">
+              </div>
+            </div>
+          </section>
+
+          <!-- Breakdown Beban Pasangan (Kas Bersama vs Pribadi) -->
+          <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink mb-3">Distribusi Beban Pasangan</h3>
+            
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span>🏠 Kas Bersama</span>
+                  <span id="cycleScopeJoint" class="num-tabular font-bold text-ink">Rp 0</span>
+                </div>
+                <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <div id="barScopeJoint" class="h-full bg-sage-700 transition-all" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span>👤 Pribadi Suami</span>
+                  <span id="cycleScopeSuami" class="num-tabular font-bold text-ink">Rp 0</span>
+                </div>
+                <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <div id="barScopeSuami" class="h-full bg-slate-600 transition-all" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span>👤 Pribadi Istri</span>
+                  <span id="cycleScopeIstri" class="num-tabular font-bold text-ink">Rp 0</span>
+                </div>
+                <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <div id="barScopeIstri" class="h-full bg-amber-600 transition-all" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div>
-            <label class="block text-[11px] font-semibold text-muted mb-1">Mulai</label>
-            <input type="date" id="summaryStartDate" onchange="fetchCustomPeriodSummary()" class="w-full rounded-xl border border-borderline bg-surface p-2 font-medium text-ink focus:outline-none focus:border-sage-700">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-muted mb-1">Sampai</label>
-            <input type="date" id="summaryEndDate" onchange="fetchCustomPeriodSummary()" class="w-full rounded-xl border border-borderline bg-surface p-2 font-medium text-ink focus:outline-none focus:border-sage-700">
-          </div>
-        </div>
-      </section>
+        <!-- Right Column: KPIs & Category Breakdown (7 cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          <!-- Period KPI Cards -->
+          <section class="grid grid-cols-3 gap-2.5">
+            <div class="rounded-xl border border-borderline bg-white p-3.5 text-center shadow-xs">
+              <span class="text-[10px] uppercase font-bold text-muted">Pemasukan</span>
+              <div id="cycleTotalIncome" class="num-tabular mt-1 text-sm lg:text-base font-bold text-ink">Rp 0</div>
+            </div>
+            <div class="rounded-xl border border-borderline bg-white p-3.5 text-center shadow-xs">
+              <span class="text-[10px] uppercase font-bold text-muted">Pengeluaran</span>
+              <div id="cycleTotalExpense" class="num-tabular mt-1 text-sm lg:text-base font-bold text-red-700">Rp 0</div>
+            </div>
+            <div class="rounded-xl border border-borderline bg-white p-3.5 text-center shadow-xs">
+              <span class="text-[10px] uppercase font-bold text-muted">Arus Kas</span>
+              <div id="cycleNetCashflow" class="num-tabular mt-1 text-sm lg:text-base font-bold text-sage-800">Rp 0</div>
+            </div>
+          </section>
 
-      <!-- Period KPI Cards -->
-      <section class="grid grid-cols-3 gap-2 mb-4">
-        <div class="rounded-xl border border-borderline bg-white p-3 text-center shadow-xs">
-          <span class="text-[10px] uppercase font-bold text-muted">Pemasukan</span>
-          <div id="cycleTotalIncome" class="num-tabular mt-1 text-sm font-bold text-ink">Rp 0</div>
+          <!-- Breakdown Pengeluaran per Kategori -->
+          <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink mb-3">Rincian Pengeluaran per Kategori</h3>
+            <div id="cycleCategoryBreakdown" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
+              <p class="text-xs text-muted text-center py-2">Memuat rincian...</p>
+            </div>
+          </section>
         </div>
-        <div class="rounded-xl border border-borderline bg-white p-3 text-center shadow-xs">
-          <span class="text-[10px] uppercase font-bold text-muted">Pengeluaran</span>
-          <div id="cycleTotalExpense" class="num-tabular mt-1 text-sm font-bold text-red-700">Rp 0</div>
-        </div>
-        <div class="rounded-xl border border-borderline bg-white p-3 text-center shadow-xs">
-          <span class="text-[10px] uppercase font-bold text-muted">Arus Kas</span>
-          <div id="cycleNetCashflow" class="num-tabular mt-1 text-sm font-bold text-sage-800">Rp 0</div>
-        </div>
-      </section>
 
-      <!-- Breakdown Beban Pasangan (Kas Bersama vs Pribadi) -->
-      <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm mb-4">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-ink mb-3">Distribusi Beban Periode Ini</h3>
-        
-        <div class="space-y-3">
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-1">
-              <span>🏠 Kas Bersama</span>
-              <span id="cycleScopeJoint" class="num-tabular font-bold text-ink">Rp 0</span>
-            </div>
-            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-              <div id="barScopeJoint" class="h-full bg-sage-700 transition-all" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-1">
-              <span>👤 Pribadi Suami</span>
-              <span id="cycleScopeSuami" class="num-tabular font-bold text-ink">Rp 0</span>
-            </div>
-            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-              <div id="barScopeSuami" class="h-full bg-slate-600 transition-all" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-1">
-              <span>👤 Pribadi Istri</span>
-              <span id="cycleScopeIstri" class="num-tabular font-bold text-ink">Rp 0</span>
-            </div>
-            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-              <div id="barScopeIstri" class="h-full bg-amber-600 transition-all" style="width: 0%"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Breakdown Pengeluaran per Kategori -->
-      <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-ink mb-3">Rincian Pengeluaran per Kategori</h3>
-        <div id="cycleCategoryBreakdown" class="space-y-2.5">
-          <p class="text-xs text-muted text-center py-2">Memuat rincian...</p>
-        </div>
-      </section>
+      </div>
     </div>
 
-    <!-- ==================== VIEW 3: KELOLA (REFINED CLEAN UI) ==================== -->
+    <!-- ==================== VIEW 3: KELOLA (RESPONSIVE GRID) ==================== -->
     <div id="viewManage" class="hidden space-y-4">
 
       <!-- Sub-Tab Navigation inside Kelola -->
-      <div class="grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/80">
+      <div class="grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/80 max-w-md mx-auto">
         <button type="button" onclick="switchManageSubTab('categories')" id="subTabCat" class="touch-btn rounded-lg py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs">
           Kategori (<span id="countCatBadge">0</span>)
         </button>
@@ -353,7 +382,7 @@
       </div>
 
       <!-- SUB-PANEL 1: KELOLA KATEGORI -->
-      <div id="subPanelCat" class="space-y-3">
+      <div id="subPanelCat" class="space-y-3 max-w-2xl mx-auto">
         <!-- Add New Category Card -->
         <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
           <label for="inputNewCategory" class="block text-xs font-bold text-ink mb-1.5">Tambah Kategori Baru</label>
@@ -371,14 +400,14 @@
             <span class="text-xs font-bold uppercase tracking-wider text-muted">Daftar Kategori Aktif</span>
             <span class="text-[11px] text-muted">Tap ✕ untuk hapus</span>
           </div>
-          <div id="manageCategoryList" class="divide-y divide-borderline/60">
+          <div id="manageCategoryList" class="divide-y divide-borderline/60 max-h-[400px] overflow-y-auto pr-1">
             <!-- Rendered as clean list rows -->
           </div>
         </div>
       </div>
 
       <!-- SUB-PANEL 2: KELOLA DOMPET -->
-      <div id="subPanelWal" class="hidden space-y-3">
+      <div id="subPanelWal" class="hidden space-y-3 max-w-2xl mx-auto">
         <!-- Add New Wallet Card -->
         <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
           <label for="inputNewWallet" class="block text-xs font-bold text-ink mb-1.5">Tambah Rekening / Dompet Baru</label>
@@ -396,14 +425,14 @@
             <span class="text-xs font-bold uppercase tracking-wider text-muted">Daftar Rekening / Dompet Aktif</span>
             <span class="text-[11px] text-muted">Tap ✕ untuk hapus</span>
           </div>
-          <div id="manageWalletList" class="divide-y divide-borderline/60">
+          <div id="manageWalletList" class="divide-y divide-borderline/60 max-h-[400px] overflow-y-auto pr-1">
             <!-- Rendered as clean list rows -->
           </div>
         </div>
       </div>
 
       <!-- SUB-PANEL 3: SIKLUS GAJIAN -->
-      <div id="subPanelSal" class="hidden">
+      <div id="subPanelSal" class="hidden max-w-2xl mx-auto">
         <div class="rounded-2xl border border-borderline bg-white p-4 shadow-xs space-y-3">
           <div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-ink mb-1">Tanggal Siklus Gajian Keluarga</h3>
@@ -423,19 +452,21 @@
       </div>
 
       <!-- Save Changes Button -->
-      <button 
-        type="button" 
-        onclick="saveConfigChanges()" 
-        id="btnSaveConfig"
-        class="touch-btn flex w-full items-center justify-center gap-2 rounded-xl bg-sage-800 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-sage-700 focus:outline-none transition-all"
-      >
-        <span id="btnSaveConfigText">Simpan Perubahan ke Google Sheets</span>
-      </button>
+      <div class="max-w-2xl mx-auto">
+        <button 
+          type="button" 
+          onclick="saveConfigChanges()" 
+          id="btnSaveConfig"
+          class="touch-btn flex w-full items-center justify-center gap-2 rounded-xl bg-sage-800 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-sage-700 focus:outline-none transition-all"
+        >
+          <span id="btnSaveConfigText">Simpan Perubahan ke Google Sheets</span>
+        </button>
+      </div>
 
     </div>
 
     <!-- Notification Alert Box -->
-    <div id="toastAlert" class="mt-3 hidden rounded-xl border px-4 py-3 text-xs font-medium transition-all"></div>
+    <div id="toastAlert" class="mt-3 hidden rounded-xl border px-4 py-3 text-xs font-medium transition-all max-w-lg mx-auto"></div>
 
   </main>
 
@@ -512,8 +543,8 @@
       var nSum = document.getElementById('navTabSummary');
       var nMan = document.getElementById('navTabManage');
 
-      var activeTabStyle = 'touch-btn rounded-lg py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs';
-      var inactiveTabStyle = 'touch-btn rounded-lg py-2 text-xs font-medium transition-all text-muted hover:text-ink';
+      var activeTabStyle = 'touch-btn rounded-lg px-4 py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs';
+      var inactiveTabStyle = 'touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink';
 
       nRec.className = tab === 'record' ? activeTabStyle : inactiveTabStyle;
       nSum.className = tab === 'summary' ? activeTabStyle : inactiveTabStyle;
@@ -757,6 +788,9 @@
         document.getElementById('userEmailBadge').textContent = 'Mode Terhubung Google';
       }
       document.getElementById('userRoleBadge').textContent = appData.userRole || 'Keluarga';
+      var badgeDesk = document.getElementById('userRoleBadgeDesktop');
+      if (badgeDesk) badgeDesk.textContent = appData.userRole || 'Keluarga';
+
       updateDynamicUI();
     }
 
@@ -770,7 +804,7 @@
       container.innerHTML = '';
       appData.recent.forEach(function(tx) {
         var card = document.createElement('div');
-        card.className = 'flex items-center justify-between rounded-xl border border-borderline bg-white p-3 shadow-xs';
+        card.className = 'flex items-center justify-between rounded-xl border border-borderline bg-white p-3 shadow-xs hover:border-slate-300 transition-colors';
         
         var isIncome = tx.type === 'Pemasukan';
         var isTransfer = tx.type === 'Transfer';
@@ -908,7 +942,7 @@
       
       var netElem = document.getElementById('cycleNetCashflow');
       netElem.textContent = formatRupiah(data.netCashflow);
-      netElem.className = 'num-tabular mt-1 text-sm font-bold ' + (data.netCashflow >= 0 ? 'text-sage-800' : 'text-red-700');
+      netElem.className = 'num-tabular mt-1 text-sm lg:text-base font-bold ' + (data.netCashflow >= 0 ? 'text-sage-800' : 'text-red-700');
 
       var totalExp = data.totalExpense || 1;
       var joint = (data.byScope && data.byScope['Kas Bersama']) || 0;
@@ -947,11 +981,9 @@
 
     // ==================== VIEW 3: KELOLA REFINED LOGIC ====================
     function renderManageItems() {
-      // Badges
       document.getElementById('countCatBadge').textContent = appData.categories.length;
       document.getElementById('countWalBadge').textContent = appData.wallets.length;
 
-      // Render Categories as clean list rows
       var catBox = document.getElementById('manageCategoryList');
       catBox.innerHTML = '';
       appData.categories.forEach(function(cat, idx) {
@@ -968,7 +1000,6 @@
         catBox.appendChild(row);
       });
 
-      // Render Wallets as clean list rows
       var walBox = document.getElementById('manageWalletList');
       walBox.innerHTML = '';
       appData.wallets.forEach(function(wal, idx) {
@@ -1214,7 +1245,6 @@
           })
           .submitTransaction(payload);
       } else {
-        // Fallback simulation mode
         setTimeout(function() {
           setLoading(false);
           appData.recent.unshift({
@@ -1226,7 +1256,8 @@
             wallet: payload.wallet,
             amount: payload.amount,
             note: payload.note,
-            author: appData.userEmail || 'Local Demo'
+            author: appData.userEmail || 'Local Demo',
+            authorRole: appData.userRole === 'Ayah' ? 'Suami (Ayah)' : 'Istri (Bunda)'
           });
           if (payload.type === 'Pengeluaran') {
             appData.summary.monthExpense += payload.amount;
