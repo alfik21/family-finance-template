@@ -184,7 +184,10 @@ function submitTransaction(payload) {
 
     var authorString = userEmail || 'Anonim';
     var configSheet = ss.getSheetByName('CONFIG');
-    if (configSheet && userEmail) {
+
+    if (payload.authorRole) {
+      authorString = payload.authorRole + (userEmail ? ' (' + userEmail + ')' : '');
+    } else if (configSheet && userEmail) {
       var sEmail = (configSheet.getRange('B3').getValue() || '').toString().toLowerCase();
       var iEmail = (configSheet.getRange('B5').getValue() || '').toString().toLowerCase();
       var sLabel = configSheet.getRange('B2').getValue() || 'Ayah';
