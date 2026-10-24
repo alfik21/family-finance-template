@@ -1,0 +1,6 @@
+# Clasp ignore configuration
+**/**
+!Code.gs
+!Setup.gs
+!WebApp.html
+!appsscript.json

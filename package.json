@@ -4,7 +4,9 @@
   "description": "Family & Couple Finance Tracker with Google Sheets and Mobile-First Apps Script PWA",
   "main": "Code.gs",
   "scripts": {
-    "test": "node tests/validate.js"
+    "test": "node tests/validate.js",
+    "push": "npx @google/clasp push",
+    "pull": "npx @google/clasp pull"
   },
   "keywords": [
     "finance-tracker",
