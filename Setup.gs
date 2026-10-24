@@ -260,7 +260,7 @@ function createDashboardSheet(ss, palette) {
   var sheet = getOrCreateSheet(ss, 'DASHBOARD');
   sheet.clear();
   sheet.setTabColor(palette.primaryDark);
-  sheet.showGridLines(true);
+  sheet.setHiddenGridlines(false);
 
   sheet.getRange('A1:G1').merge()
     .setValue('FAMILY FINANCE TRACKER — KAS RUMAH TANGGA')
