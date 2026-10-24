@@ -336,73 +336,98 @@
       </section>
     </div>
 
-    <!-- ==================== VIEW 3: KELOLA KATEGORI & DOMPET ==================== -->
+    <!-- ==================== VIEW 3: KELOLA (REFINED CLEAN UI) ==================== -->
     <div id="viewManage" class="hidden space-y-4">
 
-      <!-- Manage Categories Card -->
-      <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
-        <div class="flex items-center justify-between mb-3 border-b pb-2">
+      <!-- Sub-Tab Navigation inside Kelola -->
+      <div class="grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/80">
+        <button type="button" onclick="switchManageSubTab('categories')" id="subTabCat" class="touch-btn rounded-lg py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs">
+          Kategori (<span id="countCatBadge">0</span>)
+        </button>
+        <button type="button" onclick="switchManageSubTab('wallets')" id="subTabWal" class="touch-btn rounded-lg py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+          Dompet (<span id="countWalBadge">0</span>)
+        </button>
+        <button type="button" onclick="switchManageSubTab('salary')" id="subTabSal" class="touch-btn rounded-lg py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+          Siklus Gajian
+        </button>
+      </div>
+
+      <!-- SUB-PANEL 1: KELOLA KATEGORI -->
+      <div id="subPanelCat" class="space-y-3">
+        <!-- Add New Category Card -->
+        <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
+          <label for="inputNewCategory" class="block text-xs font-bold text-ink mb-1.5">Tambah Kategori Baru</label>
+          <div class="flex gap-2">
+            <input type="text" id="inputNewCategory" placeholder="Misal: Les Musik, Kucing, Skincare..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
+            <button type="button" onclick="addNewCategory()" class="touch-btn shrink-0 rounded-xl bg-sage-800 px-4 py-2.5 text-xs font-bold text-white hover:bg-sage-700">
+              + Tambah
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Items List -->
+        <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
+          <div class="flex items-center justify-between mb-2.5 border-b border-borderline pb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-muted">Daftar Kategori Aktif</span>
+            <span class="text-[11px] text-muted">Tap ✕ untuk hapus</span>
+          </div>
+          <div id="manageCategoryList" class="divide-y divide-borderline/60">
+            <!-- Rendered as clean list rows -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-PANEL 2: KELOLA DOMPET -->
+      <div id="subPanelWal" class="hidden space-y-3">
+        <!-- Add New Wallet Card -->
+        <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
+          <label for="inputNewWallet" class="block text-xs font-bold text-ink mb-1.5">Tambah Rekening / Dompet Baru</label>
+          <div class="flex gap-2">
+            <input type="text" id="inputNewWallet" placeholder="Misal: Bank Jago, SeaBank, OVO..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
+            <button type="button" onclick="addNewWallet()" class="touch-btn shrink-0 rounded-xl bg-sage-800 px-4 py-2.5 text-xs font-bold text-white hover:bg-sage-700">
+              + Tambah
+            </button>
+          </div>
+        </div>
+
+        <!-- Wallet Items List -->
+        <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
+          <div class="flex items-center justify-between mb-2.5 border-b border-borderline pb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-muted">Daftar Rekening / Dompet Aktif</span>
+            <span class="text-[11px] text-muted">Tap ✕ untuk hapus</span>
+          </div>
+          <div id="manageWalletList" class="divide-y divide-borderline/60">
+            <!-- Rendered as clean list rows -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-PANEL 3: SIKLUS GAJIAN -->
+      <div id="subPanelSal" class="hidden">
+        <div class="rounded-2xl border border-borderline bg-white p-4 shadow-xs space-y-3">
           <div>
-            <h2 class="text-xs font-bold uppercase tracking-wider text-ink">Kelola Kategori Belanja</h2>
-            <p class="text-[11px] text-muted">Daftar kategori yang muncul pada form input</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink mb-1">Tanggal Siklus Gajian Keluarga</h3>
+            <p class="text-[11px] text-muted">Menentukan awal periode perhitungan rekap bulanan Anda di menu Rekap Siklus.</p>
+          </div>
+
+          <div class="flex items-center gap-3 rounded-xl border border-borderline bg-surface p-3">
+            <span class="text-xs font-semibold text-ink">Setiap tanggal:</span>
+            <input type="number" id="inputSalaryDate" min="1" max="31" class="w-20 rounded-xl border border-borderline bg-white p-2 text-center text-base font-bold text-ink focus:border-sage-700 focus:outline-none">
+            <span class="text-xs text-muted">tiap bulan</span>
+          </div>
+
+          <div class="rounded-xl bg-sage-50 border border-sage-200 p-3 text-[11px] text-sage-800">
+            <strong>Contoh:</strong> Jika diisi <strong>25</strong>, maka rekap siklus bulan ini akan otomatis menghitung transaksi dari <strong>25 bulan lalu s/d 24 bulan ini</strong>.
           </div>
         </div>
-
-        <div id="manageCategoryList" class="flex flex-wrap gap-1.5 mb-4">
-          <!-- Rendered via JS -->
-        </div>
-
-        <!-- Add Category Form -->
-        <div class="flex gap-2">
-          <input type="text" id="inputNewCategory" placeholder="Kategori baru (misal: Les Anak)..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2 text-xs font-medium focus:border-sage-700 focus:outline-none">
-          <button type="button" onclick="addNewCategory()" class="touch-btn shrink-0 rounded-xl bg-sage-800 px-4 py-2 text-xs font-bold text-white hover:bg-sage-700">
-            + Tambah
-          </button>
-        </div>
-      </section>
-
-      <!-- Manage Wallets Card -->
-      <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
-        <div class="flex items-center justify-between mb-3 border-b pb-2">
-          <div>
-            <h2 class="text-xs font-bold uppercase tracking-wider text-ink">Kelola Rekening & Dompet</h2>
-            <p class="text-[11px] text-muted">Bank, kas tunai, atau e-wallet keluarga</p>
-          </div>
-        </div>
-
-        <div id="manageWalletList" class="flex flex-wrap gap-1.5 mb-4">
-          <!-- Rendered via JS -->
-        </div>
-
-        <!-- Add Wallet Form -->
-        <div class="flex gap-2">
-          <input type="text" id="inputNewWallet" placeholder="Dompet baru (misal: Bank Jago)..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2 text-xs font-medium focus:border-sage-700 focus:outline-none">
-          <button type="button" onclick="addNewWallet()" class="touch-btn shrink-0 rounded-xl bg-sage-800 px-4 py-2 text-xs font-bold text-white hover:bg-sage-700">
-            + Tambah
-          </button>
-        </div>
-      </section>
-
-      <!-- Salary Date Cycle Config -->
-      <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-ink mb-1">Tanggal Siklus Gajian</h2>
-        <p class="text-[11px] text-muted mb-3">Dasar perhitungan awal siklus rekap bulanan keluarga</p>
-        
-        <div class="flex items-center gap-3">
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs font-semibold">Setiap tanggal</span>
-            <input type="number" id="inputSalaryDate" min="1" max="31" class="w-16 rounded-xl border border-borderline bg-surface p-2 text-center text-sm font-bold text-ink focus:border-sage-700 focus:outline-none">
-          </div>
-          <span class="text-xs text-muted">tiap bulan</span>
-        </div>
-      </section>
+      </div>
 
       <!-- Save Changes Button -->
       <button 
         type="button" 
         onclick="saveConfigChanges()" 
         id="btnSaveConfig"
-        class="touch-btn flex w-full items-center justify-center gap-2 rounded-xl bg-sage-800 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-sage-700 focus:outline-none"
+        class="touch-btn flex w-full items-center justify-center gap-2 rounded-xl bg-sage-800 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-sage-700 focus:outline-none transition-all"
       >
         <span id="btnSaveConfigText">Simpan Perubahan ke Google Sheets</span>
       </button>
@@ -417,6 +442,7 @@
   <script>
     // State Management
     var currentMainTab = 'record'; // 'record' | 'summary' | 'manage'
+    var currentManageSubTab = 'categories'; // 'categories' | 'wallets' | 'salary'
     var currentType = 'Pengeluaran';
     var currentScopeChoice = 'bersama'; // 'bersama' | 'pribadi'
 
@@ -502,6 +528,28 @@
       } else if (tab === 'manage') {
         renderManageItems();
       }
+    }
+
+    function switchManageSubTab(sub) {
+      currentManageSubTab = sub;
+      var pCat = document.getElementById('subPanelCat');
+      var pWal = document.getElementById('subPanelWal');
+      var pSal = document.getElementById('subPanelSal');
+
+      var bCat = document.getElementById('subTabCat');
+      var bWal = document.getElementById('subTabWal');
+      var bSal = document.getElementById('subTabSal');
+
+      var act = 'touch-btn rounded-lg py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs';
+      var inact = 'touch-btn rounded-lg py-2 text-xs font-medium transition-all text-muted hover:text-ink';
+
+      bCat.className = sub === 'categories' ? act : inact;
+      bWal.className = sub === 'wallets' ? act : inact;
+      bSal.className = sub === 'salary' ? act : inact;
+
+      pCat.classList.toggle('hidden', sub !== 'categories');
+      pWal.classList.toggle('hidden', sub !== 'wallets');
+      pSal.classList.toggle('hidden', sub !== 'salary');
     }
 
     function initDefaultDate() {
@@ -804,7 +852,6 @@
           })
           .getPeriodSummary(sDate, eDate);
       } else {
-        // Local simulation computation
         var start = new Date(sDate + 'T00:00:00');
         var end = new Date(eDate + 'T23:59:59');
 
@@ -850,7 +897,7 @@
       netElem.textContent = formatRupiah(data.netCashflow);
       netElem.className = 'num-tabular mt-1 text-sm font-bold ' + (data.netCashflow >= 0 ? 'text-sage-800' : 'text-red-700');
 
-      var totalExp = data.totalExpense || 1; // avoid division by 0
+      var totalExp = data.totalExpense || 1;
       var joint = (data.byScope && data.byScope['Kas Bersama']) || 0;
       var suami = (data.byScope && data.byScope['Pribadi Suami']) || 0;
       var istri = (data.byScope && data.byScope['Pribadi Istri']) || 0;
@@ -885,24 +932,44 @@
       });
     }
 
-    // ==================== VIEW 3: KELOLA LOGIC ====================
+    // ==================== VIEW 3: KELOLA REFINED LOGIC ====================
     function renderManageItems() {
+      // Badges
+      document.getElementById('countCatBadge').textContent = appData.categories.length;
+      document.getElementById('countWalBadge').textContent = appData.wallets.length;
+
+      // Render Categories as clean list rows
       var catBox = document.getElementById('manageCategoryList');
       catBox.innerHTML = '';
       appData.categories.forEach(function(cat, idx) {
-        var chip = document.createElement('div');
-        chip.className = 'flex items-center gap-1.5 rounded-lg border border-borderline bg-surface px-2.5 py-1 text-xs font-medium text-ink';
-        chip.innerHTML = '<span>' + cat + '</span><button type="button" onclick="removeCategory(' + idx + ')" class="text-muted hover:text-red-700 text-xs font-bold ml-1">✕</button>';
-        catBox.appendChild(chip);
+        var row = document.createElement('div');
+        row.className = 'flex items-center justify-between py-2.5 px-1 hover:bg-surface transition-colors rounded-lg';
+        row.innerHTML = 
+          '<div class="flex items-center gap-2.5">' +
+            '<span class="flex h-5 w-5 items-center justify-center rounded-md bg-sage-100 text-[10px] font-bold text-sage-800">' + (idx + 1) + '</span>' +
+            '<span class="text-xs font-semibold text-ink">' + cat + '</span>' +
+          '</div>' +
+          '<button type="button" onclick="removeCategory(' + idx + ')" title="Hapus kategori" class="text-xs text-muted hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 font-medium transition-colors">' +
+            'Hapus' +
+          '</button>';
+        catBox.appendChild(row);
       });
 
+      // Render Wallets as clean list rows
       var walBox = document.getElementById('manageWalletList');
       walBox.innerHTML = '';
       appData.wallets.forEach(function(wal, idx) {
-        var chip = document.createElement('div');
-        chip.className = 'flex items-center gap-1.5 rounded-lg border border-borderline bg-surface px-2.5 py-1 text-xs font-medium text-ink';
-        chip.innerHTML = '<span>' + wal + '</span><button type="button" onclick="removeWallet(' + idx + ')" class="text-muted hover:text-red-700 text-xs font-bold ml-1">✕</button>';
-        walBox.appendChild(chip);
+        var row = document.createElement('div');
+        row.className = 'flex items-center justify-between py-2.5 px-1 hover:bg-surface transition-colors rounded-lg';
+        row.innerHTML = 
+          '<div class="flex items-center gap-2.5">' +
+            '<span class="flex h-5 w-5 items-center justify-center rounded-md bg-slate-100 text-[10px] font-bold text-slate-700">' + (idx + 1) + '</span>' +
+            '<span class="text-xs font-semibold text-ink">' + wal + '</span>' +
+          '</div>' +
+          '<button type="button" onclick="removeWallet(' + idx + ')" title="Hapus dompet" class="text-xs text-muted hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 font-medium transition-colors">' +
+            'Hapus' +
+          '</button>';
+        walBox.appendChild(row);
       });
 
       document.getElementById('inputSalaryDate').value = appData.salaryDate || 25;
@@ -917,7 +984,9 @@
         input.value = '';
         renderManageItems();
         renderOptions();
-        showToast('Kategori ditambahkan. Jangan lupa klik Simpan Perubahan.', true);
+        showToast('Kategori ditambahkan. Jangan lupa klik "Simpan Perubahan".', true);
+      } else {
+        showToast('Kategori sudah ada dalam daftar', false);
       }
     }
 
@@ -926,9 +995,10 @@
         showToast('Minimal harus ada 1 kategori', false);
         return;
       }
-      appData.categories.splice(idx, 1);
+      var removed = appData.categories.splice(idx, 1);
       renderManageItems();
       renderOptions();
+      showToast('Kategori "' + removed[0] + '" dihapus.', true);
     }
 
     function addNewWallet() {
@@ -940,7 +1010,9 @@
         input.value = '';
         renderManageItems();
         renderOptions();
-        showToast('Dompet ditambahkan. Jangan lupa klik Simpan Perubahan.', true);
+        showToast('Dompet ditambahkan. Jangan lupa klik "Simpan Perubahan".', true);
+      } else {
+        showToast('Dompet sudah ada dalam daftar', false);
       }
     }
 
@@ -949,9 +1021,10 @@
         showToast('Minimal harus ada 1 dompet', false);
         return;
       }
-      appData.wallets.splice(idx, 1);
+      var removed = appData.wallets.splice(idx, 1);
       renderManageItems();
       renderOptions();
+      showToast('Dompet "' + removed[0] + '" dihapus.', true);
     }
 
     function saveConfigChanges() {
