@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Kas Keluarga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            sage: {
+              50: '#f4f7f5',
+              100: '#e8f0ec',
+              200: '#d1e0d8',
+              500: '#40916c',
+              700: '#2d6a4f',
+              800: '#1b4332',
+              900: '#081c15',
+            },
+            surface: '#fcfbf7',
+            ink: '#1c1e21',
+            muted: '#656b73',
+            borderline: '#e1e5ea'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      background-color: #f6f8f7;
+      color: #1c1e21;
+    }
+    .num-tabular {
+      font-variant-numeric: tabular-nums;
+    }
+    .touch-btn:active {
+      transform: scale(0.97);
+    }
+    /* Hide scrollbar for preset chips horizontal scroll */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-10 antialiased selection:bg-sage-100 selection:text-sage-900">
+
+  <!-- Mobile Container Wrapper -->
+  <main class="mx-auto w-full max-w-lg px-4 pt-3 sm:px-6">
+
+    <!-- Top Identity Bar -->
+    <header class="mb-4 flex items-center justify-between border-b border-borderline/80 pb-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-block h-2.5 w-2.5 rounded-full bg-sage-500"></span>
+          <h1 class="text-base font-bold tracking-tight text-ink sm:text-lg">Kas Keluarga</h1>
+        </div>
+        <p id="userEmailBadge" class="text-xs text-muted">Memuat akun Google...</p>
+      </div>
+
+      <div class="flex items-center gap-1.5 rounded-full bg-sage-100 px-3 py-1 text-xs font-semibold text-sage-800">
+        <span id="userRoleBadge">Pasangan</span>
+      </div>
+    </header>
+
+    <!-- Monthly Summary Bar -->
+    <section class="mb-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+      <div class="rounded-xl border border-borderline bg-white p-3 shadow-xs">
+        <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Pengeluaran Bulan Ini</span>
+        <div id="statMonthExpense" class="num-tabular mt-1 text-lg font-bold text-ink">Rp 0</div>
+      </div>
+      <div class="rounded-xl border border-borderline bg-white p-3 shadow-xs">
+        <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Sisa Kas Berjalan</span>
+        <div id="statJointBalance" class="num-tabular mt-1 text-lg font-bold text-sage-700">Rp 0</div>
+      </div>
+      <div class="col-span-2 rounded-xl border border-borderline bg-white p-3 shadow-xs sm:col-span-1">
+        <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Pemasukan Bulan Ini</span>
+        <div id="statMonthIncome" class="num-tabular mt-1 text-lg font-bold text-ink">Rp 0</div>
+      </div>
+    </section>
+
+    <!-- Main Transaction Form Card -->
+    <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm sm:p-5">
+      <form id="txForm" onsubmit="handleFormSubmit(event)">
+
+        <!-- Type Selector (Pengeluaran vs Pemasukan) -->
+        <div class="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/60">
+          <button type="button" onclick="setType('Pengeluaran')" id="btnTypeExpense" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all bg-sage-800 text-white shadow-xs">
+            Pengeluaran
+          </button>
+          <button type="button" onclick="setType('Pemasukan')" id="btnTypeIncome" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all text-muted hover:text-ink">
+            Pemasukan
+          </button>
+          <button type="button" onclick="setType('Transfer')" id="btnTypeTransfer" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all text-muted hover:text-ink">
+            Transfer Kas
+          </button>
+        </div>
+
+        <!-- Scope / Peruntukan (Kas Bersama vs Pribadi) -->
+        <div class="mb-4">
+          <label class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Peruntukan Dana</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="setScope('Kas Bersama')" id="scopeJoint" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all">
+              Kas Bersama
+            </button>
+            <button type="button" onclick="setScope('Pribadi Suami')" id="scopeSuami" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
+              Suami
+            </button>
+            <button type="button" onclick="setScope('Pribadi Istri')" id="scopeIstri" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
+              Istri
+            </button>
+          </div>
+        </div>
+
+        <!-- Amount Input Field -->
+        <div class="mb-4">
+          <label for="displayAmount" class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Nominal</label>
+          <div class="relative flex items-center">
+            <span class="absolute left-3.5 text-base font-bold text-muted">Rp</span>
+            <input 
+              type="text" 
+              inputmode="numeric" 
+              id="displayAmount" 
+              placeholder="0" 
+              required
+              autocomplete="off"
+              oninput="handleAmountInput(this)"
+              class="num-tabular w-full rounded-xl border border-borderline bg-surface py-3.5 pl-12 pr-4 text-2xl font-bold text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200 transition-all"
+            />
+          </div>
+          <input type="hidden" id="rawAmount" name="amount" value="0">
+        </div>
+
+        <!-- Quick Preset Chips -->
+        <div class="mb-4">
+          <div class="mb-1.5 flex items-center justify-between">
+            <span class="text-xs font-semibold text-ink">Tombol Cepat</span>
+            <span class="text-[11px] text-muted">1 tap isi otomatis</span>
+          </div>
+          <div id="presetsList" class="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+            <!-- Preset items rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Category & Wallet Grid -->
+        <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label for="categorySelect" class="mb-1.5 block text-xs font-semibold text-ink">Kategori</label>
+            <select id="categorySelect" required class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+              <option value="">Pilih Kategori...</option>
+            </select>
+          </div>
+          <div>
+            <label for="walletSelect" class="mb-1.5 block text-xs font-semibold text-ink">Rekening / Dompet</label>
+            <select id="walletSelect" required class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+              <option value="">Pilih Dompet...</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Date & Notes -->
+        <div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label for="txDate" class="mb-1.5 block text-xs font-semibold text-ink">Tanggal</label>
+            <input type="date" id="txDate" required class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+          </div>
+          <div>
+            <label for="txNote" class="mb-1.5 block text-xs font-semibold text-ink">Catatan (Opsional)</label>
+            <input type="text" id="txNote" placeholder="Keterangan singkat..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          id="btnSubmit"
+          class="touch-btn flex w-full items-center justify-center gap-2 rounded-xl bg-sage-800 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-sage-700 focus:outline-none focus:ring-3 focus:ring-sage-500/30 transition-all"
+        >
+          <span id="btnSubmitText">Simpan Transaksi</span>
+          <svg id="btnSpinner" class="hidden h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+        </button>
+
+      </form>
+    </section>
+
+    <!-- Notification Alert Box -->
+    <div id="toastAlert" class="mt-3 hidden rounded-xl border px-4 py-3 text-xs font-medium transition-all"></div>
+
+    <!-- Recent Transactions Section -->
+    <section class="mt-6">
+      <div class="mb-2.5 flex items-center justify-between">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-muted">5 Transaksi Terakhir</h2>
+        <span class="text-[11px] text-muted">Sinkronisasi Realtime</span>
+      </div>
+      
+      <div id="recentTxContainer" class="space-y-2">
+        <!-- Rendered via JS -->
+        <div class="rounded-xl border border-borderline bg-white p-3 text-center text-xs text-muted">
+          Memuat riwayat transaksi...
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // State Management
+    var currentType = 'Pengeluaran';
+    var currentScope = 'Kas Bersama';
+    var appData = {
+      categories: [
+        'Belanja Pasar & Dapur',
+        'Makan Luar & Jajan',
+        'Listrik & Utilitas',
+        'Internet & Pulsa',
+        'Kebutuhan Anak & Les',
+        'Transportasi & Bensin',
+        'Cicilan & Kewajiban',
+        'Pribadi Suami',
+        'Pribadi Istri',
+        'Sedekah & Orang Tua',
+        'Darurat & Tabungan',
+        'Lain-lain'
+      ],
+      wallets: [
+        'Kas Tunai Rumah',
+        'Rekening BCA Bersama',
+        'BCA Pribadi Suami',
+        'BCA Pribadi Istri',
+        'GoPay Suami',
+        'GoPay Istri',
+        'ShopeePay'
+      ],
+      presets: [
+        { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama' },
+        { name: 'Kopi Pagi', amount: 22000, category: 'Makan Luar & Jajan', scope: 'Pribadi Suami' },
+        { name: 'Sayur Pasar', amount: 75000, category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama' },
+        { name: 'Token Listrik', amount: 100000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' },
+        { name: 'Galon & Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' }
+      ],
+      recent: [],
+      summary: { monthExpense: 0, jointBalance: 0, monthIncome: 0 },
+      userEmail: '',
+      userRole: 'Keluarga'
+    };
+
+    // Initialize application
+    document.addEventListener('DOMContentLoaded', function() {
+      initDefaultDate();
+      loadCachedData();
+      renderOptions();
+      renderPresets();
+      fetchServerData();
+    });
+
+    function initDefaultDate() {
+      var today = new Date();
+      var yyyy = today.getFullYear();
+      var mm = String(today.getMonth() + 1).padStart(2, '0');
+      var dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('txDate').value = yyyy + '-' + mm + '-' + dd;
+    }
+
+    function formatRupiah(num) {
+      return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+    }
+
+    function handleAmountInput(input) {
+      var raw = input.value.replace(/[^0-9]/g, '');
+      var val = Number(raw) || 0;
+      document.getElementById('rawAmount').value = val;
+      input.value = val === 0 ? '' : val.toLocaleString('id-ID');
+    }
+
+    function setType(type) {
+      currentType = type;
+      var btnExp = document.getElementById('btnTypeExpense');
+      var btnInc = document.getElementById('btnTypeIncome');
+      var btnTrf = document.getElementById('btnTypeTransfer');
+
+      var activeClass = 'bg-sage-800 text-white shadow-xs';
+      var inactiveClass = 'text-muted hover:text-ink';
+
+      btnExp.className = 'touch-btn rounded-lg py-2 text-xs font-semibold transition-all ' + (type === 'Pengeluaran' ? activeClass : inactiveClass);
+      btnInc.className = 'touch-btn rounded-lg py-2 text-xs font-semibold transition-all ' + (type === 'Pemasukan' ? activeClass : inactiveClass);
+      btnTrf.className = 'touch-btn rounded-lg py-2 text-xs font-semibold transition-all ' + (type === 'Transfer' ? activeClass : inactiveClass);
+
+      var btnSubmit = document.getElementById('btnSubmitText');
+      if (type === 'Pengeluaran') btnSubmit.innerText = 'Simpan Pengeluaran';
+      else if (type === 'Pemasukan') btnSubmit.innerText = 'Simpan Pemasukan';
+      else btnSubmit.innerText = 'Simpan Transfer Saldo';
+    }
+
+    function setScope(scope) {
+      currentScope = scope;
+      var sJoint = document.getElementById('scopeJoint');
+      var sSuami = document.getElementById('scopeSuami');
+      var sIstri = document.getElementById('scopeIstri');
+
+      var setStyle = function(elem, isActive) {
+        if (isActive) {
+          elem.className = 'touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all';
+        } else {
+          elem.className = 'touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all';
+        }
+      };
+
+      setStyle(sJoint, scope === 'Kas Bersama');
+      setStyle(sSuami, scope === 'Pribadi Suami');
+      setStyle(sIstri, scope === 'Pribadi Istri');
+    }
+
+    function applyPreset(p) {
+      var displayInput = document.getElementById('displayAmount');
+      document.getElementById('rawAmount').value = p.amount;
+      displayInput.value = p.amount.toLocaleString('id-ID');
+
+      if (p.category) {
+        document.getElementById('categorySelect').value = p.category;
+      }
+      if (p.scope) {
+        setScope(p.scope);
+      }
+      setType('Pengeluaran');
+
+      // Subtle pulse feedback
+      displayInput.classList.add('ring-2', 'ring-sage-500');
+      setTimeout(function() {
+        displayInput.classList.remove('ring-2', 'ring-sage-500');
+      }, 300);
+    }
+
+    function renderPresets() {
+      var container = document.getElementById('presetsList');
+      container.innerHTML = '';
+      appData.presets.forEach(function(p) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'touch-btn shrink-0 rounded-full border border-borderline bg-surface px-3 py-1.5 text-xs font-medium text-ink hover:bg-sage-100 hover:border-sage-200 transition-all';
+        btn.innerHTML = '<span class="font-semibold">' + p.name + '</span> <span class="text-muted num-tabular">' + formatRupiah(p.amount) + '</span>';
+        btn.onclick = function() { applyPreset(p); };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderOptions() {
+      var catSelect = document.getElementById('categorySelect');
+      var walSelect = document.getElementById('walletSelect');
+
+      var prevCat = catSelect.value;
+      var prevWal = walSelect.value;
+
+      catSelect.innerHTML = '<option value="">Pilih Kategori...</option>';
+      appData.categories.forEach(function(c) {
+        var opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        catSelect.appendChild(opt);
+      });
+      if (prevCat) catSelect.value = prevCat;
+
+      walSelect.innerHTML = '<option value="">Pilih Dompet...</option>';
+      appData.wallets.forEach(function(w) {
+        var opt = document.createElement('option');
+        opt.value = w;
+        opt.textContent = w;
+        walSelect.appendChild(opt);
+      });
+      if (prevWal) walSelect.value = prevWal;
+    }
+
+    function renderSummary() {
+      document.getElementById('statMonthExpense').textContent = formatRupiah(appData.summary.monthExpense);
+      document.getElementById('statJointBalance').textContent = formatRupiah(appData.summary.jointBalance);
+      document.getElementById('statMonthIncome').textContent = formatRupiah(appData.summary.monthIncome);
+      
+      if (appData.userEmail) {
+        document.getElementById('userEmailBadge').textContent = appData.userEmail;
+      } else {
+        document.getElementById('userEmailBadge').textContent = 'Mode Terhubung Google';
+      }
+      document.getElementById('userRoleBadge').textContent = appData.userRole || 'Keluarga';
+    }
+
+    function renderRecent() {
+      var container = document.getElementById('recentTxContainer');
+      if (!appData.recent || appData.recent.length === 0) {
+        container.innerHTML = '<div class="rounded-xl border border-borderline bg-white p-4 text-center text-xs text-muted">Belum ada transaksi bulan ini.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      appData.recent.forEach(function(tx) {
+        var card = document.createElement('div');
+        card.className = 'flex items-center justify-between rounded-xl border border-borderline bg-white p-3 shadow-xs';
+        
+        var isIncome = tx.type === 'Pemasukan';
+        var sign = isIncome ? '+' : '-';
+        var amountClass = isIncome ? 'text-sage-700' : 'text-ink';
+
+        var authorShort = tx.author ? tx.author.split('@')[0] : 'Keluarga';
+
+        card.innerHTML = 
+          '<div class="pr-2">' +
+            '<div class="flex items-center gap-1.5">' +
+              '<span class="text-xs font-bold text-ink">' + (tx.category || tx.type) + '</span>' +
+              '<span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-muted">' + (tx.scope || 'Bersama') + '</span>' +
+            '</div>' +
+            '<div class="mt-0.5 text-[11px] text-muted">' + 
+              tx.date + ' • ' + (tx.note || tx.wallet || 'Tanpa catatan') + 
+              ' • <span class="text-slate-500 font-medium">' + authorShort + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="text-right">' +
+            '<div class="num-tabular text-sm font-bold ' + amountClass + '">' + sign + ' ' + formatRupiah(tx.amount) + '</div>' +
+          '</div>';
+        container.appendChild(card);
+      });
+    }
+
+    function loadCachedData() {
+      try {
+        var cached = localStorage.getItem('family_finance_cache');
+        if (cached) {
+          var parsed = JSON.parse(cached);
+          if (parsed.categories) appData.categories = parsed.categories;
+          if (parsed.wallets) appData.wallets = parsed.wallets;
+          if (parsed.presets) appData.presets = parsed.presets;
+          if (parsed.summary) appData.summary = parsed.summary;
+          if (parsed.recent) appData.recent = parsed.recent;
+          renderSummary();
+          renderRecent();
+        }
+      } catch (e) {}
+    }
+
+    function saveCachedData() {
+      try {
+        localStorage.setItem('family_finance_cache', JSON.stringify({
+          categories: appData.categories,
+          wallets: appData.wallets,
+          presets: appData.presets,
+          summary: appData.summary,
+          recent: appData.recent
+        }));
+      } catch (e) {}
+    }
+
+    function fetchServerData() {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(data) {
+            if (data) {
+              if (data.categories && data.categories.length) appData.categories = data.categories;
+              if (data.wallets && data.wallets.length) appData.wallets = data.wallets;
+              if (data.presets && data.presets.length) appData.presets = data.presets;
+              if (data.recent) appData.recent = data.recent;
+              if (data.summary) appData.summary = data.summary;
+              if (data.userEmail) appData.userEmail = data.userEmail;
+              if (data.userRole) appData.userRole = data.userRole;
+
+              renderOptions();
+              renderPresets();
+              renderSummary();
+              renderRecent();
+              saveCachedData();
+            }
+          })
+          .withFailureHandler(function(err) {
+            showToast('Gagal memuat data sheet: ' + err.message, false);
+          })
+          .getInitialData();
+      }
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+
+      var rawVal = Number(document.getElementById('rawAmount').value) || 0;
+      if (rawVal <= 0) {
+        showToast('Nominal harus lebih dari 0', false);
+        document.getElementById('displayAmount').focus();
+        return;
+      }
+
+      var category = document.getElementById('categorySelect').value;
+      var wallet = document.getElementById('walletSelect').value;
+      var date = document.getElementById('txDate').value;
+      var note = document.getElementById('txNote').value;
+
+      var payload = {
+        amount: rawVal,
+        type: currentType,
+        scope: currentScope,
+        category: category,
+        wallet: wallet,
+        date: date,
+        note: note
+      };
+
+      setLoading(true);
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            setLoading(false);
+            if (res && res.success) {
+              showToast('Transaksi berhasil disimpan ke spreadsheet!', true);
+              resetForm();
+              fetchServerData();
+            } else {
+              showToast('Gagal menyimpan: ' + (res ? res.message : 'Error tidak diketahui'), false);
+            }
+          })
+          .withFailureHandler(function(err) {
+            setLoading(false);
+            showToast('Koneksi terganggu: ' + err.message, false);
+          })
+          .submitTransaction(payload);
+      } else {
+        // Fallback demo mode for local preview / offline
+        setTimeout(function() {
+          setLoading(false);
+          appData.recent.unshift({
+            id: 'TRX-LOCAL',
+            date: payload.date,
+            type: payload.type,
+            category: payload.category,
+            scope: payload.scope,
+            wallet: payload.wallet,
+            amount: payload.amount,
+            note: payload.note,
+            author: appData.userEmail || 'Local Demo'
+          });
+          if (payload.type === 'Pengeluaran') {
+            appData.summary.monthExpense += payload.amount;
+            if (payload.scope === 'Kas Bersama') appData.summary.jointBalance -= payload.amount;
+          } else if (payload.type === 'Pemasukan') {
+            appData.summary.monthIncome += payload.amount;
+            if (payload.scope === 'Kas Bersama') appData.summary.jointBalance += payload.amount;
+          }
+          renderSummary();
+          renderRecent();
+          saveCachedData();
+          showToast('Transaksi disimpan (Mode Demo Lokal)', true);
+          resetForm();
+        }, 300);
+      }
+    }
+
+    function setLoading(isLoading) {
+      var btn = document.getElementById('btnSubmit');
+      var spinner = document.getElementById('btnSpinner');
+      var text = document.getElementById('btnSubmitText');
+
+      btn.disabled = isLoading;
+      if (isLoading) {
+        spinner.classList.remove('hidden');
+        text.classList.add('opacity-70');
+      } else {
+        spinner.classList.add('hidden');
+        text.classList.remove('opacity-70');
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('rawAmount').value = 0;
+      document.getElementById('displayAmount').value = '';
+      document.getElementById('txNote').value = '';
+      initDefaultDate();
+    }
+
+    function showToast(msg, isSuccess) {
+      var toast = document.getElementById('toastAlert');
+      toast.textContent = msg;
+      toast.className = 'mt-3 block rounded-xl border px-4 py-3 text-xs font-semibold shadow-xs ' + 
+        (isSuccess ? 'border-sage-200 bg-sage-50 text-sage-800' : 'border-red-200 bg-red-50 text-red-800');
+      
+      setTimeout(function() {
+        toast.className = 'hidden';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>

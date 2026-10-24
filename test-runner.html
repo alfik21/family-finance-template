@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Test Harness — Family Finance Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    .device-mobile {
+      width: 400px;
+      height: 780px;
+      border-radius: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 12px #202322;
+      overflow: hidden;
+      position: relative;
+    }
+    .device-desktop {
+      width: 100%;
+      max-width: 900px;
+      height: 780px;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 0 0 1px #cbd5e1;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 p-4 lg:p-6">
+
+  <!-- Top Simulation Control Toolbar -->
+  <header class="mx-auto max-w-5xl mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-3 h-3 rounded-full bg-emerald-600 animate-pulse"></span>
+          <h1 class="text-base font-bold text-slate-900">User Testing Environment — Kas Keluarga</h1>
+        </div>
+        <p class="text-xs text-slate-500 mt-0.5">Simulasi Google Apps Script & Interaksi Pasangan Suami-Istri</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Role Switcher -->
+        <div class="flex items-center rounded-xl bg-slate-100 p-1 border border-slate-200 text-xs font-semibold">
+          <span class="px-2 text-slate-400 font-normal">Login Sebagai:</span>
+          <button id="btnRoleSuami" onclick="switchRole('suami@gmail.com', 'Ayah')" class="px-3 py-1.5 rounded-lg bg-emerald-800 text-white transition-all">
+            Suami (Ayah)
+          </button>
+          <button id="btnRoleIstri" onclick="switchRole('istri@gmail.com', 'Bunda')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+            Istri (Bunda)
+          </button>
+        </div>
+
+        <!-- Viewport Switcher -->
+        <div class="flex items-center rounded-xl bg-slate-100 p-1 border border-slate-200 text-xs font-semibold">
+          <button id="btnViewMobile" onclick="setViewMode('mobile')" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white transition-all">
+            Mobile (iPhone)
+          </button>
+          <button id="btnViewDesktop" onclick="setViewMode('desktop')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+            Desktop View
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Test Workspace Grid -->
+  <main class="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- Left / Center: Interactive App Frame -->
+    <div class="lg:col-span-7 flex justify-center">
+      <div id="deviceContainer" class="device-mobile bg-white transition-all duration-300">
+        <iframe id="appFrame" src="WebApp.html" class="w-full h-full border-0"></iframe>
+      </div>
+    </div>
+
+    <!-- Right: Simulated Live Spreadsheet Ledger -->
+    <div class="lg:col-span-5 space-y-4">
+
+      <!-- Test Guide Card -->
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Panduan Pengujian User (Checklist)</h2>
+        <ul class="text-xs space-y-1.5 text-slate-700">
+          <li class="flex items-start gap-1.5">
+            <span class="text-emerald-700 font-bold">1.</span>
+            <span>Uji <strong>Tombol Cepat</strong>: Klik "Bensin Motor" atau "Token Listrik", nominal & kategori langsung terisi.</span>
+          </li>
+          <li class="flex items-start gap-1.5">
+            <span class="text-emerald-700 font-bold">2.</span>
+            <span>Uji <strong>Peruntukan</strong>: Pilih antara "Kas Bersama", "Suami", atau "Istri".</span>
+          </li>
+          <li class="flex items-start gap-1.5">
+            <span class="text-emerald-700 font-bold">3.</span>
+            <span>Uji <strong>Simpan Transaksi</strong>: Tekan tombol simpan, data langsung muncul di tabel simulasi bawah.</span>
+          </li>
+          <li class="flex items-start gap-1.5">
+            <span class="text-emerald-700 font-bold">4.</span>
+            <span>Uji <strong>Ganti Akun</strong>: Klik tombol Suami / Istri di atas untuk melihat pergantian identitas pencatat.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Live Simulated Spreadsheet Data -->
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+        <div class="flex items-center justify-between mb-3 border-b pb-2">
+          <div class="flex items-center gap-1.5">
+            <div class="w-2.5 h-2.5 rounded bg-emerald-700"></div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Simulasi Sheet 'TRANSAKSI' Realtime</h3>
+          </div>
+          <button onclick="clearSimulatedData()" class="text-[11px] text-red-600 hover:underline font-medium">Reset Data</button>
+        </div>
+
+        <div class="overflow-x-auto max-h-[360px]">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-500 border-b">
+              <tr>
+                <th class="py-2 px-2.5 font-semibold">Tgl</th>
+                <th class="py-2 px-2.5 font-semibold">Kategori</th>
+                <th class="py-2 px-2.5 font-semibold">Pos</th>
+                <th class="py-2 px-2.5 font-semibold">Nominal</th>
+                <th class="py-2 px-2.5 font-semibold">Diinput Oleh</th>
+              </tr>
+            </thead>
+            <tbody id="simulatedTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // In-memory simulated state
+    var currentUser = {
+      email: 'suami@gmail.com',
+      role: 'Ayah'
+    };
+
+    var mockDatabase = {
+      transactions: [
+        { id: 'TRX-101', date: '2026-10-24', type: 'Pengeluaran', category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama', amount: 150000, note: 'Beli sayur, ayam & bumbu', author: 'istri@gmail.com' },
+        { id: 'TRX-102', date: '2026-10-24', type: 'Pengeluaran', category: 'Transportasi & Bensin', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami', amount: 50000, note: 'Bensin motor kantor', author: 'suami@gmail.com' }
+      ],
+      categories: [
+        'Belanja Pasar & Dapur',
+        'Makan Luar & Jajan',
+        'Listrik & Utilitas',
+        'Internet & Pulsa',
+        'Kebutuhan Anak & Les',
+        'Transportasi & Bensin',
+        'Cicilan & Kewajiban',
+        'Pribadi Suami',
+        'Pribadi Istri',
+        'Sedekah & Orang Tua',
+        'Darurat & Tabungan',
+        'Lain-lain'
+      ],
+      wallets: [
+        'Kas Tunai Rumah',
+        'Rekening BCA Bersama',
+        'BCA Pribadi Suami',
+        'BCA Pribadi Istri',
+        'GoPay Suami',
+        'GoPay Istri',
+        'ShopeePay'
+      ],
+      presets: [
+        { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama' },
+        { name: 'Kopi Pagi', amount: 22000, category: 'Makan Luar & Jajan', scope: 'Pribadi Suami' },
+        { name: 'Sayur Pasar', amount: 75000, category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama' },
+        { name: 'Token Listrik', amount: 100000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' },
+        { name: 'Galon & Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' }
+      ]
+    };
+
+    function calculateSummary() {
+      var monthExpense = 0;
+      var monthIncome = 0;
+      var jointBalance = 5000000; // Saldo awal contoh kas bersama
+
+      mockDatabase.transactions.forEach(function(tx) {
+        if (tx.type === 'Pengeluaran') {
+          monthExpense += tx.amount;
+          if (tx.scope === 'Kas Bersama') jointBalance -= tx.amount;
+        } else if (tx.type === 'Pemasukan') {
+          monthIncome += tx.amount;
+          if (tx.scope === 'Kas Bersama') jointBalance += tx.amount;
+        }
+      });
+
+      return {
+        monthExpense: monthExpense,
+        monthIncome: monthIncome,
+        jointBalance: jointBalance
+      };
+    }
+
+    function renderSimulatedTable() {
+      var tbody = document.getElementById('simulatedTableBody');
+      tbody.innerHTML = '';
+      
+      mockDatabase.transactions.slice().reverse().forEach(function(t) {
+        var tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition-colors';
+        var isIncome = t.type === 'Pemasukan';
+        var color = isIncome ? 'text-emerald-700 font-bold' : 'text-slate-800 font-medium';
+        var sign = isIncome ? '+' : '-';
+
+        tr.innerHTML = 
+          '<td class="py-2 px-2.5 text-slate-500 whitespace-nowrap">' + t.date + '</td>' +
+          '<td class="py-2 px-2.5 font-medium text-slate-900">' + t.category + '</td>' +
+          '<td class="py-2 px-2.5"><span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-600">' + t.scope + '</span></td>' +
+          '<td class="py-2 px-2.5 ' + color + ' whitespace-nowrap">' + sign + ' Rp ' + t.amount.toLocaleString('id-ID') + '</td>' +
+          '<td class="py-2 px-2.5 text-slate-500 text-[11px]">' + t.author.split('@')[0] + '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function switchRole(email, role) {
+      currentUser.email = email;
+      currentUser.role = role;
+
+      var btnS = document.getElementById('btnRoleSuami');
+      var btnI = document.getElementById('btnRoleIstri');
+
+      if (role === 'Ayah') {
+        btnS.className = 'px-3 py-1.5 rounded-lg bg-emerald-800 text-white transition-all';
+        btnI.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+      } else {
+        btnI.className = 'px-3 py-1.5 rounded-lg bg-emerald-800 text-white transition-all';
+        btnS.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+      }
+
+      syncIframeWithCurrentUser();
+    }
+
+    function setViewMode(mode) {
+      var container = document.getElementById('deviceContainer');
+      var btnMob = document.getElementById('btnViewMobile');
+      var btnDesk = document.getElementById('btnViewDesktop');
+
+      if (mode === 'mobile') {
+        container.className = 'device-mobile bg-white transition-all duration-300';
+        btnMob.className = 'px-3 py-1.5 rounded-lg bg-slate-800 text-white transition-all';
+        btnDesk.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+      } else {
+        container.className = 'device-desktop bg-white transition-all duration-300';
+        btnDesk.className = 'px-3 py-1.5 rounded-lg bg-slate-800 text-white transition-all';
+        btnMob.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+      }
+    }
+
+    function clearSimulatedData() {
+      mockDatabase.transactions = [];
+      renderSimulatedTable();
+      syncIframeWithCurrentUser();
+    }
+
+    function syncIframeWithCurrentUser() {
+      var iframe = document.getElementById('appFrame');
+      if (iframe && iframe.contentWindow && iframe.contentWindow.appData) {
+        var win = iframe.contentWindow;
+        win.appData.userEmail = currentUser.email;
+        win.appData.userRole = currentUser.role;
+        win.appData.categories = mockDatabase.categories;
+        win.appData.wallets = mockDatabase.wallets;
+        win.appData.presets = mockDatabase.presets;
+        win.appData.summary = calculateSummary();
+        win.appData.recent = mockDatabase.transactions.slice(-6).reverse();
+        
+        win.renderOptions();
+        win.renderPresets();
+        win.renderSummary();
+        win.renderRecent();
+      }
+    }
+
+    // Set up mock google.script.run bridge into the iframe once loaded
+    var iframe = document.getElementById('appFrame');
+    iframe.onload = function() {
+      var win = iframe.contentWindow;
+
+      // Inject simulated Apps Script runner
+      win.google = {
+        script: {
+          run: {
+            withSuccessHandler: function(onSuccess) {
+              return {
+                withFailureHandler: function(onFail) {
+                  return {
+                    getInitialData: function() {
+                      setTimeout(function() {
+                        onSuccess({
+                          userEmail: currentUser.email,
+                          userRole: currentUser.role,
+                          categories: mockDatabase.categories,
+                          wallets: mockDatabase.wallets,
+                          presets: mockDatabase.presets,
+                          summary: calculateSummary(),
+                          recent: mockDatabase.transactions.slice(-6).reverse()
+                        });
+                      }, 100);
+                    },
+                    submitTransaction: function(payload) {
+                      setTimeout(function() {
+                        var newTx = {
+                          id: 'TRX-' + (mockDatabase.transactions.length + 101),
+                          date: payload.date,
+                          type: payload.type,
+                          category: payload.category,
+                          scope: payload.scope,
+                          wallet: payload.wallet,
+                          amount: payload.amount,
+                          note: payload.note,
+                          author: currentUser.email
+                        };
+                        mockDatabase.transactions.push(newTx);
+                        renderSimulatedTable();
+
+                        onSuccess({
+                          success: true,
+                          trxId: newTx.id,
+                          message: 'Transaksi berhasil disimpan ke simulasi sheet'
+                        });
+                      }, 200);
+                    }
+                  };
+                }
+              };
+            }
+          }
+        }
+      };
+
+      // Initial synchronization
+      syncIframeWithCurrentUser();
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderSimulatedTable();
+    });
+  </script>
+</body>
+</html>
