@@ -93,6 +93,20 @@ function getInitialData() {
             dateFormatted = row[1] ? row[1].toString() : '';
           }
 
+          var authorEmail = (row[9] || '').toString();
+          var authorRole = 'Keluarga';
+          if (suamiEmail && authorEmail.toLowerCase().indexOf(suamiEmail.toLowerCase()) !== -1) {
+            authorRole = 'Suami (' + (suamiLabel || 'Ayah') + ')';
+          } else if (istriEmail && authorEmail.toLowerCase().indexOf(istriEmail.toLowerCase()) !== -1) {
+            authorRole = 'Istri (' + (istriLabel || 'Bunda') + ')';
+          } else if (authorEmail.toLowerCase().indexOf('suami') !== -1) {
+            authorRole = 'Suami (Ayah)';
+          } else if (authorEmail.toLowerCase().indexOf('istri') !== -1) {
+            authorRole = 'Istri (Bunda)';
+          } else if (authorEmail) {
+            authorRole = authorEmail.split('@')[0];
+          }
+
           recent.push({
             id: row[0],
             date: dateFormatted,
@@ -102,7 +116,8 @@ function getInitialData() {
             wallet: row[6],
             amount: Number(row[7]) || 0,
             note: row[8] || '',
-            author: row[9] || ''
+            author: authorEmail,
+            authorRole: authorRole
           });
           if (recent.length >= 6) break;
         }
@@ -167,6 +182,21 @@ function submitTransaction(payload) {
     var wallet = payload.wallet || 'Kas Tunai Rumah';
     var note = payload.note || '';
 
+    var authorString = userEmail || 'Anonim';
+    var configSheet = ss.getSheetByName('CONFIG');
+    if (configSheet && userEmail) {
+      var sEmail = (configSheet.getRange('B3').getValue() || '').toString().toLowerCase();
+      var iEmail = (configSheet.getRange('B5').getValue() || '').toString().toLowerCase();
+      var sLabel = configSheet.getRange('B2').getValue() || 'Ayah';
+      var iLabel = configSheet.getRange('B4').getValue() || 'Bunda';
+
+      if ((sEmail && userEmail.toLowerCase().indexOf(sEmail) !== -1) || userEmail.toLowerCase().indexOf('suami') !== -1) {
+        authorString = 'Suami (' + sLabel + ') - ' + userEmail;
+      } else if ((iEmail && userEmail.toLowerCase().indexOf(iEmail) !== -1) || userEmail.toLowerCase().indexOf('istri') !== -1) {
+        authorString = 'Istri (' + iLabel + ') - ' + userEmail;
+      }
+    }
+
     var newRow = [
       trxId,
       rawDate,
@@ -177,7 +207,7 @@ function submitTransaction(payload) {
       wallet,
       amount,
       note,
-      userEmail || 'Anonim',
+      authorString,
       new Date()
     ];
 
