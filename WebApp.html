@@ -386,7 +386,7 @@
       </div>
 
       <!-- Sub-Tab Navigation inside Kelola -->
-      <div class="grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/80 max-w-md mx-auto">
+      <div class="grid grid-cols-4 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/80 max-w-md mx-auto">
         <button type="button" onclick="switchManageSubTab('categories')" id="subTabCat" class="touch-btn rounded-lg py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs">
           Kategori (<span id="countCatBadge">0</span>)
         </button>
@@ -394,7 +394,10 @@
           Dompet (<span id="countWalBadge">0</span>)
         </button>
         <button type="button" onclick="switchManageSubTab('salary')" id="subTabSal" class="touch-btn rounded-lg py-2 text-xs font-medium transition-all text-muted hover:text-ink">
-          Siklus Gajian
+          Siklus
+        </button>
+        <button type="button" onclick="switchManageSubTab('presets')" id="subTabPre" class="touch-btn rounded-lg py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+          Preset
         </button>
       </div>
 
@@ -475,6 +478,34 @@
 
           <div class="rounded-xl bg-sage-50 border border-sage-200 p-3 text-[11px] text-sage-800">
             <strong>Contoh:</strong> Jika diisi <strong>25</strong>, maka rekap siklus bulan ini akan otomatis menghitung transaksi dari <strong>25 bulan lalu sampai 24 bulan ini</strong>.
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-PANEL 4: MODE TOMBOL CEPAT (SMART PRESETS) -->
+      <div id="subPanelPre" class="hidden max-w-2xl mx-auto space-y-3">
+        <div class="rounded-2xl border border-borderline bg-white p-4 shadow-xs space-y-3">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink mb-1">Mode Tombol Cepat (Preset Transaksi)</h3>
+            <p class="text-[11px] text-muted">Tentukan bagaimana tombol cepat di formulir input Catat ditampilkan.</p>
+          </div>
+
+          <div class="space-y-2">
+            <label class="flex items-start gap-2.5 rounded-xl border border-borderline bg-surface p-3 cursor-pointer hover:bg-sage-50 transition-colors">
+              <input type="radio" name="presetModeRadio" id="radioPresetAuto" value="auto" checked onchange="togglePresetMode('auto')" class="mt-0.5 text-sage-700">
+              <div>
+                <span class="block text-xs font-bold text-ink">Otomatis Berbasis Riwayat Transaksi (Direkomendasikan)</span>
+                <span class="text-[11px] text-muted">Sistem menganalisis transaksi yang paling sering Anda ulang (kebiasaan belanja) dan menampilkannya sebagai tombol cepat.</span>
+              </div>
+            </label>
+
+            <label class="flex items-start gap-2.5 rounded-xl border border-borderline bg-surface p-3 cursor-pointer hover:bg-sage-50 transition-colors">
+              <input type="radio" name="presetModeRadio" id="radioPresetManual" value="manual" onchange="togglePresetMode('manual')" class="mt-0.5 text-sage-700">
+              <div>
+                <span class="block text-xs font-bold text-ink">Manual dari Pengaturan Spreadsheet</span>
+                <span class="text-[11px] text-muted">Hanya menampilkan daftar preset tetap yang tertulis di sheet CONFIG kolom Preset Cepat.</span>
+              </div>
+            </label>
           </div>
         </div>
       </div>
@@ -609,6 +640,36 @@
             <span id="btnSaveAccountText">Simpan Pengaturan Akun</span>
           </button>
         </form>
+      </section>
+
+      <!-- Tutup Buku & Arsip Tahunan Card (Master Only) -->
+      <section id="sectionMasterArchiving" class="rounded-2xl border border-borderline bg-white p-4 shadow-sm space-y-3">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-ink mb-1">Tutup Buku & Arsip Tahunan</h2>
+          <p class="text-[11px] text-muted">
+            Pindahkan riwayat transaksi tahun lalu ke tab arsip statis Google Sheets ('ARSIP_YYYY'). Sisa saldo Kas Bersama akan otomatis dioper sebagai Saldo Awal tahun baru di sheet transaksi.
+          </p>
+        </div>
+
+        <div id="boxPendingArchiveAlert" class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 space-y-1 hidden">
+          <div class="font-bold">Perhatian: Transaksi Tahun Lalu Belum Diarsipkan</div>
+          <div id="textPendingArchiveDesc" class="text-[11px] text-amber-800">
+            Ditemukan transaksi tahun lalu yang belum ditutup bukukan.
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-borderline bg-surface p-3.5 space-y-2.5">
+          <label class="block text-[11px] font-semibold text-muted">Pilih Tahun yang Ingin Ditutup & Diarsipkan</label>
+          <div class="flex gap-2">
+            <input type="number" id="inputArchiveYear" placeholder="2026" class="w-full rounded-xl border border-borderline bg-white p-2.5 text-xs font-bold text-ink focus:border-sage-700 focus:outline-none">
+            <button type="button" onclick="executeYearlyArchive()" id="btnExecuteArchive" class="touch-btn shrink-0 rounded-xl bg-sage-800 px-4 py-2.5 text-xs font-bold text-white hover:bg-sage-700 transition-all">
+              Tutup Buku & Arsip
+            </button>
+          </div>
+          <p class="text-[11px] text-muted">
+            Tab baru bernama ARSIP_[Tahun] akan otomatis dibuat dengan kartu ringkasan permanen.
+          </p>
+        </div>
       </section>
 
       <!-- Read-Only Notice for Invited Member -->
@@ -830,21 +891,25 @@
       var pCat = document.getElementById('subPanelCat');
       var pWal = document.getElementById('subPanelWal');
       var pSal = document.getElementById('subPanelSal');
+      var pPre = document.getElementById('subPanelPre');
 
       var bCat = document.getElementById('subTabCat');
       var bWal = document.getElementById('subTabWal');
       var bSal = document.getElementById('subTabSal');
+      var bPre = document.getElementById('subTabPre');
 
       var act = 'touch-btn rounded-lg py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs';
       var inact = 'touch-btn rounded-lg py-2 text-xs font-medium transition-all text-muted hover:text-ink';
 
-      bCat.className = sub === 'categories' ? act : inact;
-      bWal.className = sub === 'wallets' ? act : inact;
-      bSal.className = sub === 'salary' ? act : inact;
+      if (bCat) bCat.className = sub === 'categories' ? act : inact;
+      if (bWal) bWal.className = sub === 'wallets' ? act : inact;
+      if (bSal) bSal.className = sub === 'salary' ? act : inact;
+      if (bPre) bPre.className = sub === 'presets' ? act : inact;
 
-      pCat.classList.toggle('hidden', sub !== 'categories');
-      pWal.classList.toggle('hidden', sub !== 'wallets');
-      pSal.classList.toggle('hidden', sub !== 'salary');
+      if (pCat) pCat.classList.toggle('hidden', sub !== 'categories');
+      if (pWal) pWal.classList.toggle('hidden', sub !== 'wallets');
+      if (pSal) pSal.classList.toggle('hidden', sub !== 'salary');
+      if (pPre) pPre.classList.toggle('hidden', sub !== 'presets');
     }
 
     function initDefaultDate() {
@@ -1591,10 +1656,12 @@
       }
 
       var secMasterForm = document.getElementById('sectionMasterAccountSettings');
+      var secMasterArchiving = document.getElementById('sectionMasterArchiving');
       var secMemberView = document.getElementById('sectionMemberAccountView');
 
       if (appData.isMaster) {
         if (secMasterForm) secMasterForm.classList.remove('hidden');
+        if (secMasterArchiving) secMasterArchiving.classList.remove('hidden');
         if (secMemberView) secMemberView.classList.add('hidden');
 
         document.getElementById('accSuamiLabel').value = appData.accounts.suamiLabel || 'Ayah';
@@ -1607,8 +1674,22 @@
         var rIstri = document.getElementById('radioMasterIstri');
         if (rSuami) rSuami.checked = !isIstriMaster;
         if (rIstri) rIstri.checked = isIstriMaster;
+
+        var boxPending = document.getElementById('boxPendingArchiveAlert');
+        var textPending = document.getElementById('textPendingArchiveDesc');
+        var inputArchive = document.getElementById('inputArchiveYear');
+
+        if (appData.pendingArchive && appData.pendingArchive.hasPending && appData.pendingArchive.pendingYears.length > 0) {
+          if (boxPending) boxPending.classList.remove('hidden');
+          if (textPending) textPending.textContent = 'Ditemukan transaksi tahun ' + appData.pendingArchive.pendingYears.join(', ') + ' yang belum ditutup buku.';
+          if (inputArchive) inputArchive.value = appData.pendingArchive.pendingYears[0];
+        } else {
+          if (boxPending) boxPending.classList.add('hidden');
+          if (inputArchive && !inputArchive.value) inputArchive.value = new Date().getFullYear() - 1;
+        }
       } else {
         if (secMasterForm) secMasterForm.classList.add('hidden');
+        if (secMasterArchiving) secMasterArchiving.classList.add('hidden');
         if (secMemberView) secMemberView.classList.remove('hidden');
 
         var mSuami = document.getElementById('viewMemberSuamiText');
@@ -1620,6 +1701,82 @@
         if (mSuamiMail) mSuamiMail.textContent = appData.accounts.suamiEmail || 'suami@gmail.com';
         if (mIstri) mIstri.textContent = 'Istri (' + (appData.accounts.istriLabel || 'Bunda') + ')';
         if (mIstriMail) mIstriMail.textContent = appData.accounts.istriEmail || 'istri@gmail.com';
+      }
+    }
+
+    function togglePresetMode(mode) {
+      appData.presetMode = mode;
+      try { localStorage.setItem('family_preset_mode', mode); } catch (e) {}
+      renderPresets();
+      showToast('Mode tombol cepat diubah ke: ' + (mode === 'auto' ? 'Otomatis Riwayat' : 'Manual Tetap'), true);
+    }
+
+    function executeYearlyArchive() {
+      if (!appData.isMaster) {
+        showToast('Hanya Akun Master yang dapat melakukan tutup buku', false);
+        return;
+      }
+
+      var inputYear = document.getElementById('inputArchiveYear');
+      var yr = Number(inputYear.value);
+      if (!yr || isNaN(yr)) {
+        showToast('Masukkan tahun yang valid (misal: ' + (new Date().getFullYear() - 1) + ')', false);
+        return;
+      }
+
+      if (!confirm('Apakah Anda yakin ingin menutup buku tahun ' + yr + '?\n\nTransaksi tahun ' + yr + ' akan dibekukan ke tab ARSIP_' + yr + ' dan sisa saldo Kas Bersama akan dioper sebagai Saldo Awal tahun baru.')) {
+        return;
+      }
+
+      var btn = document.getElementById('btnExecuteArchive');
+      btn.disabled = true;
+      btn.textContent = 'Memproses...';
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            btn.disabled = false;
+            btn.textContent = 'Tutup Buku & Arsip';
+            if (res && res.success) {
+              showToast(res.message, true);
+              fetchServerData();
+            } else {
+              showToast('Gagal: ' + (res ? res.message : 'Error'), false);
+            }
+          })
+          .withFailureHandler(function(err) {
+            btn.disabled = false;
+            btn.textContent = 'Tutup Buku & Arsip';
+            showToast('Error koneksi: ' + err.message, false);
+          })
+          .closeAndArchiveYear(yr);
+      } else {
+        setTimeout(function() {
+          btn.disabled = false;
+          btn.textContent = 'Tutup Buku & Arsip';
+          var remaining = [];
+          (appData.recent || []).forEach(function(tx) {
+            var txYr = new Date(tx.date + 'T00:00:00').getFullYear();
+            if (txYr !== yr) remaining.push(tx);
+          });
+          var nextYr = yr + 1;
+          remaining.unshift({
+            id: 'TRX-INIT-' + nextYr,
+            date: nextYr + '-01-01',
+            type: 'Pemasukan',
+            category: 'Saldo Awal Tahun',
+            scope: 'Kas Bersama',
+            wallet: 'Kas Tunai Rumah [Kas Bersama]',
+            amount: appData.summary.jointBalance || 1500000,
+            note: 'Saldo bawaan tutup buku tahun ' + yr,
+            author: 'Sistem Otomatis - Tutup Buku ' + yr,
+            authorRole: 'Sistem'
+          });
+          appData.recent = remaining;
+          renderRecent();
+          renderPresets();
+          showToast('Tutup buku tahun ' + yr + ' berhasil (Mode Demo). Tab ARSIP_' + yr + ' disimulasikan.', true);
+        }, 500);
       }
     }
 

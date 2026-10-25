@@ -99,4 +99,14 @@ if (!codeGs.includes('closeAndArchiveYear') || !codeGs.includes('checkPendingArc
   throw new Error('Task 2 pending: closeAndArchiveYear or checkPendingArchive not implemented in Code.gs');
 }
 
+// 10. WebApp Archiving & Preset UI verification
+if (!webAppHtml.includes('sectionMasterArchiving') || !webAppHtml.includes('executeYearlyArchive')) {
+  throw new Error('Task 4 pending: sectionMasterArchiving or executeYearlyArchive not implemented in WebApp.html');
+}
+if (!webAppHtml.includes('subPanelPre') || !webAppHtml.includes('togglePresetMode')) {
+  throw new Error('Task 4 pending: subPanelPre or togglePresetMode not implemented in WebApp.html');
+}
+
+console.log('✔ WebApp Archiving UI & Smart Preset Mode Controls: Verified');
+
 console.log('\nAll tests completed successfully!');
