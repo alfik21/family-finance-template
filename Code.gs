@@ -116,12 +116,13 @@ function getInitialData() {
   }
 
   var recent = [];
+  var allTxForPresets = [];
   if (transSheet) {
     var lastRow = transSheet.getLastRow();
     if (lastRow > 1) {
-      var startRow = Math.max(2, lastRow - 9);
-      var numRows = lastRow - startRow + 1;
-      var rawRows = transSheet.getRange(startRow, 1, numRows, 11).getValues();
+      var scanRows = Math.min(100, lastRow - 1);
+      var startRow = Math.max(2, lastRow - scanRows + 1);
+      var rawRows = transSheet.getRange(startRow, 1, scanRows, 11).getValues();
 
       for (var r = rawRows.length - 1; r >= 0; r--) {
         var row = rawRows[r];
@@ -147,7 +148,7 @@ function getInitialData() {
             authorRole = authorEmail.split('@')[0];
           }
 
-          recent.push({
+          var txObj = {
             id: row[0],
             date: dateFormatted,
             type: row[3],
@@ -158,12 +159,18 @@ function getInitialData() {
             note: row[8] || '',
             author: authorEmail,
             authorRole: authorRole
-          });
-          if (recent.length >= 6) break;
+          };
+
+          allTxForPresets.push(txObj);
+          if (recent.length < 6) {
+            recent.push(txObj);
+          }
         }
       }
     }
   }
+
+  var smartPresets = extractSmartPresets(allTxForPresets, presets, 6);
 
   var summary = {
     jointBalance: 0,
@@ -194,11 +201,69 @@ function getInitialData() {
     },
     categories: categories,
     wallets: wallets,
-    presets: presets,
+    presets: smartPresets,
+    defaultPresets: presets,
     salaryDate: salaryDate,
     recent: recent,
     summary: summary
   };
+}
+
+function extractSmartPresets(transactions, defaultPresets, maxPresets) {
+  maxPresets = maxPresets || 6;
+  defaultPresets = defaultPresets || [];
+  if (!transactions || !Array.isArray(transactions) || transactions.length === 0) {
+    return defaultPresets.slice(0, maxPresets);
+  }
+
+  var countMap = {};
+  for (var i = 0; i < transactions.length; i++) {
+    var tx = transactions[i];
+    if (tx.type !== 'Pengeluaran' || !tx.amount || Number(tx.amount) <= 0) continue;
+
+    var name = (tx.note || tx.category || '').trim();
+    if (!name) continue;
+
+    var key = (name + '|' + Number(tx.amount) + '|' + (tx.category || '') + '|' + (tx.scope || 'Kas Bersama')).toLowerCase();
+    if (!countMap[key]) {
+      countMap[key] = {
+        name: name,
+        amount: Number(tx.amount),
+        category: tx.category || 'Lain-lain',
+        scope: tx.scope || 'Kas Bersama',
+        count: 0
+      };
+    }
+    countMap[key].count++;
+  }
+
+  var sorted = [];
+  for (var k in countMap) {
+    if (countMap[k].count >= 2) {
+      sorted.push(countMap[k]);
+    }
+  }
+
+  sorted.sort(function(a, b) {
+    return b.count - a.count;
+  });
+
+  var result = sorted.slice(0, maxPresets);
+
+  if (result.length < maxPresets && defaultPresets.length > 0) {
+    for (var d = 0; d < defaultPresets.length; d++) {
+      var def = defaultPresets[d];
+      var isAlreadyIn = result.some(function(r) {
+        return r.name.toLowerCase() === def.name.toLowerCase() && r.amount === def.amount;
+      });
+      if (!isAlreadyIn) {
+        result.push(def);
+        if (result.length >= maxPresets) break;
+      }
+    }
+  }
+
+  return result.length > 0 ? result : defaultPresets.slice(0, maxPresets);
 }
 
 function submitTransaction(payload) {

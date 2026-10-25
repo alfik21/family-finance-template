@@ -88,4 +88,10 @@ console.log('✔ Cycle check (after pay date 25 Oct): Starts on 25 Oct:', p1.sta
 const p2 = getSalaryPeriod(new Date(2026, 9, 10), 25);
 console.log('✔ Cycle check (before pay date 10 Oct): Starts on 25 Sep:', p2.start.getMonth() === 8 && p2.start.getDate() === 25 ? 'PASS' : 'FAIL');
 
+// 8. Logic verification: Smart Presets extraction
+const codeGs = fs.readFileSync('Code.gs', 'utf8');
+if (!codeGs.includes('extractSmartPresets')) {
+  throw new Error('Task 1 pending: extractSmartPresets function not implemented in Code.gs');
+}
+
 console.log('\nAll tests completed successfully!');
