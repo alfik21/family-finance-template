@@ -7,7 +7,43 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Family Finance')
     .addItem('Jalankan Setup / Reset Template', 'setupFinanceTracker')
+    .addItem('Tutup Buku & Arsipkan Tahun Lalu', 'menuCloseYearArchive')
     .addToUi();
+}
+
+function menuCloseYearArchive() {
+  var ui = SpreadsheetApp.getUi();
+  var pending = (typeof checkPendingArchive === 'function') ? checkPendingArchive() : { hasPending: false, pendingYears: [] };
+  var defaultYear = (new Date().getFullYear() - 1);
+  if (pending.hasPending && pending.pendingYears.length > 0) {
+    defaultYear = pending.pendingYears[0];
+  }
+
+  var response = ui.prompt(
+    'Tutup Buku & Arsip Tahunan',
+    'Masukkan tahun yang ingin ditutup dan diarsipkan (contoh: ' + defaultYear + '):\n\n' +
+    'Data transaksi tahun tersebut akan dipindahkan ke tab ARSIP_' + defaultYear + ' dan sisa saldo Kas Bersama akan otomatis dioper sebagai Saldo Awal tahun baru.',
+    ui.ButtonSet.OK_CANCEL
+  );
+
+  if (response.getSelectedButton() === ui.Button.OK) {
+    var inputYear = response.getResponseText().trim();
+    if (!inputYear || isNaN(Number(inputYear))) {
+      ui.alert('Tahun tidak valid. Proses dibatalkan.');
+      return;
+    }
+
+    if (typeof closeAndArchiveYear === 'function') {
+      var res = closeAndArchiveYear(Number(inputYear));
+      if (res.success) {
+        ui.alert('Sukses', res.message, ui.ButtonSet.OK);
+      } else {
+        ui.alert('Peringatan', res.message, ui.ButtonSet.OK);
+      }
+    } else {
+      ui.alert('Fungsi closeAndArchiveYear belum tersedia.');
+    }
+  }
 }
 
 function setupFinanceTracker() {
