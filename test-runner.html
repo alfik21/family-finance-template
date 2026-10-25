@@ -99,6 +99,14 @@
             <span class="text-emerald-700 font-bold">4.</span>
             <span><strong>Zero-Symbol UI</strong>: Seluruh antarmuka bersih tanpa emoji atau simbol dekoratif.</span>
           </li>
+          <li class="flex items-start gap-1.5">
+            <span class="text-emerald-700 font-bold">5.</span>
+            <span><strong>Tombol Cepat Cerdas</strong>: Sistem otomatis mendeteksi transaksi yang sering dicatat dan menampilkannya sebagai preset tombol cepat.</span>
+          </li>
+          <li class="flex items-start gap-1.5">
+            <span class="text-emerald-700 font-bold">6.</span>
+            <span><strong>Tutup Buku & Arsip</strong>: Di tab 'Akun' (login Master), klik 'Tutup Buku & Arsip' untuk membekukan transaksi tahun lalu dan mengoper sisa saldo Kas Bersama ke tahun baru.</span>
+          </li>
         </ul>
       </div>
 
@@ -390,6 +398,58 @@
                         if (payload.masterRole) mockDatabase.accounts.masterRole = payload.masterRole;
                         onSuccess({ success: true, message: 'Pengaturan akun keluarga berhasil disimpan' });
                       }, 150);
+                    },
+                    checkPendingArchive: function() {
+                      setTimeout(function() {
+                        onSuccess({ hasPending: true, pendingYears: [2026] });
+                      }, 100);
+                    },
+                    closeAndArchiveYear: function(targetYear) {
+                      setTimeout(function() {
+                        if (!currentUser.isMaster) {
+                          onSuccess({ success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat melakukan tutup buku.' });
+                          return;
+                        }
+                        var yr = Number(targetYear) || 2026;
+                        var remaining = [];
+                        var archivedCount = 0;
+                        mockDatabase.transactions.forEach(function(tx) {
+                          var txYr = new Date(tx.date + 'T00:00:00').getFullYear();
+                          if (txYr === yr) {
+                            archivedCount++;
+                          } else {
+                            remaining.push(tx);
+                          }
+                        });
+
+                        var nextYr = yr + 1;
+                        var carryover = calculateSummary().jointBalance || 1500000;
+                        remaining.unshift({
+                          id: 'TRX-INIT-' + nextYr,
+                          date: nextYr + '-01-01',
+                          type: 'Pemasukan',
+                          category: 'Saldo Awal Tahun',
+                          scope: 'Kas Bersama',
+                          wallet: 'Kas Tunai Rumah [Kas Bersama]',
+                          amount: carryover,
+                          note: 'Saldo bawaan tutup buku tahun ' + yr,
+                          author: currentUser.email,
+                          authorRole: 'Sistem'
+                        });
+
+                        mockDatabase.transactions = remaining;
+                        renderSimulatedTable();
+                        syncIframeWithCurrentUser();
+
+                        onSuccess({
+                          success: true,
+                          archivedYear: yr,
+                          archivedRows: archivedCount,
+                          carryoverBalance: carryover,
+                          sheetName: 'ARSIP_' + yr,
+                          message: 'Tutup buku tahun ' + yr + ' berhasil. ' + archivedCount + ' transaksi diarsipkan ke tab ARSIP_' + yr + ' dan saldo kas dioper ke tahun baru.'
+                        });
+                      }, 300);
                     },
                     getPeriodSummary: function(startDate, endDate) {
                       setTimeout(function() {
