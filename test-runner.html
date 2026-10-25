@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Test Harness — Family Finance Tracker</title>
+  <title>User Test Harness - Family Finance Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -36,20 +36,20 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="inline-block w-3 h-3 rounded-full bg-emerald-600 animate-pulse"></span>
-          <h1 class="text-base font-bold text-slate-900">User Testing Environment — Kas Keluarga</h1>
+          <h1 class="text-base font-bold text-slate-900">User Testing Environment - Kas Keluarga</h1>
         </div>
-        <p class="text-xs text-slate-500 mt-0.5">Simulasi Google Apps Script & Interaksi Pasangan Suami-Istri</p>
+        <p class="text-xs text-slate-500 mt-0.5">Simulasi Google Apps Script dan Interaksi RBAC Pasangan</p>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <!-- Role Switcher -->
+        <!-- Role & RBAC Switcher -->
         <div class="flex items-center rounded-xl bg-slate-100 p-1 border border-slate-200 text-xs font-semibold">
           <span class="px-2 text-slate-400 font-normal">Login Sebagai:</span>
-          <button id="btnRoleSuami" onclick="switchRole('suami@gmail.com', 'Ayah')" class="px-3 py-1.5 rounded-lg bg-emerald-800 text-white transition-all">
-            Suami (Ayah)
+          <button id="btnRoleSuami" onclick="switchRole('suami@gmail.com', 'Suami (Ayah)', true)" class="px-3 py-1.5 rounded-lg bg-emerald-800 text-white transition-all">
+            Suami (Ayah - Master)
           </button>
-          <button id="btnRoleIstri" onclick="switchRole('istri@gmail.com', 'Bunda')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
-            Istri (Bunda)
+          <button id="btnRoleIstri" onclick="switchRole('istri@gmail.com', 'Istri (Bunda)', false)" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+            Istri (Bunda - Diundang)
           </button>
         </div>
 
@@ -85,19 +85,19 @@
         <ul class="text-xs space-y-1.5 text-slate-700">
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">1.</span>
-            <span>Uji <strong>Tab 'Rekap Siklus'</strong>: Klik tab kedua di Web App untuk menarik rekap kas berdasarkan siklus gajian atau bulan kalender.</span>
+            <span><strong>Mobile Bottom Nav</strong>: Pada mode Mobile, menu (Catat, Rekap, Kelola, Akun) melayang di bawah layar pas di jangkauan ibu jari. Pada Desktop beralih ke header atas.</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">2.</span>
-            <span>Uji <strong>Tab 'Kelola'</strong>: Tambah atau hapus Kategori / Dompet baru langsung dari HP dan simpan perubahannya.</span>
+            <span><strong>Tab 'Akun' & RBAC</strong>: Uji tombol di atas ("Suami - Master" vs "Istri - Diundang"). Periksa hak akses tab 'Kelola' (terkunci untuk anggota, terbuka untuk master).</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">3.</span>
-            <span>Uji <strong>Transfer Kas</strong>: Klik tab "Transfer Kas" untuk memindahkan saldo antar-rekening tanpa tombol peruntukan rancu.</span>
+            <span><strong>Kepemilikan Dompet Transfer</strong>: Pilih tab "Transfer Kas", cek dropdown rekening asal dan tujuan yang menampilkan kepemilikan jelas ([Suami], [Istri], atau [Kas Bersama]).</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">4.</span>
-            <span>Uji <strong>Ganti Akun</strong>: Beralih antara Suami dan Istri untuk memeriksa adaptasi data dan isolasi pencatat.</span>
+            <span><strong>Zero-Symbol UI</strong>: Seluruh antarmuka bersih tanpa emoji atau simbol dekoratif.</span>
           </li>
         </ul>
       </div>
@@ -119,8 +119,9 @@
                 <th class="py-2 px-2.5 font-semibold">Tgl</th>
                 <th class="py-2 px-2.5 font-semibold">Kategori</th>
                 <th class="py-2 px-2.5 font-semibold">Pos</th>
+                <th class="py-2 px-2.5 font-semibold">Dompet</th>
                 <th class="py-2 px-2.5 font-semibold">Nominal</th>
-                <th class="py-2 px-2.5 font-semibold">Diinput Oleh</th>
+                <th class="py-2 px-2.5 font-semibold">Pencatat</th>
               </tr>
             </thead>
             <tbody id="simulatedTableBody" class="divide-y divide-slate-100">
@@ -138,13 +139,23 @@
     // In-memory simulated state
     var currentUser = {
       email: 'suami@gmail.com',
-      role: 'Ayah'
+      role: 'Suami (Ayah)',
+      isMaster: true
     };
 
     var mockDatabase = {
+      accounts: {
+        suamiLabel: 'Ayah',
+        suamiEmail: 'suami@gmail.com',
+        istriLabel: 'Bunda',
+        istriEmail: 'istri@gmail.com',
+        masterEmail: 'suami@gmail.com',
+        masterRole: 'Suami'
+      },
       transactions: [
-        { id: 'TRX-101', date: '2026-10-24', type: 'Pengeluaran', category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama', amount: 150000, note: 'Beli sayur, ayam & bumbu', author: 'istri@gmail.com' },
-        { id: 'TRX-102', date: '2026-10-24', type: 'Pengeluaran', category: 'Transportasi & Bensin', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami', amount: 50000, note: 'Bensin motor kantor', author: 'suami@gmail.com' }
+        { id: 'TRX-101', date: '2026-10-24', type: 'Pengeluaran', category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 150000, note: 'Beli sayur, ayam dan bumbu', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-102', date: '2026-10-24', type: 'Pengeluaran', category: 'Transportasi & Bensin', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami [Suami]', amount: 50000, note: 'Bensin motor kantor', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-103', date: '2026-10-25', type: 'Transfer', category: 'Transfer Kas', scope: 'Transfer', wallet: 'BCA Pribadi Suami [Suami] ke Rekening BCA Bersama [Kas Bersama]', amount: 500000, note: 'Setor uang belanja mingguan', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' }
       ],
       categories: [
         'Belanja Pasar & Dapur',
@@ -161,27 +172,28 @@
         'Lain-lain'
       ],
       wallets: [
-        'Kas Tunai Rumah',
-        'Rekening BCA Bersama',
-        'BCA Pribadi Suami',
-        'BCA Pribadi Istri',
-        'GoPay Suami',
-        'GoPay Istri',
-        'ShopeePay'
+        { name: 'Kas Tunai Rumah', owner: 'Kas Bersama' },
+        { name: 'Rekening BCA Bersama', owner: 'Kas Bersama' },
+        { name: 'BCA Pribadi Suami', owner: 'Suami' },
+        { name: 'GoPay Suami', owner: 'Suami' },
+        { name: 'BCA Pribadi Istri', owner: 'Istri' },
+        { name: 'ShopeePay Istri', owner: 'Istri' },
+        { name: 'GoPay Istri', owner: 'Istri' }
       ],
       presets: [
         { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama' },
         { name: 'Kopi Pagi', amount: 22000, category: 'Makan Luar & Jajan', scope: 'Pribadi Suami' },
         { name: 'Sayur Pasar', amount: 75000, category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama' },
         { name: 'Token Listrik', amount: 100000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' },
-        { name: 'Galon & Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' }
-      ]
+        { name: 'Galon dan Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' }
+      ],
+      salaryDate: 25
     };
 
     function calculateSummary() {
       var monthExpense = 0;
       var monthIncome = 0;
-      var jointBalance = 5000000; // Saldo awal contoh kas bersama
+      var jointBalance = 5000000;
 
       mockDatabase.transactions.forEach(function(tx) {
         if (tx.type === 'Pengeluaran') {
@@ -208,34 +220,37 @@
         var tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50 transition-colors';
         var isIncome = t.type === 'Pemasukan';
-        var color = isIncome ? 'text-emerald-700 font-bold' : 'text-slate-800 font-medium';
-        var sign = isIncome ? '+' : '-';
+        var isTransfer = t.type === 'Transfer';
+        var color = isIncome ? 'text-emerald-700 font-bold' : (isTransfer ? 'text-slate-600 font-medium' : 'text-slate-800 font-medium');
+        var sign = isIncome ? '+' : (isTransfer ? '' : '-');
 
         var isSuami = (t.authorRole && t.authorRole.includes('Suami')) || (t.author && t.author.includes('suami'));
         var isIstri = (t.authorRole && t.authorRole.includes('Istri')) || (t.author && t.author.includes('istri'));
         var authorBadge = isSuami ? 
-          '<span class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">👨 Suami</span>' :
-          (isIstri ? '<span class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">👩 Istri</span>' :
-          '<span class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold bg-slate-100 text-slate-700">👤 ' + (t.author ? t.author.split('@')[0] : 'Keluarga') + '</span>');
+          '<span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Suami</span>' :
+          (isIstri ? '<span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Istri</span>' :
+          '<span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold bg-slate-100 text-slate-700">' + (t.author ? t.author.split('@')[0] : 'Keluarga') + '</span>');
 
         tr.innerHTML = 
           '<td class="py-2 px-2.5 text-slate-500 whitespace-nowrap">' + t.date + '</td>' +
           '<td class="py-2 px-2.5 font-medium text-slate-900">' + t.category + '</td>' +
           '<td class="py-2 px-2.5"><span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-600">' + t.scope + '</span></td>' +
-          '<td class="py-2 px-2.5 ' + color + ' whitespace-nowrap">' + sign + ' Rp ' + t.amount.toLocaleString('id-ID') + '</td>' +
+          '<td class="py-2 px-2.5 text-[11px] text-slate-600 max-w-[140px] truncate" title="' + (t.wallet || '') + '">' + (t.wallet || '-') + '</td>' +
+          '<td class="py-2 px-2.5 ' + color + ' whitespace-nowrap">' + (sign ? sign + ' ' : '') + 'Rp ' + t.amount.toLocaleString('id-ID') + '</td>' +
           '<td class="py-2 px-2.5">' + authorBadge + '</td>';
         tbody.appendChild(tr);
       });
     }
 
-    function switchRole(email, role) {
+    function switchRole(email, role, isMaster) {
       currentUser.email = email;
       currentUser.role = role;
+      currentUser.isMaster = isMaster;
 
       var btnS = document.getElementById('btnRoleSuami');
       var btnI = document.getElementById('btnRoleIstri');
 
-      if (role === 'Ayah') {
+      if (isMaster) {
         btnS.className = 'px-3 py-1.5 rounded-lg bg-emerald-800 text-white transition-all';
         btnI.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
       } else {
@@ -280,9 +295,12 @@
         var win = iframe.contentWindow;
         win.appData.userEmail = currentUser.email;
         win.appData.userRole = currentUser.role;
+        win.appData.isMaster = currentUser.isMaster;
+        win.appData.accounts = mockDatabase.accounts;
         win.appData.categories = mockDatabase.categories;
         win.appData.wallets = mockDatabase.wallets;
         win.appData.presets = mockDatabase.presets;
+        win.appData.salaryDate = mockDatabase.salaryDate;
         win.appData.summary = calculateSummary();
         win.appData.recent = mockDatabase.transactions.slice(-6).reverse();
         
@@ -290,6 +308,8 @@
         win.renderPresets();
         win.renderSummary();
         win.renderRecent();
+        win.renderManageItems();
+        win.renderAccountView();
       }
     }
 
@@ -298,7 +318,6 @@
     iframe.onload = function() {
       var win = iframe.contentWindow;
 
-      // Inject simulated Apps Script runner
       win.google = {
         script: {
           run: {
@@ -311,9 +330,12 @@
                         onSuccess({
                           userEmail: currentUser.email,
                           userRole: currentUser.role,
+                          isMaster: currentUser.isMaster,
+                          accounts: mockDatabase.accounts,
                           categories: mockDatabase.categories,
                           wallets: mockDatabase.wallets,
                           presets: mockDatabase.presets,
+                          salaryDate: mockDatabase.salaryDate,
                           summary: calculateSummary(),
                           recent: mockDatabase.transactions.slice(-6).reverse()
                         });
@@ -331,7 +353,7 @@
                           amount: payload.amount,
                           note: payload.note,
                           author: currentUser.email,
-                          authorRole: currentUser.role === 'Ayah' ? 'Suami (Ayah)' : 'Istri (Bunda)'
+                          authorRole: currentUser.role
                         };
                         mockDatabase.transactions.push(newTx);
                         renderSimulatedTable();
@@ -345,10 +367,28 @@
                     },
                     saveConfigData: function(payload) {
                       setTimeout(function() {
+                        if (!currentUser.isMaster) {
+                          onSuccess({ success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat mengubah konfigurasi.' });
+                          return;
+                        }
                         if (payload.categories) mockDatabase.categories = payload.categories;
                         if (payload.wallets) mockDatabase.wallets = payload.wallets;
                         if (payload.salaryDate) mockDatabase.salaryDate = payload.salaryDate;
                         onSuccess({ success: true, message: 'Konfigurasi tersimpan di simulasi sheet' });
+                      }, 150);
+                    },
+                    saveAccountSettings: function(payload) {
+                      setTimeout(function() {
+                        if (!currentUser.isMaster) {
+                          onSuccess({ success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat mengubah akun keluarga.' });
+                          return;
+                        }
+                        if (payload.suamiLabel) mockDatabase.accounts.suamiLabel = payload.suamiLabel;
+                        if (payload.suamiEmail) mockDatabase.accounts.suamiEmail = payload.suamiEmail;
+                        if (payload.istriLabel) mockDatabase.accounts.istriLabel = payload.istriLabel;
+                        if (payload.istriEmail) mockDatabase.accounts.istriEmail = payload.istriEmail;
+                        if (payload.masterRole) mockDatabase.accounts.masterRole = payload.masterRole;
+                        onSuccess({ success: true, message: 'Pengaturan akun keluarga berhasil disimpan' });
                       }, 150);
                     },
                     getPeriodSummary: function(startDate, endDate) {

@@ -1,6 +1,6 @@
 /**
- * Setup.gs - Generator Otomatis Struktur & Visual Google Sheets
- * Jalankan fungsi setupFinanceTracker() satu kali dari editor Apps Script.
+ * Setup.gs - Generator Otomatis Struktur dan Visual Google Sheets
+ * Menyiapkan sheet DASHBOARD, TRANSAKSI, BUDGET, dan CONFIG dengan tema Sage Green
  */
 
 function onOpen() {
@@ -54,40 +54,48 @@ function createConfigSheet(ss, palette) {
   sheet.setTabColor(palette.primaryLight);
 
   var headers = [
-    ['PENGATURAN KELUARGA', '', 'KATEGORI PENGELUARAN', 'ALOKASI POS', 'DOMPET / AKUN', 'PRESET CEPAT WEB APP', 'NOMINAL DEFAULT']
+    ['PENGATURAN KELUARGA', '', 'KATEGORI PENGELUARAN', 'ALOKASI POS', 'DOMPET / REKENING', 'PEMILIK DOMPET', 'PRESET CEPAT', 'NOMINAL DEFAULT']
   ];
-  sheet.getRange(1, 1, 1, 7).setValues(headers)
+  sheet.getRange(1, 1, 1, 8).setValues(headers)
     .setBackground(palette.primaryDark)
     .setFontColor(palette.white)
     .setFontWeight('bold')
     .setFontSize(10);
 
+  var masterEmail = '';
+  try {
+    masterEmail = Session.getEffectiveUser().getEmail() || 'suami@gmail.com';
+  } catch (e) {
+    masterEmail = 'suami@gmail.com';
+  }
+
   var configData = [
-    ['Label Suami', 'Ayah', 'Belanja Pasar & Dapur', 'Kas Bersama', 'Kas Tunai Rumah', 'Bensin Motor', 35000],
-    ['Email Suami', 'suami@gmail.com', 'Makan Luar & Jajan', 'Kas Bersama', 'Rekening BCA Bersama', 'Kopi Pagi', 22000],
-    ['Label Istri', 'Bunda', 'Listrik & Utilitas', 'Kas Bersama', 'BCA Pribadi Suami', 'Belanja Sayur', 75000],
-    ['Email Istri', 'istri@gmail.com', 'Internet & Pulsa', 'Kas Bersama', 'BCA Pribadi Istri', 'Galon & Gas', 45000],
-    ['Bulan Acuan', '=TEXT(TODAY(), "yyyy-mm")', 'Kebutuhan Anak & Les', 'Kas Bersama', 'GoPay Suami', 'Token Listrik', 100000],
-    ['', '', 'Transportasi & Bensin', 'Kas Bersama', 'GoPay Istri', 'Jajan Anak', 20000],
-    ['', '', 'Cicilan & Kewajiban', 'Kas Bersama', 'ShopeePay', '', ''],
-    ['', '', 'Pribadi Suami', 'Pribadi Suami', '', '', ''],
-    ['', '', 'Pribadi Istri', 'Pribadi Istri', '', '', ''],
-    ['', '', 'Sedekah & Orang Tua', 'Kas Bersama', '', '', ''],
-    ['', '', 'Darurat & Tabungan', 'Kas Bersama', '', '', ''],
-    ['', '', 'Lain-lain', 'Kas Bersama', '', '', '']
+    ['Label Suami', 'Ayah', 'Belanja Pasar & Dapur', 'Kas Bersama', 'Kas Tunai Rumah', 'Kas Bersama', 'Bensin Motor', 35000],
+    ['Email Suami', 'suami@gmail.com', 'Makan Luar & Jajan', 'Kas Bersama', 'Rekening BCA Bersama', 'Kas Bersama', 'Kopi Pagi', 22000],
+    ['Label Istri', 'Bunda', 'Listrik & Utilitas', 'Kas Bersama', 'BCA Pribadi Suami', 'Suami', 'Belanja Sayur', 75000],
+    ['Email Istri', 'istri@gmail.com', 'Internet & Pulsa', 'Kas Bersama', 'GoPay Suami', 'Suami', 'Galon dan Gas', 45000],
+    ['Email Master', masterEmail, 'Kebutuhan Anak & Les', 'Kas Bersama', 'BCA Pribadi Istri', 'Istri', 'Token Listrik', 100000],
+    ['Peran Master', 'Suami', 'Transportasi & Bensin', 'Kas Bersama', 'ShopeePay Istri', 'Istri', 'Jajan Anak', 20000],
+    ['Siklus Gajian (Tgl)', 25, 'Cicilan & Kewajiban', 'Kas Bersama', 'GoPay Istri', 'Istri', '', ''],
+    ['Bulan Acuan', '=TEXT(TODAY(), "yyyy-mm")', 'Pribadi Suami', 'Pribadi Suami', '', '', '', ''],
+    ['', '', 'Pribadi Istri', 'Pribadi Istri', '', '', '', ''],
+    ['', '', 'Sedekah & Orang Tua', 'Kas Bersama', '', '', '', ''],
+    ['', '', 'Darurat & Tabungan', 'Kas Bersama', '', '', '', ''],
+    ['', '', 'Lain-lain', 'Kas Bersama', '', '', '', '']
   ];
 
-  sheet.getRange(2, 1, configData.length, 7).setValues(configData);
-  sheet.getRange(2, 7, configData.length, 1).setNumberFormat('Rp #,##0');
-  sheet.getRange(1, 1, configData.length + 1, 7).setFontFamily('Roboto');
+  sheet.getRange(2, 1, configData.length, 8).setValues(configData);
+  sheet.getRange(2, 8, configData.length, 1).setNumberFormat('Rp #,##0');
+  sheet.getRange(1, 1, configData.length + 1, 8).setFontFamily('Roboto');
   
-  sheet.setColumnWidth(1, 140);
-  sheet.setColumnWidth(2, 180);
+  sheet.setColumnWidth(1, 150);
+  sheet.setColumnWidth(2, 190);
   sheet.setColumnWidth(3, 200);
   sheet.setColumnWidth(4, 140);
   sheet.setColumnWidth(5, 180);
-  sheet.setColumnWidth(6, 160);
-  sheet.setColumnWidth(7, 140);
+  sheet.setColumnWidth(6, 140);
+  sheet.setColumnWidth(7, 160);
+  sheet.setColumnWidth(8, 140);
 }
 
 function createTransactionsSheet(ss, palette) {
@@ -116,10 +124,10 @@ function createTransactionsSheet(ss, palette) {
       'Pengeluaran',
       'Belanja Pasar & Dapur',
       'Kas Bersama',
-      'Rekening BCA Bersama',
+      'Rekening BCA Bersama [Kas Bersama]',
       150000,
       'Belanja mingguan pasar',
-      'suami@gmail.com',
+      'Suami (Ayah) - suami@gmail.com',
       new Date()
     ],
     [
@@ -129,10 +137,10 @@ function createTransactionsSheet(ss, palette) {
       'Pengeluaran',
       'Transportasi & Bensin',
       'Pribadi Suami',
-      'BCA Pribadi Suami',
+      'BCA Pribadi Suami [Suami]',
       50000,
       'Isi bensin motor kantor',
-      'suami@gmail.com',
+      'Suami (Ayah) - suami@gmail.com',
       new Date()
     ]
   ];
@@ -145,7 +153,7 @@ function createTransactionsSheet(ss, palette) {
 
   var configSheet = ss.getSheetByName('CONFIG');
   var categoryRule = SpreadsheetApp.newDataValidation()
-    .requireValueInRange(configSheet.getRange('C2:C15'), true)
+    .requireValueInRange(configSheet.getRange('C2:C20'), true)
     .build();
   sheet.getRange('E2:E5000').setDataValidation(categoryRule);
 
@@ -159,21 +167,16 @@ function createTransactionsSheet(ss, palette) {
     .build();
   sheet.getRange('F2:F5000').setDataValidation(scopeRule);
 
-  var walletRule = SpreadsheetApp.newDataValidation()
-    .requireValueInRange(configSheet.getRange('E2:E15'), true)
-    .build();
-  sheet.getRange('G2:G5000').setDataValidation(walletRule);
-
   sheet.setColumnWidth(1, 90);
   sheet.setColumnWidth(2, 100);
   sheet.setColumnWidth(3, 90);
   sheet.setColumnWidth(4, 110);
   sheet.setColumnWidth(5, 180);
   sheet.setColumnWidth(6, 130);
-  sheet.setColumnWidth(7, 160);
+  sheet.setColumnWidth(7, 200);
   sheet.setColumnWidth(8, 130);
   sheet.setColumnWidth(9, 220);
-  sheet.setColumnWidth(10, 160);
+  sheet.setColumnWidth(10, 200);
   sheet.setColumnWidth(11, 140);
 }
 
@@ -184,7 +187,7 @@ function createBudgetSheet(ss, palette) {
 
   var titleRange = sheet.getRange('A1:G1');
   titleRange.merge();
-  titleRange.setValue('ALOKASI ANGGARAN & REALISASI BULAN INI')
+  titleRange.setValue('ALOKASI ANGGARAN DAN REALISASI BULAN INI')
     .setBackground(palette.primaryDark)
     .setFontColor(palette.white)
     .setFontWeight('bold')
@@ -359,7 +362,7 @@ function createDashboardSheet(ss, palette) {
   sheet.setColumnWidth(4, 130);
   sheet.setColumnWidth(5, 150);
   sheet.setColumnWidth(6, 200);
-  sheet.setColumnWidth(7, 180);
+  sheet.setColumnWidth(7, 220);
 }
 
 function getOrCreateSheet(ss, name) {

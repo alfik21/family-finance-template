@@ -56,7 +56,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen pb-20 antialiased selection:bg-sage-100 selection:text-sage-900">
+<body class="min-h-screen pb-28 lg:pb-12 antialiased selection:bg-sage-100 selection:text-sage-900">
 
   <!-- Responsive Container (Mobile centered max-w-lg, Desktop expands to max-w-6xl) -->
   <main class="mx-auto w-full max-w-lg lg:max-w-6xl px-4 pt-3 sm:px-6 lg:pt-6">
@@ -68,44 +68,37 @@
           <div class="flex items-center gap-2">
             <span class="inline-block h-2.5 w-2.5 rounded-full bg-sage-500"></span>
             <h1 class="text-base font-bold tracking-tight text-ink sm:text-lg">Kas Keluarga</h1>
+            <span id="headerMasterBadge" class="rounded-full bg-sage-100 px-2 py-0.5 text-[10px] font-bold text-sage-800 border border-sage-200">Akun Master</span>
           </div>
-          <p id="userEmailBadge" class="text-xs text-muted">Memuat akun Google...</p>
+          <p id="userEmailBadge" class="text-xs text-muted">Memuat akun...</p>
         </div>
 
-        <div class="md:hidden flex items-center">
-          <button type="button" onclick="toggleDemoRole()" title="Klik untuk beralih antara akun Suami dan Istri" class="touch-btn inline-flex items-center gap-1.5 rounded-full border border-sage-300 bg-sage-50 px-3 py-1 text-xs font-bold text-sage-900 shadow-2xs hover:bg-sage-100 transition-all">
-            <span id="userRoleIcon">👨</span>
+        <!-- Quick Demo Switcher on Header -->
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="toggleDemoRole()" title="Klik untuk beralih antara akun Suami dan Istri" class="touch-btn inline-flex items-center rounded-lg border border-sage-300 bg-white px-2.5 py-1 text-xs font-bold text-sage-900 shadow-2xs hover:bg-sage-50 transition-all">
             <span id="userRoleBadge">Suami (Ayah)</span>
-            <span class="text-[9px] text-sage-600 font-medium">⇄ Ganti</span>
           </button>
         </div>
       </div>
 
-      <!-- Navigation Tabs & Desktop Role Badge -->
-      <div class="flex items-center gap-3">
-        <nav class="grid grid-cols-3 gap-1 rounded-xl bg-white p-1 border border-borderline shadow-2xs w-full sm:w-auto">
-          <button type="button" onclick="switchMainTab('record')" id="navTabRecord" class="touch-btn rounded-lg px-4 py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs">
-            Catat
-          </button>
-          <button type="button" onclick="switchMainTab('summary')" id="navTabSummary" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
-            Rekap Siklus
-          </button>
-          <button type="button" onclick="switchMainTab('manage')" id="navTabManage" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
-            Kelola
-          </button>
-        </nav>
-
-        <div class="hidden md:flex items-center">
-          <button type="button" onclick="toggleDemoRole()" title="Klik untuk beralih antara akun Suami dan Istri" class="touch-btn inline-flex items-center gap-1.5 rounded-full border border-sage-300 bg-sage-50 px-3.5 py-1.5 text-xs font-bold text-sage-900 shadow-2xs hover:bg-sage-100 transition-all">
-            <span id="userRoleIconDesktop">👨</span>
-            <span id="userRoleBadgeDesktop">Suami (Ayah)</span>
-            <span class="text-[10px] text-sage-600 font-medium ml-0.5">⇄ Ganti Akun</span>
-          </button>
-        </div>
-      </div>
+      <!-- Desktop Top Navigation Tabs (Hidden on Mobile, Visible on Desktop) -->
+      <nav class="hidden lg:grid grid-cols-4 gap-1 rounded-xl bg-white p-1 border border-borderline shadow-2xs w-auto">
+        <button type="button" onclick="switchMainTab('record')" id="desktopNavTabRecord" class="touch-btn rounded-lg px-4 py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs">
+          Catat
+        </button>
+        <button type="button" onclick="switchMainTab('summary')" id="desktopNavTabSummary" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+          Rekap
+        </button>
+        <button type="button" onclick="switchMainTab('manage')" id="desktopNavTabManage" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+          Kelola
+        </button>
+        <button type="button" onclick="switchMainTab('account')" id="desktopNavTabAccount" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+          Akun
+        </button>
+      </nav>
     </header>
 
-    <!-- ==================== VIEW 1: CATAT TRANSAKSI (RESPONSIVE GRID) ==================== -->
+    <!-- ==================== VIEW 1: CATAT TRANSAKSI ==================== -->
     <div id="viewRecord">
       <div class="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
 
@@ -134,10 +127,10 @@
                 <label id="labelScope" class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Peruntukan Pengeluaran</label>
                 <div class="grid grid-cols-2 gap-2">
                   <button type="button" onclick="setScopeChoice('bersama')" id="btnScopeBersama" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all">
-                    <span id="textScopeBersama">🏠 Kebutuhan Bersama</span>
+                    <span id="textScopeBersama">Kebutuhan Bersama</span>
                   </button>
                   <button type="button" onclick="setScopeChoice('pribadi')" id="btnScopePribadi" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
-                    <span id="textScopePribadi">👤 Pribadi Saya</span>
+                    <span id="textScopePribadi">Pribadi Saya</span>
                   </button>
                 </div>
                 <p id="scopeHelpText" class="mt-1.5 text-[11px] text-muted">
@@ -168,7 +161,7 @@
               <div id="sectionPresets" class="mb-4">
                 <div class="mb-1.5 flex items-center justify-between">
                   <span class="text-xs font-semibold text-ink">Tombol Cepat</span>
-                  <span class="text-[11px] text-muted">1 tap isi otomatis</span>
+                  <span class="text-[11px] text-muted">1 ketuk isi otomatis</span>
                 </div>
                 <div id="presetsList" class="no-scrollbar flex gap-2 overflow-x-auto pb-1">
                   <!-- Preset items rendered via JS -->
@@ -192,18 +185,29 @@
               </div>
 
               <!-- Transfer Routing Fields (Khusus Mode Transfer Kas) -->
-              <div id="sectionTransfer" class="mb-4 hidden grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div>
-                  <label for="transferFromSelect" class="mb-1.5 block text-xs font-semibold text-ink">Dari Rekening (Sumber)</label>
-                  <select id="transferFromSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
-                    <option value="">Pilih Sumber...</option>
-                  </select>
+              <div id="sectionTransfer" class="mb-4 hidden space-y-3">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div>
+                    <label for="transferFromSelect" class="mb-1.5 block text-xs font-semibold text-ink">Dari Rekening (Sumber)</label>
+                    <select id="transferFromSelect" onchange="updateTransferRoutePreview()" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+                      <option value="">Pilih Sumber...</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="transferToSelect" class="mb-1.5 block text-xs font-semibold text-ink">Ke Rekening (Tujuan)</label>
+                    <select id="transferToSelect" onchange="updateTransferRoutePreview()" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
+                      <option value="">Pilih Tujuan...</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label for="transferToSelect" class="mb-1.5 block text-xs font-semibold text-ink">Ke Rekening (Tujuan)</label>
-                  <select id="transferToSelect" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-sm font-medium text-ink focus:border-sage-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage-200">
-                    <option value="">Pilih Tujuan...</option>
-                  </select>
+
+                <!-- Live Route Preview Box -->
+                <div id="transferRoutePreview" class="rounded-xl border border-sage-200 bg-sage-50 p-3 text-xs text-sage-900 space-y-1">
+                  <div class="font-bold text-[11px] text-sage-700 uppercase tracking-wide">Rute Pemindahan Saldo</div>
+                  <div class="flex items-center justify-between">
+                    <div>Asal: <strong id="previewFromText">-</strong></div>
+                    <div>Tujuan: <strong id="previewToText">-</strong></div>
+                  </div>
                 </div>
               </div>
 
@@ -271,7 +275,7 @@
       </div>
     </div>
 
-    <!-- ==================== VIEW 2: REKAP SIKLUS PERIODE (RESPONSIVE GRID) ==================== -->
+    <!-- ==================== VIEW 2: REKAP SIKLUS PERIODE ==================== -->
     <div id="viewSummary" class="hidden">
       <div class="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
         
@@ -312,7 +316,7 @@
             <div class="space-y-3">
               <div>
                 <div class="flex justify-between text-xs font-semibold mb-1">
-                  <span>🏠 Kas Bersama</span>
+                  <span>Kas Bersama</span>
                   <span id="cycleScopeJoint" class="num-tabular font-bold text-ink">Rp 0</span>
                 </div>
                 <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
@@ -322,7 +326,7 @@
 
               <div>
                 <div class="flex justify-between text-xs font-semibold mb-1">
-                  <span>👤 Pribadi Suami</span>
+                  <span>Pribadi Suami</span>
                   <span id="cycleScopeSuami" class="num-tabular font-bold text-ink">Rp 0</span>
                 </div>
                 <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
@@ -332,7 +336,7 @@
 
               <div>
                 <div class="flex justify-between text-xs font-semibold mb-1">
-                  <span>👤 Pribadi Istri</span>
+                  <span>Pribadi Istri</span>
                   <span id="cycleScopeIstri" class="num-tabular font-bold text-ink">Rp 0</span>
                 </div>
                 <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
@@ -373,8 +377,13 @@
       </div>
     </div>
 
-    <!-- ==================== VIEW 3: KELOLA (RESPONSIVE GRID) ==================== -->
+    <!-- ==================== VIEW 3: KELOLA ==================== -->
     <div id="viewManage" class="hidden space-y-4">
+
+      <!-- RBAC Notice if Member -->
+      <div id="manageRbacWarning" class="hidden rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-900 max-w-2xl mx-auto">
+        <strong>Akses Terbatas:</strong> Anda masuk sebagai Anggota Keluarga. Penambahan dan penghapusan kategori, dompet, dan siklus gajian hanya dapat dilakukan oleh Akun Master.
+      </div>
 
       <!-- Sub-Tab Navigation inside Kelola -->
       <div class="grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/80 max-w-md mx-auto">
@@ -391,13 +400,13 @@
 
       <!-- SUB-PANEL 1: KELOLA KATEGORI -->
       <div id="subPanelCat" class="space-y-3 max-w-2xl mx-auto">
-        <!-- Add New Category Card -->
-        <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
+        <!-- Add New Category Card (Master only) -->
+        <div id="cardAddCategory" class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
           <label for="inputNewCategory" class="block text-xs font-bold text-ink mb-1.5">Tambah Kategori Baru</label>
           <div class="flex gap-2">
             <input type="text" id="inputNewCategory" placeholder="Misal: Les Musik, Kucing, Skincare..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
             <button type="button" onclick="addNewCategory()" class="touch-btn shrink-0 rounded-xl bg-sage-800 px-4 py-2.5 text-xs font-bold text-white hover:bg-sage-700">
-              + Tambah
+              Tambah
             </button>
           </div>
         </div>
@@ -406,7 +415,7 @@
         <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
           <div class="flex items-center justify-between mb-2.5 border-b border-borderline pb-2">
             <span class="text-xs font-bold uppercase tracking-wider text-muted">Daftar Kategori Aktif</span>
-            <span class="text-[11px] text-muted">Tap ✕ untuk hapus</span>
+            <span id="labelCatDeleteHint" class="text-[11px] text-muted">Ketuk Hapus untuk menghapus</span>
           </div>
           <div id="manageCategoryList" class="divide-y divide-borderline/60 max-h-[400px] overflow-y-auto pr-1">
             <!-- Rendered as clean list rows -->
@@ -416,13 +425,24 @@
 
       <!-- SUB-PANEL 2: KELOLA DOMPET -->
       <div id="subPanelWal" class="hidden space-y-3 max-w-2xl mx-auto">
-        <!-- Add New Wallet Card -->
-        <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
-          <label for="inputNewWallet" class="block text-xs font-bold text-ink mb-1.5">Tambah Rekening / Dompet Baru</label>
-          <div class="flex gap-2">
-            <input type="text" id="inputNewWallet" placeholder="Misal: Bank Jago, SeaBank, OVO..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
-            <button type="button" onclick="addNewWallet()" class="touch-btn shrink-0 rounded-xl bg-sage-800 px-4 py-2.5 text-xs font-bold text-white hover:bg-sage-700">
-              + Tambah
+        <!-- Add New Wallet Card (Master only) -->
+        <div id="cardAddWallet" class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs space-y-2.5">
+          <label class="block text-xs font-bold text-ink">Tambah Rekening / Dompet Baru</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div class="sm:col-span-2">
+              <input type="text" id="inputNewWallet" placeholder="Nama dompet (misal: Bank Jago, SeaBank)..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
+            </div>
+            <div>
+              <select id="selectNewWalletOwner" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2 text-xs font-medium text-ink focus:border-sage-700 focus:outline-none">
+                <option value="Kas Bersama">Kas Bersama</option>
+                <option value="Suami">Milik Suami</option>
+                <option value="Istri">Milik Istri</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button type="button" onclick="addNewWallet()" class="touch-btn rounded-xl bg-sage-800 px-4 py-2 text-xs font-bold text-white hover:bg-sage-700">
+              Tambah Dompet
             </button>
           </div>
         </div>
@@ -431,7 +451,7 @@
         <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
           <div class="flex items-center justify-between mb-2.5 border-b border-borderline pb-2">
             <span class="text-xs font-bold uppercase tracking-wider text-muted">Daftar Rekening / Dompet Aktif</span>
-            <span class="text-[11px] text-muted">Tap ✕ untuk hapus</span>
+            <span id="labelWalDeleteHint" class="text-[11px] text-muted">Ketuk Hapus untuk menghapus</span>
           </div>
           <div id="manageWalletList" class="divide-y divide-borderline/60 max-h-[400px] overflow-y-auto pr-1">
             <!-- Rendered as clean list rows -->
@@ -454,13 +474,13 @@
           </div>
 
           <div class="rounded-xl bg-sage-50 border border-sage-200 p-3 text-[11px] text-sage-800">
-            <strong>Contoh:</strong> Jika diisi <strong>25</strong>, maka rekap siklus bulan ini akan otomatis menghitung transaksi dari <strong>25 bulan lalu s/d 24 bulan ini</strong>.
+            <strong>Contoh:</strong> Jika diisi <strong>25</strong>, maka rekap siklus bulan ini akan otomatis menghitung transaksi dari <strong>25 bulan lalu sampai 24 bulan ini</strong>.
           </div>
         </div>
       </div>
 
-      <!-- Save Changes Button -->
-      <div class="max-w-2xl mx-auto">
+      <!-- Save Changes Button (Master only) -->
+      <div id="boxSaveConfigBtn" class="max-w-2xl mx-auto">
         <button 
           type="button" 
           onclick="saveConfigChanges()" 
@@ -473,19 +493,193 @@
 
     </div>
 
+    <!-- ==================== VIEW 4: AKUN (RBAC & PENGATURAN KELUARGA) ==================== -->
+    <div id="viewAccount" class="hidden space-y-4 max-w-2xl mx-auto">
+
+      <!-- Active User Profile Card -->
+      <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between border-b border-borderline pb-3">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-muted">Akun Google Aktif</span>
+            <div id="accountUserEmail" class="text-sm font-bold text-ink">memuat...</div>
+          </div>
+          <div class="text-right">
+            <span id="accountUserRbacBadge" class="rounded-full bg-sage-100 px-2.5 py-1 text-xs font-bold text-sage-800 border border-sage-200">
+              Akun Master
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div class="rounded-xl border border-borderline bg-surface p-3">
+            <span class="text-[10px] font-semibold text-muted block mb-0.5">Peran Aktif</span>
+            <div id="accountUserRole" class="font-bold text-ink">Suami (Ayah)</div>
+          </div>
+          <div class="rounded-xl border border-borderline bg-surface p-3">
+            <span class="text-[10px] font-semibold text-muted block mb-0.5">Hak Akses</span>
+            <div id="accountUserPermissions" class="font-bold text-sage-800">Akses Penuh (Master)</div>
+          </div>
+        </div>
+
+        <!-- Testing Simulation Toggle (Allows testing both perspectives easily) -->
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800">Simulasi Pengujian Hak Akses</span>
+            <span class="text-[10px] text-slate-500">Uji tampilan pasangan</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="setSimulatedRole(true, 'Suami (Ayah)')" id="btnSimMaster" class="touch-btn rounded-lg border-2 border-sage-800 bg-white py-2 text-center text-xs font-bold text-sage-800">
+              Akun Master (Ayah)
+            </button>
+            <button type="button" onclick="setSimulatedRole(false, 'Istri (Bunda)')" id="btnSimMember" class="touch-btn rounded-lg border border-slate-200 bg-white py-2 text-center text-xs font-medium text-slate-600 hover:border-slate-400">
+              Akun Diundang (Bunda)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Account Settings Form (Configured by Master) -->
+      <section id="sectionMasterAccountSettings" class="rounded-2xl border border-borderline bg-white p-4 shadow-sm space-y-4">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-ink mb-1">Pengaturan Akun Pasangan (Master)</h2>
+          <p class="text-[11px] text-muted">
+            Tentukan alamat email Google pasangan Anda. Akun pertama yang membuat spreadsheet adalah Akun Master, dan email pasangan yang didaftarkan akan berstatus akun anggota.
+          </p>
+        </div>
+
+        <form id="accountConfigForm" onsubmit="handleAccountConfigSubmit(event)" class="space-y-4">
+          <!-- Akun Ayah -->
+          <div class="rounded-xl border border-borderline bg-surface p-3.5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-ink">Identitas Suami</span>
+              <span class="text-[10px] text-muted">Akun Pertama</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] font-semibold text-muted mb-1">Panggilan / Label</label>
+                <input type="text" id="accSuamiLabel" value="Ayah" required class="w-full rounded-xl border border-borderline bg-white p-2 text-xs font-bold text-ink focus:border-sage-700 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-muted mb-1">Email Google Suami</label>
+                <input type="email" id="accSuamiEmail" placeholder="suami@gmail.com" required class="w-full rounded-xl border border-borderline bg-white p-2 text-xs font-medium text-ink focus:border-sage-700 focus:outline-none">
+              </div>
+            </div>
+          </div>
+
+          <!-- Akun Bunda -->
+          <div class="rounded-xl border border-borderline bg-surface p-3.5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-ink">Identitas Istri</span>
+              <span class="text-[10px] text-muted">Akun Pasangan</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] font-semibold text-muted mb-1">Panggilan / Label</label>
+                <input type="text" id="accIstriLabel" value="Bunda" required class="w-full rounded-xl border border-borderline bg-white p-2 text-xs font-bold text-ink focus:border-sage-700 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-muted mb-1">Email Google Istri</label>
+                <input type="email" id="accIstriEmail" placeholder="istri@gmail.com" required class="w-full rounded-xl border border-borderline bg-white p-2 text-xs font-medium text-ink focus:border-sage-700 focus:outline-none">
+              </div>
+            </div>
+          </div>
+
+          <!-- Master Account Role Selector -->
+          <div class="rounded-xl border border-borderline bg-surface p-3.5 space-y-2">
+            <label class="block text-xs font-bold text-ink">Penanggung Jawab Akun Master</label>
+            <p class="text-[11px] text-muted">Pilih siapa yang memegang kendali penuh atas akun Master.</p>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center gap-2 rounded-xl border border-borderline bg-white p-2.5 text-xs font-semibold cursor-pointer">
+                <input type="radio" name="accMasterRole" id="radioMasterSuami" value="Suami" checked class="text-sage-700">
+                <span>Suami (Ayah)</span>
+              </label>
+              <label class="flex items-center gap-2 rounded-xl border border-borderline bg-white p-2.5 text-xs font-semibold cursor-pointer">
+                <input type="radio" name="accMasterRole" id="radioMasterIstri" value="Istri" class="text-sage-700">
+                <span>Istri (Bunda)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            id="btnSaveAccount"
+            class="touch-btn flex w-full items-center justify-center gap-2 rounded-xl bg-sage-800 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-sage-700 focus:outline-none transition-all"
+          >
+            <span id="btnSaveAccountText">Simpan Pengaturan Akun</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Read-Only Notice for Invited Member -->
+      <section id="sectionMemberAccountView" class="hidden rounded-2xl border border-borderline bg-white p-4 shadow-sm space-y-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-ink mb-1">Daftar Akun Keluarga</h2>
+        <div class="space-y-2 text-xs">
+          <div class="flex items-center justify-between p-2.5 rounded-xl border border-borderline bg-surface">
+            <div>
+              <span class="font-bold text-ink block" id="viewMemberSuamiText">Suami (Ayah)</span>
+              <span class="text-muted text-[11px]" id="viewMemberSuamiEmail">suami@gmail.com</span>
+            </div>
+            <span class="text-[10px] font-semibold text-muted">Akun Keluarga</span>
+          </div>
+          <div class="flex items-center justify-between p-2.5 rounded-xl border border-borderline bg-surface">
+            <div>
+              <span class="font-bold text-ink block" id="viewMemberIstriText">Istri (Bunda)</span>
+              <span class="text-muted text-[11px]" id="viewMemberIstriEmail">istri@gmail.com</span>
+            </div>
+            <span class="text-[10px] font-semibold text-muted">Akun Keluarga</span>
+          </div>
+        </div>
+        <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-[11px] text-slate-700">
+          Akun Google pertama yang membuat spreadsheet adalah pemegang Akun Master. Akun yang diundang memiliki hak akses untuk mencatat seluruh transaksi dan memantau rekap keuangan keluarga.
+        </div>
+      </section>
+
+    </div>
+
     <!-- Notification Alert Box -->
     <div id="toastAlert" class="mt-3 hidden rounded-xl border px-4 py-3 text-xs font-medium transition-all max-w-lg mx-auto"></div>
 
   </main>
 
+  <!-- ==================== MOBILE BOTTOM NAVIGATION BAR ==================== -->
+  <!-- Floating bottom bar ergonomic for thumb reach, visible on mobile, hidden on desktop -->
+  <nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-borderline px-3 py-2 shadow-lg lg:hidden">
+    <div class="mx-auto max-w-md grid grid-cols-4 gap-1">
+      <button type="button" onclick="switchMainTab('record')" id="mobileNavTabRecord" class="touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all bg-sage-800 text-white font-bold">
+        <span class="text-xs">Catat</span>
+      </button>
+      <button type="button" onclick="switchMainTab('summary')" id="mobileNavTabSummary" class="touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all text-muted font-medium hover:text-ink">
+        <span class="text-xs">Rekap</span>
+      </button>
+      <button type="button" onclick="switchMainTab('manage')" id="mobileNavTabManage" class="touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all text-muted font-medium hover:text-ink">
+        <span class="text-xs">Kelola</span>
+      </button>
+      <button type="button" onclick="switchMainTab('account')" id="mobileNavTabAccount" class="touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all text-muted font-medium hover:text-ink">
+        <span class="text-xs">Akun</span>
+      </button>
+    </div>
+  </nav>
+
   <script>
     // State Management
-    var currentMainTab = 'record'; // 'record' | 'summary' | 'manage'
+    var currentMainTab = 'record'; // 'record' | 'summary' | 'manage' | 'account'
     var currentManageSubTab = 'categories'; // 'categories' | 'wallets' | 'salary'
     var currentType = 'Pengeluaran';
     var currentScopeChoice = 'bersama'; // 'bersama' | 'pribadi'
 
     var appData = {
+      isMaster: true,
+      userEmail: '',
+      userRole: 'Suami (Ayah)',
+      accounts: {
+        suamiLabel: 'Ayah',
+        suamiEmail: 'suami@gmail.com',
+        istriLabel: 'Bunda',
+        istriEmail: 'istri@gmail.com',
+        masterEmail: 'suami@gmail.com',
+        masterRole: 'Suami'
+      },
       categories: [
         'Belanja Pasar & Dapur',
         'Makan Luar & Jajan',
@@ -509,13 +703,13 @@
         'Pemberian / Lainnya'
       ],
       wallets: [
-        'Kas Tunai Rumah',
-        'Rekening BCA Bersama',
-        'BCA Pribadi Suami',
-        'BCA Pribadi Istri',
-        'GoPay Suami',
-        'GoPay Istri',
-        'ShopeePay'
+        { name: 'Kas Tunai Rumah', owner: 'Kas Bersama' },
+        { name: 'Rekening BCA Bersama', owner: 'Kas Bersama' },
+        { name: 'BCA Pribadi Suami', owner: 'Suami' },
+        { name: 'GoPay Suami', owner: 'Suami' },
+        { name: 'BCA Pribadi Istri', owner: 'Istri' },
+        { name: 'ShopeePay Istri', owner: 'Istri' },
+        { name: 'GoPay Istri', owner: 'Istri' }
       ],
       presets: [
         { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama' },
@@ -526,25 +720,49 @@
       ],
       salaryDate: 25,
       recent: [],
-      summary: { monthExpense: 0, jointBalance: 0, monthIncome: 0 },
-      userEmail: '',
-      userRole: 'Suami (Ayah)'
+      summary: { monthExpense: 0, jointBalance: 0, monthIncome: 0 }
     };
 
     function toggleDemoRole() {
       var isSuami = (appData.userRole.indexOf('Suami') !== -1 || appData.userRole.indexOf('Ayah') !== -1);
       if (isSuami) {
-        appData.userRole = 'Istri (Bunda)';
-        showToast('Beralih ke mode akun: 👩 Istri (Bunda)', true);
+        appData.userRole = 'Istri (' + (appData.accounts.istriLabel || 'Bunda') + ')';
+        showToast('Beralih ke peran: ' + appData.userRole, true);
       } else {
-        appData.userRole = 'Suami (Ayah)';
-        showToast('Beralih ke mode akun: 👨 Suami (Ayah)', true);
+        appData.userRole = 'Suami (' + (appData.accounts.suamiLabel || 'Ayah') + ')';
+        showToast('Beralih ke peran: ' + appData.userRole, true);
       }
       try {
         localStorage.setItem('family_demo_role', appData.userRole);
       } catch (e) {}
       renderSummary();
+      renderAccountView();
       updateDynamicUI();
+    }
+
+    function setSimulatedRole(isMaster, roleName) {
+      appData.isMaster = isMaster;
+      appData.userRole = roleName;
+      try {
+        localStorage.setItem('family_demo_is_master', isMaster ? '1' : '0');
+        localStorage.setItem('family_demo_role', roleName);
+      } catch (e) {}
+
+      var bMas = document.getElementById('btnSimMaster');
+      var bMem = document.getElementById('btnSimMember');
+      if (isMaster) {
+        bMas.className = 'touch-btn rounded-lg border-2 border-sage-800 bg-white py-2 text-center text-xs font-bold text-sage-800';
+        bMem.className = 'touch-btn rounded-lg border border-slate-200 bg-white py-2 text-center text-xs font-medium text-slate-600 hover:border-slate-400';
+      } else {
+        bMem.className = 'touch-btn rounded-lg border-2 border-sage-800 bg-white py-2 text-center text-xs font-bold text-sage-800';
+        bMas.className = 'touch-btn rounded-lg border border-slate-200 bg-white py-2 text-center text-xs font-medium text-slate-600 hover:border-slate-400';
+      }
+
+      renderSummary();
+      renderAccountView();
+      renderManageItems();
+      updateDynamicUI();
+      showToast('Mode diubah: ' + (isMaster ? 'Akun Master' : 'Anggota Diundang'), true);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -554,6 +772,7 @@
       renderPresets();
       updateDynamicUI();
       renderManageItems();
+      renderAccountView();
       fetchServerData();
     });
 
@@ -562,26 +781,47 @@
       var vRec = document.getElementById('viewRecord');
       var vSum = document.getElementById('viewSummary');
       var vMan = document.getElementById('viewManage');
+      var vAcc = document.getElementById('viewAccount');
 
-      var nRec = document.getElementById('navTabRecord');
-      var nSum = document.getElementById('navTabSummary');
-      var nMan = document.getElementById('navTabManage');
+      // Desktop nav elements
+      var dRec = document.getElementById('desktopNavTabRecord');
+      var dSum = document.getElementById('desktopNavTabSummary');
+      var dMan = document.getElementById('desktopNavTabManage');
+      var dAcc = document.getElementById('desktopNavTabAccount');
 
-      var activeTabStyle = 'touch-btn rounded-lg px-4 py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs';
-      var inactiveTabStyle = 'touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink';
+      // Mobile nav elements
+      var mRec = document.getElementById('mobileNavTabRecord');
+      var mSum = document.getElementById('mobileNavTabSummary');
+      var mMan = document.getElementById('mobileNavTabManage');
+      var mAcc = document.getElementById('mobileNavTabAccount');
 
-      nRec.className = tab === 'record' ? activeTabStyle : inactiveTabStyle;
-      nSum.className = tab === 'summary' ? activeTabStyle : inactiveTabStyle;
-      nMan.className = tab === 'manage' ? activeTabStyle : inactiveTabStyle;
+      var deskActive = 'touch-btn rounded-lg px-4 py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs';
+      var deskInactive = 'touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink';
+
+      var mobActive = 'touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all bg-sage-800 text-white font-bold';
+      var mobInactive = 'touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all text-muted font-medium hover:text-ink';
+
+      if (dRec) dRec.className = tab === 'record' ? deskActive : deskInactive;
+      if (dSum) dSum.className = tab === 'summary' ? deskActive : deskInactive;
+      if (dMan) dMan.className = tab === 'manage' ? deskActive : deskInactive;
+      if (dAcc) dAcc.className = tab === 'account' ? deskActive : deskInactive;
+
+      if (mRec) mRec.className = tab === 'record' ? mobActive : mobInactive;
+      if (mSum) mSum.className = tab === 'summary' ? mobActive : mobInactive;
+      if (mMan) mMan.className = tab === 'manage' ? mobActive : mobInactive;
+      if (mAcc) mAcc.className = tab === 'account' ? mobActive : mobInactive;
 
       vRec.classList.toggle('hidden', tab !== 'record');
       vSum.classList.toggle('hidden', tab !== 'summary');
       vMan.classList.toggle('hidden', tab !== 'manage');
+      vAcc.classList.toggle('hidden', tab !== 'account');
 
       if (tab === 'summary') {
         setPeriodFilter('salary');
       } else if (tab === 'manage') {
         renderManageItems();
+      } else if (tab === 'account') {
+        renderAccountView();
       }
     }
 
@@ -693,8 +933,8 @@
         sectionTransfer.classList.add('hidden');
 
         labelScope.textContent = 'Peruntukan Pengeluaran';
-        textScopeBersama.textContent = '🏠 Kebutuhan Bersama';
-        textScopePribadi.textContent = isAyah ? '👤 Pribadi Suami' : '👤 Pribadi Istri';
+        textScopeBersama.textContent = 'Kebutuhan Bersama';
+        textScopePribadi.textContent = isAyah ? 'Pribadi Suami' : 'Pribadi Istri';
         labelWallet.textContent = 'Sumber Rekening / Dompet';
         
         renderOptions();
@@ -707,8 +947,8 @@
         sectionTransfer.classList.add('hidden');
 
         labelScope.textContent = 'Tujuan Alokasi Pemasukan';
-        textScopeBersama.textContent = '🏠 Masuk Kas Bersama';
-        textScopePribadi.textContent = isAyah ? '👤 Rekening Suami' : '👤 Rekening Istri';
+        textScopeBersama.textContent = 'Masuk Kas Bersama';
+        textScopePribadi.textContent = isAyah ? 'Rekening Suami' : 'Rekening Istri';
         labelWallet.textContent = 'Rekening Penerima';
 
         renderOptions();
@@ -719,7 +959,19 @@
         sectionPresets.classList.add('hidden');
         sectionCatAndWallet.classList.add('hidden');
         sectionTransfer.classList.remove('hidden');
+        renderOptions();
+        updateTransferRoutePreview();
       }
+    }
+
+    function updateTransferRoutePreview() {
+      var trFrom = document.getElementById('transferFromSelect').value;
+      var trTo = document.getElementById('transferToSelect').value;
+      var prevFrom = document.getElementById('previewFromText');
+      var prevTo = document.getElementById('previewToText');
+
+      if (prevFrom) prevFrom.textContent = trFrom || 'Pilih sumber';
+      if (prevTo) prevTo.textContent = trTo || 'Pilih tujuan';
     }
 
     function resolveResolvedScope() {
@@ -785,20 +1037,46 @@
       });
       if (prevCat) catSelect.value = prevCat;
 
-      var populateWallets = function(selectEl, prevVal) {
-        selectEl.innerHTML = '<option value="">Pilih Dompet...</option>';
+      var populateWallets = function(selectEl, prevVal, isTransfer) {
+        selectEl.innerHTML = isTransfer ? '<option value="">Pilih Rekening...</option>' : '<option value="">Pilih Dompet...</option>';
+        
+        // Group wallets by owner
+        var groups = {
+          'Kas Bersama': [],
+          'Suami': [],
+          'Istri': []
+        };
+
         appData.wallets.forEach(function(w) {
-          var opt = document.createElement('option');
-          opt.value = w;
-          opt.textContent = w;
-          selectEl.appendChild(opt);
+          var name = (typeof w === 'object') ? w.name : w;
+          var owner = (typeof w === 'object' && w.owner) ? w.owner : 'Kas Bersama';
+          if (!groups[owner]) groups[owner] = [];
+          groups[owner].push({ name: name, owner: owner });
         });
+
+        for (var ownerKey in groups) {
+          if (groups[ownerKey].length > 0) {
+            var groupLabel = ownerKey === 'Kas Bersama' ? 'Kas Bersama' : 'Milik ' + ownerKey;
+            var optGroup = document.createElement('optgroup');
+            optGroup.label = groupLabel;
+            groups[ownerKey].forEach(function(item) {
+              var opt = document.createElement('option');
+              var displayTitle = item.name + ' [' + item.owner + ']';
+              opt.value = displayTitle;
+              opt.textContent = displayTitle;
+              optGroup.appendChild(opt);
+            });
+            selectEl.appendChild(optGroup);
+          }
+        }
+
         if (prevVal) selectEl.value = prevVal;
       };
 
-      populateWallets(walSelect, prevWal);
-      populateWallets(trFrom, prevFrom);
-      populateWallets(trTo, prevTo);
+      populateWallets(walSelect, prevWal, false);
+      populateWallets(trFrom, prevFrom, true);
+      populateWallets(trTo, prevTo, true);
+      updateTransferRoutePreview();
     }
 
     function renderSummary() {
@@ -811,21 +1089,20 @@
       } else {
         document.getElementById('userEmailBadge').textContent = 'Mode Terhubung Google';
       }
-      var isAyah = (appData.userRole.indexOf('Suami') !== -1 || appData.userRole.indexOf('Ayah') !== -1);
-      var roleText = isAyah ? 'Suami (Ayah)' : 'Istri (Bunda)';
-      var roleIcon = isAyah ? '👨' : '👩';
 
-      var badgeMob = document.getElementById('userRoleBadge');
-      if (badgeMob) badgeMob.textContent = roleText;
-      var iconMob = document.getElementById('userRoleIcon');
-      if (iconMob) iconMob.textContent = roleIcon;
+      var roleBadge = document.getElementById('userRoleBadge');
+      if (roleBadge) roleBadge.textContent = appData.userRole;
 
-      var badgeDesk = document.getElementById('userRoleBadgeDesktop');
-      if (badgeDesk) badgeDesk.textContent = roleText;
-      var iconDesk = document.getElementById('userRoleIconDesktop');
-      if (iconDesk) iconDesk.textContent = roleIcon;
-
-      updateDynamicUI();
+      var headerMasterBadge = document.getElementById('headerMasterBadge');
+      if (headerMasterBadge) {
+        if (appData.isMaster) {
+          headerMasterBadge.textContent = 'Akun Master';
+          headerMasterBadge.className = 'rounded-full bg-sage-100 px-2 py-0.5 text-[10px] font-bold text-sage-800 border border-sage-200';
+        } else {
+          headerMasterBadge.textContent = 'Anggota';
+          headerMasterBadge.className = 'rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 border border-slate-200';
+        }
+      }
     }
 
     function renderRecent() {
@@ -842,7 +1119,7 @@
         
         var isIncome = tx.type === 'Pemasukan';
         var isTransfer = tx.type === 'Transfer';
-        var sign = isIncome ? '+' : (isTransfer ? '⇄' : '-');
+        var sign = isIncome ? '+' : (isTransfer ? '' : '-');
         var amountClass = isIncome ? 'text-sage-700' : (isTransfer ? 'text-slate-600' : 'text-ink');
 
         var isSuami = (tx.authorRole && tx.authorRole.toLowerCase().indexOf('suami') !== -1) || 
@@ -852,11 +1129,11 @@
 
         var authorBadge = '';
         if (isSuami) {
-          authorBadge = '<span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200">👨 Suami (Ayah)</span>';
+          authorBadge = '<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200">Suami (Ayah)</span>';
         } else if (isIstri) {
-          authorBadge = '<span class="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 border border-rose-200">👩 Istri (Bunda)</span>';
+          authorBadge = '<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 border border-rose-200">Istri (Bunda)</span>';
         } else {
-          authorBadge = '<span class="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">👤 ' + (tx.authorRole || (tx.author ? tx.author.split('@')[0] : 'Keluarga')) + '</span>';
+          authorBadge = '<span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">' + (tx.authorRole || (tx.author ? tx.author.split('@')[0] : 'Keluarga')) + '</span>';
         }
 
         card.innerHTML = 
@@ -871,7 +1148,7 @@
             '</div>' +
           '</div>' +
           '<div class="text-right shrink-0">' +
-            '<div class="num-tabular text-sm font-bold ' + amountClass + '">' + sign + ' ' + formatRupiah(tx.amount) + '</div>' +
+            '<div class="num-tabular text-sm font-bold ' + amountClass + '">' + (sign ? sign + ' ' : '') + formatRupiah(tx.amount) + '</div>' +
           '</div>';
         container.appendChild(card);
       });
@@ -1013,24 +1290,51 @@
       });
     }
 
-    // ==================== VIEW 3: KELOLA REFINED LOGIC ====================
+    // ==================== VIEW 3: KELOLA WITH RBAC ====================
     function renderManageItems() {
       document.getElementById('countCatBadge').textContent = appData.categories.length;
       document.getElementById('countWalBadge').textContent = appData.wallets.length;
+
+      var rbacWarning = document.getElementById('manageRbacWarning');
+      var cardAddCat = document.getElementById('cardAddCategory');
+      var cardAddWal = document.getElementById('cardAddWallet');
+      var boxSaveConfig = document.getElementById('boxSaveConfigBtn');
+      var inputSal = document.getElementById('inputSalaryDate');
+      var labelCatHint = document.getElementById('labelCatDeleteHint');
+      var labelWalHint = document.getElementById('labelWalDeleteHint');
+
+      if (appData.isMaster) {
+        if (rbacWarning) rbacWarning.classList.add('hidden');
+        if (cardAddCat) cardAddCat.classList.remove('hidden');
+        if (cardAddWal) cardAddWal.classList.remove('hidden');
+        if (boxSaveConfig) boxSaveConfig.classList.remove('hidden');
+        if (inputSal) inputSal.disabled = false;
+        if (labelCatHint) labelCatHint.textContent = 'Ketuk Hapus untuk menghapus';
+        if (labelWalHint) labelWalHint.textContent = 'Ketuk Hapus untuk menghapus';
+      } else {
+        if (rbacWarning) rbacWarning.classList.remove('hidden');
+        if (cardAddCat) cardAddCat.classList.add('hidden');
+        if (cardAddWal) cardAddWal.classList.add('hidden');
+        if (boxSaveConfig) boxSaveConfig.classList.add('hidden');
+        if (inputSal) inputSal.disabled = true;
+        if (labelCatHint) labelCatHint.textContent = 'Mode baca saja';
+        if (labelWalHint) labelWalHint.textContent = 'Mode baca saja';
+      }
 
       var catBox = document.getElementById('manageCategoryList');
       catBox.innerHTML = '';
       appData.categories.forEach(function(cat, idx) {
         var row = document.createElement('div');
         row.className = 'flex items-center justify-between py-2.5 px-1 hover:bg-surface transition-colors rounded-lg';
+        
+        var deleteBtn = appData.isMaster ? 
+          '<button type="button" onclick="removeCategory(' + idx + ')" title="Hapus kategori" class="text-xs text-muted hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 font-medium transition-colors">Hapus</button>' : '';
+
         row.innerHTML = 
           '<div class="flex items-center gap-2.5">' +
             '<span class="flex h-5 w-5 items-center justify-center rounded-md bg-sage-100 text-[10px] font-bold text-sage-800">' + (idx + 1) + '</span>' +
             '<span class="text-xs font-semibold text-ink">' + cat + '</span>' +
-          '</div>' +
-          '<button type="button" onclick="removeCategory(' + idx + ')" title="Hapus kategori" class="text-xs text-muted hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 font-medium transition-colors">' +
-            'Hapus' +
-          '</button>';
+          '</div>' + deleteBtn;
         catBox.appendChild(row);
       });
 
@@ -1039,21 +1343,41 @@
       appData.wallets.forEach(function(wal, idx) {
         var row = document.createElement('div');
         row.className = 'flex items-center justify-between py-2.5 px-1 hover:bg-surface transition-colors rounded-lg';
+        
+        var wName = (typeof wal === 'object') ? wal.name : wal;
+        var wOwner = (typeof wal === 'object' && wal.owner) ? wal.owner : 'Kas Bersama';
+
+        var ownerBadge = '';
+        if (wOwner === 'Suami') {
+          ownerBadge = '<span class="rounded bg-blue-50 border border-blue-200 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700">Suami</span>';
+        } else if (wOwner === 'Istri') {
+          ownerBadge = '<span class="rounded bg-rose-50 border border-rose-200 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700">Istri</span>';
+        } else {
+          ownerBadge = '<span class="rounded bg-sage-50 border border-sage-200 px-1.5 py-0.5 text-[10px] font-semibold text-sage-800">Kas Bersama</span>';
+        }
+
+        var deleteBtn = appData.isMaster ? 
+          '<button type="button" onclick="removeWallet(' + idx + ')" title="Hapus dompet" class="text-xs text-muted hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 font-medium transition-colors">Hapus</button>' : '';
+
         row.innerHTML = 
           '<div class="flex items-center gap-2.5">' +
             '<span class="flex h-5 w-5 items-center justify-center rounded-md bg-slate-100 text-[10px] font-bold text-slate-700">' + (idx + 1) + '</span>' +
-            '<span class="text-xs font-semibold text-ink">' + wal + '</span>' +
-          '</div>' +
-          '<button type="button" onclick="removeWallet(' + idx + ')" title="Hapus dompet" class="text-xs text-muted hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 font-medium transition-colors">' +
-            'Hapus' +
-          '</button>';
+            '<div class="flex items-center gap-1.5">' +
+              '<span class="text-xs font-semibold text-ink">' + wName + '</span>' +
+              ownerBadge +
+            '</div>' +
+          '</div>' + deleteBtn;
         walBox.appendChild(row);
       });
 
-      document.getElementById('inputSalaryDate').value = appData.salaryDate || 25;
+      if (inputSal) inputSal.value = appData.salaryDate || 25;
     }
 
     function addNewCategory() {
+      if (!appData.isMaster) {
+        showToast('Hanya Akun Master yang dapat menambah kategori', false);
+        return;
+      }
       var input = document.getElementById('inputNewCategory');
       var val = input.value.trim();
       if (!val) return;
@@ -1069,6 +1393,10 @@
     }
 
     function removeCategory(idx) {
+      if (!appData.isMaster) {
+        showToast('Hanya Akun Master yang dapat menghapus kategori', false);
+        return;
+      }
       if (appData.categories.length <= 1) {
         showToast('Minimal harus ada 1 kategori', false);
         return;
@@ -1080,32 +1408,53 @@
     }
 
     function addNewWallet() {
+      if (!appData.isMaster) {
+        showToast('Hanya Akun Master yang dapat menambah dompet', false);
+        return;
+      }
       var input = document.getElementById('inputNewWallet');
+      var ownerSel = document.getElementById('selectNewWalletOwner');
       var val = input.value.trim();
+      var owner = ownerSel.value || 'Kas Bersama';
       if (!val) return;
-      if (appData.wallets.indexOf(val) === -1) {
-        appData.wallets.push(val);
+
+      var exists = appData.wallets.some(function(w) {
+        return (typeof w === 'object' ? w.name : w).toLowerCase() === val.toLowerCase();
+      });
+
+      if (!exists) {
+        appData.wallets.push({ name: val, owner: owner });
         input.value = '';
         renderManageItems();
         renderOptions();
-        showToast('Dompet ditambahkan. Jangan lupa klik "Simpan Perubahan".', true);
+        showToast('Dompet ' + val + ' (' + owner + ') ditambahkan.', true);
       } else {
         showToast('Dompet sudah ada dalam daftar', false);
       }
     }
 
     function removeWallet(idx) {
+      if (!appData.isMaster) {
+        showToast('Hanya Akun Master yang dapat menghapus dompet', false);
+        return;
+      }
       if (appData.wallets.length <= 1) {
         showToast('Minimal harus ada 1 dompet', false);
         return;
       }
       var removed = appData.wallets.splice(idx, 1);
+      var rName = typeof removed[0] === 'object' ? removed[0].name : removed[0];
       renderManageItems();
       renderOptions();
-      showToast('Dompet "' + removed[0] + '" dihapus.', true);
+      showToast('Dompet "' + rName + '" dihapus.', true);
     }
 
     function saveConfigChanges() {
+      if (!appData.isMaster) {
+        showToast('Hanya Akun Master yang dapat menyimpan konfigurasi', false);
+        return;
+      }
+
       var sDate = Number(document.getElementById('inputSalaryDate').value) || 25;
       appData.salaryDate = sDate;
       saveCachedData();
@@ -1147,12 +1496,140 @@
       }
     }
 
+    // ==================== VIEW 4: AKUN LOGIC ====================
+    function renderAccountView() {
+      var emailEl = document.getElementById('accountUserEmail');
+      var rbacBadge = document.getElementById('accountUserRbacBadge');
+      var roleEl = document.getElementById('accountUserRole');
+      var permEl = document.getElementById('accountUserPermissions');
+
+      if (emailEl) emailEl.textContent = appData.userEmail || (appData.isMaster ? 'suami@gmail.com' : 'istri@gmail.com');
+      if (roleEl) roleEl.textContent = appData.userRole;
+
+      if (appData.isMaster) {
+        if (rbacBadge) {
+          rbacBadge.textContent = 'Akun Master';
+          rbacBadge.className = 'rounded-full bg-sage-100 px-2.5 py-1 text-xs font-bold text-sage-800 border border-sage-200';
+        }
+        if (permEl) {
+          permEl.textContent = 'Akses Penuh (Master)';
+          permEl.className = 'font-bold text-sage-800';
+        }
+      } else {
+        if (rbacBadge) {
+          rbacBadge.textContent = 'Anggota Diundang';
+          rbacBadge.className = 'rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 border border-slate-200';
+        }
+        if (permEl) {
+          permEl.textContent = 'Input Transaksi Saja';
+          permEl.className = 'font-bold text-slate-600';
+        }
+      }
+
+      var secMasterForm = document.getElementById('sectionMasterAccountSettings');
+      var secMemberView = document.getElementById('sectionMemberAccountView');
+
+      if (appData.isMaster) {
+        if (secMasterForm) secMasterForm.classList.remove('hidden');
+        if (secMemberView) secMemberView.classList.add('hidden');
+
+        document.getElementById('accSuamiLabel').value = appData.accounts.suamiLabel || 'Ayah';
+        document.getElementById('accSuamiEmail').value = appData.accounts.suamiEmail || '';
+        document.getElementById('accIstriLabel').value = appData.accounts.istriLabel || 'Bunda';
+        document.getElementById('accIstriEmail').value = appData.accounts.istriEmail || '';
+
+        var isIstriMaster = appData.accounts.masterRole === 'Istri';
+        var rSuami = document.getElementById('radioMasterSuami');
+        var rIstri = document.getElementById('radioMasterIstri');
+        if (rSuami) rSuami.checked = !isIstriMaster;
+        if (rIstri) rIstri.checked = isIstriMaster;
+      } else {
+        if (secMasterForm) secMasterForm.classList.add('hidden');
+        if (secMemberView) secMemberView.classList.remove('hidden');
+
+        var mSuami = document.getElementById('viewMemberSuamiText');
+        var mSuamiMail = document.getElementById('viewMemberSuamiEmail');
+        var mIstri = document.getElementById('viewMemberIstriText');
+        var mIstriMail = document.getElementById('viewMemberIstriEmail');
+
+        if (mSuami) mSuami.textContent = 'Suami (' + (appData.accounts.suamiLabel || 'Ayah') + ')';
+        if (mSuamiMail) mSuamiMail.textContent = appData.accounts.suamiEmail || 'suami@gmail.com';
+        if (mIstri) mIstri.textContent = 'Istri (' + (appData.accounts.istriLabel || 'Bunda') + ')';
+        if (mIstriMail) mIstriMail.textContent = appData.accounts.istriEmail || 'istri@gmail.com';
+      }
+    }
+
+    function handleAccountConfigSubmit(e) {
+      e.preventDefault();
+      if (!appData.isMaster) {
+        showToast('Hanya Akun Master yang dapat mengubah akun keluarga', false);
+        return;
+      }
+
+      var sLabel = document.getElementById('accSuamiLabel').value.trim() || 'Ayah';
+      var sEmail = document.getElementById('accSuamiEmail').value.trim().toLowerCase();
+      var iLabel = document.getElementById('accIstriLabel').value.trim() || 'Bunda';
+      var iEmail = document.getElementById('accIstriEmail').value.trim().toLowerCase();
+      var masterRole = document.getElementById('radioMasterIstri').checked ? 'Istri' : 'Suami';
+
+      appData.accounts.suamiLabel = sLabel;
+      appData.accounts.suamiEmail = sEmail;
+      appData.accounts.istriLabel = iLabel;
+      appData.accounts.istriEmail = iEmail;
+      appData.accounts.masterRole = masterRole;
+
+      saveCachedData();
+
+      var btn = document.getElementById('btnSaveAccount');
+      var text = document.getElementById('btnSaveAccountText');
+      btn.disabled = true;
+      text.textContent = 'Menyimpan ke Google Sheets...';
+
+      var payload = {
+        suamiLabel: sLabel,
+        suamiEmail: sEmail,
+        istriLabel: iLabel,
+        istriEmail: iEmail,
+        masterRole: masterRole,
+        masterEmail: masterRole === 'Istri' ? iEmail : sEmail
+      };
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            btn.disabled = false;
+            text.textContent = 'Simpan Pengaturan Akun';
+            if (res && res.success) {
+              showToast('Pengaturan Akun Pasangan berhasil diperbarui!', true);
+              fetchServerData();
+            } else {
+              showToast('Gagal: ' + (res ? res.message : 'Error'), false);
+            }
+          })
+          .withFailureHandler(function(err) {
+            btn.disabled = false;
+            text.textContent = 'Simpan Pengaturan Akun';
+            showToast('Error koneksi: ' + err.message, false);
+          })
+          .saveAccountSettings(payload);
+      } else {
+        setTimeout(function() {
+          btn.disabled = false;
+          text.textContent = 'Simpan Pengaturan Akun';
+          showToast('Pengaturan Akun disimpan (Mode Demo Lokal)', true);
+          renderAccountView();
+        }, 300);
+      }
+    }
+
     // ==================== COMMON CACHING & FETCH ====================
     function loadCachedData() {
       try {
         var cached = localStorage.getItem('family_finance_cache');
         var cachedRole = localStorage.getItem('family_demo_role');
+        var cachedMaster = localStorage.getItem('family_demo_is_master');
         if (cachedRole) appData.userRole = cachedRole;
+        if (cachedMaster !== null) appData.isMaster = (cachedMaster === '1');
         if (cached) {
           var parsed = JSON.parse(cached);
           if (parsed.categories) appData.categories = parsed.categories;
@@ -1162,6 +1639,7 @@
           if (parsed.salaryDate) appData.salaryDate = parsed.salaryDate;
           if (parsed.summary) appData.summary = parsed.summary;
           if (parsed.recent) appData.recent = parsed.recent;
+          if (parsed.accounts) appData.accounts = parsed.accounts;
           renderSummary();
           renderRecent();
         }
@@ -1177,7 +1655,8 @@
           presets: appData.presets,
           salaryDate: appData.salaryDate,
           summary: appData.summary,
-          recent: appData.recent
+          recent: appData.recent,
+          accounts: appData.accounts
         }));
       } catch (e) {}
     }
@@ -1195,12 +1674,15 @@
               if (data.summary) appData.summary = data.summary;
               if (data.userEmail) appData.userEmail = data.userEmail;
               if (data.userRole) appData.userRole = data.userRole;
+              if (data.isMaster !== undefined) appData.isMaster = data.isMaster;
+              if (data.accounts) appData.accounts = data.accounts;
 
               renderOptions();
               renderPresets();
               renderSummary();
               renderRecent();
               renderManageItems();
+              renderAccountView();
               saveCachedData();
             }
           })
@@ -1236,7 +1718,7 @@
           return;
         }
         category = 'Transfer Kas';
-        wallet = fromW + ' ➔ ' + toW;
+        wallet = fromW + ' ke ' + toW;
         if (!note) note = 'Transfer dari ' + fromW + ' ke ' + toW;
       } else {
         category = document.getElementById('categorySelect').value;
@@ -1294,7 +1776,7 @@
             amount: payload.amount,
             note: payload.note,
             author: appData.userEmail || 'Local Demo',
-            authorRole: appData.userRole === 'Ayah' ? 'Suami (Ayah)' : 'Istri (Bunda)'
+            authorRole: appData.userRole
           });
           if (payload.type === 'Pengeluaran') {
             appData.summary.monthExpense += payload.amount;

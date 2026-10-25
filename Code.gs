@@ -1,11 +1,12 @@
 /**
  * Code.gs - Backend API Google Apps Script untuk Web App Family Finance Tracker
+ * Mendukung RBAC Akun Master vs Anggota, Kepemilikan Dompet Eksplisit, dan Zero-Symbol UI.
  */
 
 function doGet(e) {
   var template = HtmlService.createTemplateFromFile('WebApp');
   return template.evaluate()
-    .setTitle('Kas Keluarga — Catat Keuangan')
+    .setTitle('Kas Keluarga - Catat Keuangan')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -18,6 +19,13 @@ function getInitialData() {
     userEmail = '';
   }
 
+  var effectiveEmail = '';
+  try {
+    effectiveEmail = Session.getEffectiveUser().getEmail();
+  } catch (err) {
+    effectiveEmail = '';
+  }
+
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var configSheet = ss.getSheetByName('CONFIG');
   var transSheet = ss.getSheetByName('TRANSAKSI');
@@ -26,10 +34,19 @@ function getInitialData() {
   var categories = [];
   var wallets = [];
   var presets = [];
-  var userRole = 'Keluarga';
   var salaryDate = 25;
 
+  var settings = {};
   if (configSheet) {
+    var settingRows = configSheet.getRange('A2:B15').getValues();
+    for (var s = 0; s < settingRows.length; s++) {
+      var key = (settingRows[s][0] || '').toString().trim();
+      var val = settingRows[s][1];
+      if (key) {
+        settings[key] = val;
+      }
+    }
+
     var catValues = configSheet.getRange('C2:C50').getValues();
     for (var i = 0; i < catValues.length; i++) {
       var cat = catValues[i][0];
@@ -38,15 +55,19 @@ function getInitialData() {
       }
     }
 
-    var walValues = configSheet.getRange('E2:E50').getValues();
+    var walValues = configSheet.getRange('E2:F50').getValues();
     for (var j = 0; j < walValues.length; j++) {
-      var wal = walValues[j][0];
-      if (wal && wal.toString().trim() !== '') {
-        wallets.push(wal.toString().trim());
+      var walName = (walValues[j][0] || '').toString().trim();
+      var walOwner = (walValues[j][1] || '').toString().trim() || 'Kas Bersama';
+      if (walName !== '') {
+        wallets.push({
+          name: walName,
+          owner: walOwner
+        });
       }
     }
 
-    var preValues = configSheet.getRange('F2:G20').getValues();
+    var preValues = configSheet.getRange('G2:H20').getValues();
     for (var k = 0; k < preValues.length; k++) {
       var pName = preValues[k][0];
       var pAmount = preValues[k][1];
@@ -58,21 +79,40 @@ function getInitialData() {
       }
     }
 
-    var valSal = configSheet.getRange('B6').getValue();
-    if (valSal && !isNaN(Number(valSal))) {
-      salaryDate = Number(valSal);
+    var salVal = settings['Siklus Gajian (Tgl)'];
+    if (salVal && !isNaN(Number(salVal))) {
+      salaryDate = Number(salVal);
     }
+  }
 
-    var suamiEmail = configSheet.getRange('B3').getValue();
-    var istriEmail = configSheet.getRange('B5').getValue();
-    var suamiLabel = configSheet.getRange('B2').getValue() || 'Suami';
-    var istriLabel = configSheet.getRange('B4').getValue() || 'Istri';
+  var suamiLabel = settings['Label Suami'] || 'Ayah';
+  var suamiEmail = (settings['Email Suami'] || '').toString().trim();
+  var istriLabel = settings['Label Istri'] || 'Bunda';
+  var istriEmail = (settings['Email Istri'] || '').toString().trim();
+  var masterEmail = (settings['Email Master'] || effectiveEmail || '').toString().trim();
+  var masterRole = (settings['Peran Master'] || 'Suami').toString().trim();
 
-    if (userEmail && userEmail.toLowerCase() === (suamiEmail + '').toLowerCase()) {
-      userRole = suamiLabel;
-    } else if (userEmail && userEmail.toLowerCase() === (istriEmail + '').toLowerCase()) {
-      userRole = istriLabel;
-    }
+  // Deteksi RBAC: Apakah pengguna aktif adalah Master?
+  var isMaster = false;
+  var cleanActive = (userEmail || '').toLowerCase().trim();
+  var cleanMaster = masterEmail.toLowerCase();
+  var cleanEff = effectiveEmail.toLowerCase();
+
+  if (!cleanActive) {
+    // Mode demo lokal atau permission restricted
+    isMaster = true;
+  } else if ((cleanEff && cleanActive === cleanEff) || (cleanMaster && cleanActive === cleanMaster)) {
+    isMaster = true;
+  }
+
+  // Tentukan user role tampilan
+  var userRole = 'Suami (' + suamiLabel + ')';
+  if (cleanActive && cleanActive === istriEmail.toLowerCase()) {
+    userRole = 'Istri (' + istriLabel + ')';
+  } else if (cleanActive && cleanActive === suamiEmail.toLowerCase()) {
+    userRole = 'Suami (' + suamiLabel + ')';
+  } else if (masterRole === 'Istri' && isMaster) {
+    userRole = 'Istri (' + istriLabel + ')';
   }
 
   var recent = [];
@@ -96,13 +136,13 @@ function getInitialData() {
           var authorEmail = (row[9] || '').toString();
           var authorRole = 'Keluarga';
           if (suamiEmail && authorEmail.toLowerCase().indexOf(suamiEmail.toLowerCase()) !== -1) {
-            authorRole = 'Suami (' + (suamiLabel || 'Ayah') + ')';
+            authorRole = 'Suami (' + suamiLabel + ')';
           } else if (istriEmail && authorEmail.toLowerCase().indexOf(istriEmail.toLowerCase()) !== -1) {
-            authorRole = 'Istri (' + (istriLabel || 'Bunda') + ')';
+            authorRole = 'Istri (' + istriLabel + ')';
           } else if (authorEmail.toLowerCase().indexOf('suami') !== -1) {
-            authorRole = 'Suami (Ayah)';
+            authorRole = 'Suami (' + suamiLabel + ')';
           } else if (authorEmail.toLowerCase().indexOf('istri') !== -1) {
-            authorRole = 'Istri (Bunda)';
+            authorRole = 'Istri (' + istriLabel + ')';
           } else if (authorEmail) {
             authorRole = authorEmail.split('@')[0];
           }
@@ -141,7 +181,17 @@ function getInitialData() {
 
   return {
     userEmail: userEmail,
+    effectiveEmail: effectiveEmail,
     userRole: userRole,
+    isMaster: isMaster,
+    accounts: {
+      suamiLabel: suamiLabel,
+      suamiEmail: suamiEmail,
+      istriLabel: istriLabel,
+      istriEmail: istriEmail,
+      masterEmail: masterEmail,
+      masterRole: masterRole
+    },
     categories: categories,
     wallets: wallets,
     presets: presets,
@@ -186,7 +236,7 @@ function submitTransaction(payload) {
     var configSheet = ss.getSheetByName('CONFIG');
 
     if (payload.authorRole) {
-      authorString = payload.authorRole + (userEmail ? ' (' + userEmail + ')' : '');
+      authorString = payload.authorRole + (userEmail ? ' - ' + userEmail : '');
     } else if (configSheet && userEmail) {
       var sEmail = (configSheet.getRange('B3').getValue() || '').toString().toLowerCase();
       var iEmail = (configSheet.getRange('B5').getValue() || '').toString().toLowerCase();
@@ -248,6 +298,17 @@ function saveConfigData(payload) {
     var configSheet = ss.getSheetByName('CONFIG');
     if (!configSheet) return { success: false, message: 'Sheet CONFIG tidak ditemukan.' };
 
+    // Validasi Hak Akses RBAC: Hanya akun Master atau Spreadsheet Owner yang boleh mengubah
+    var activeEmail = '';
+    try { activeEmail = Session.getActiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
+    var effEmail = '';
+    try { effEmail = Session.getEffectiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
+    var currentMaster = (configSheet.getRange('B6').getValue() || '').toString().toLowerCase().trim();
+
+    if (activeEmail && activeEmail !== effEmail && activeEmail !== currentMaster) {
+      return { success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat mengubah konfigurasi.' };
+    }
+
     if (payload.categories && Array.isArray(payload.categories)) {
       configSheet.getRange('C2:C50').clearContent();
       var catRows = payload.categories.map(function(c) { return [c]; });
@@ -257,20 +318,74 @@ function saveConfigData(payload) {
     }
 
     if (payload.wallets && Array.isArray(payload.wallets)) {
-      configSheet.getRange('E2:E50').clearContent();
-      var walRows = payload.wallets.map(function(w) { return [w]; });
+      configSheet.getRange('E2:F50').clearContent();
+      var walRows = payload.wallets.map(function(w) {
+        if (typeof w === 'object' && w.name) {
+          return [w.name, w.owner || 'Kas Bersama'];
+        }
+        return [w, 'Kas Bersama'];
+      });
       if (walRows.length > 0) {
-        configSheet.getRange(2, 5, walRows.length, 1).setValues(walRows);
+        configSheet.getRange(2, 5, walRows.length, 2).setValues(walRows);
       }
     }
 
     if (payload.salaryDate) {
-      configSheet.getRange('A6').setValue('Siklus Gajian (Tgl)');
-      configSheet.getRange('B6').setValue(Number(payload.salaryDate) || 25);
+      configSheet.getRange('A8').setValue('Siklus Gajian (Tgl)');
+      configSheet.getRange('B8').setValue(Number(payload.salaryDate) || 25);
+    }
+
+    // Jika ada pembaruan akun keluarga
+    if (payload.accounts) {
+      if (payload.accounts.suamiLabel) configSheet.getRange('B2').setValue(payload.accounts.suamiLabel);
+      if (payload.accounts.suamiEmail) configSheet.getRange('B3').setValue(payload.accounts.suamiEmail);
+      if (payload.accounts.istriLabel) configSheet.getRange('B4').setValue(payload.accounts.istriLabel);
+      if (payload.accounts.istriEmail) configSheet.getRange('B5').setValue(payload.accounts.istriEmail);
+      if (payload.accounts.masterEmail) configSheet.getRange('B6').setValue(payload.accounts.masterEmail);
+      if (payload.accounts.masterRole) configSheet.getRange('B7').setValue(payload.accounts.masterRole);
     }
 
     SpreadsheetApp.flush();
-    return { success: true, message: 'Pengaturan kategori & dompet berhasil diperbarui.' };
+    return { success: true, message: 'Pengaturan berhasil diperbarui di Google Sheets.' };
+  } catch (err) {
+    return { success: false, message: err.toString() };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function saveAccountSettings(payload) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+  } catch (e) {
+    return { success: false, message: 'Server sedang sibuk.' };
+  }
+
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var configSheet = ss.getSheetByName('CONFIG');
+    if (!configSheet) return { success: false, message: 'Sheet CONFIG tidak ditemukan.' };
+
+    var activeEmail = '';
+    try { activeEmail = Session.getActiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
+    var effEmail = '';
+    try { effEmail = Session.getEffectiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
+    var currentMaster = (configSheet.getRange('B6').getValue() || '').toString().toLowerCase().trim();
+
+    if (activeEmail && activeEmail !== effEmail && activeEmail !== currentMaster) {
+      return { success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat mengubah akun keluarga.' };
+    }
+
+    if (payload.suamiLabel) configSheet.getRange('B2').setValue(payload.suamiLabel);
+    if (payload.suamiEmail) configSheet.getRange('B3').setValue(payload.suamiEmail);
+    if (payload.istriLabel) configSheet.getRange('B4').setValue(payload.istriLabel);
+    if (payload.istriEmail) configSheet.getRange('B5').setValue(payload.istriEmail);
+    if (payload.masterEmail) configSheet.getRange('B6').setValue(payload.masterEmail);
+    if (payload.masterRole) configSheet.getRange('B7').setValue(payload.masterRole);
+
+    SpreadsheetApp.flush();
+    return { success: true, message: 'Pengaturan akun keluarga berhasil disimpan.' };
   } catch (err) {
     return { success: false, message: err.toString() };
   } finally {
