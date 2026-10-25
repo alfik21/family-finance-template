@@ -85,27 +85,27 @@
         <ul class="text-xs space-y-1.5 text-slate-700">
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">1.</span>
-            <span><strong>Mobile Bottom Nav</strong>: Pada mode Mobile, menu (Catat, Rekap, Kelola, Akun) melayang di bawah layar pas di jangkauan ibu jari. Pada Desktop beralih ke header atas.</span>
+            <span><strong>Mobile Bottom Nav</strong>: Pada mode Mobile, menu (Catat, Rekap, Kelola, Akun) melayang di bawah layar dengan ikon SVG garis bersih tanpa emoji.</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">2.</span>
-            <span><strong>Tab 'Akun' & RBAC</strong>: Uji tombol di atas ("Suami - Master" vs "Istri - Diundang"). Periksa hak akses tab 'Kelola' (terkunci untuk anggota, terbuka untuk master).</span>
+            <span><strong>Saldo Dompet Riil & Kumulatif</strong>: Saldo Kas Bersama tidak hilang jadi 0 saat ganti bulan; kartu Saldo Dompet menampilkan mutasi riil per rekening.</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">3.</span>
-            <span><strong>Kepemilikan Dompet Transfer</strong>: Pilih tab "Transfer Kas", cek dropdown rekening asal dan tujuan yang menampilkan kepemilikan jelas ([Suami], [Istri], atau [Kas Bersama]).</span>
+            <span><strong>Transfer Kas Mengalirkan Saldo</strong>: Transfer dari dompet Suami/Istri ke BCA Bersama langsung menambah saldo Kas Bersama dan memotong dompet asal.</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">4.</span>
-            <span><strong>Zero-Symbol UI</strong>: Seluruh antarmuka bersih tanpa emoji atau simbol dekoratif.</span>
+            <span><strong>Tombol Cepat 1-Klik Siap</strong>: Mengetuk preset otomatis mengisi nominal, kategori, pos, dan dompet yang relevan tanpa minta pilih dompet lagi.</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">5.</span>
-            <span><strong>Tombol Cepat Cerdas</strong>: Sistem otomatis mendeteksi transaksi yang sering dicatat dan menampilkannya sebagai preset tombol cepat.</span>
+            <span><strong>Hapus Transaksi Langsung</strong>: Di riwayat transaksi terakhir ada tombol hapus untuk membatalkan salah input secara instan.</span>
           </li>
           <li class="flex items-start gap-1.5">
             <span class="text-emerald-700 font-bold">6.</span>
-            <span><strong>Tutup Buku & Arsip</strong>: Di tab 'Akun' (login Master), klik 'Tutup Buku & Arsip' untuk membekukan transaksi tahun lalu dan mengoper sisa saldo Kas Bersama ke tahun baru.</span>
+            <span><strong>Fleksibilitas 3-Pos Peruntukan</strong>: Pencatat dapat memilih pos Kas Bersama, Pribadi Ayah, atau Pribadi Bunda dengan bebas.</span>
           </li>
         </ul>
       </div>
@@ -199,24 +199,90 @@
     };
 
     function calculateSummary() {
-      var monthExpense = 0;
-      var monthIncome = 0;
-      var jointBalance = 5000000;
+      var walletMap = {};
+      (mockDatabase.wallets || []).forEach(function(w) {
+        var name = typeof w === 'object' ? w.name : w;
+        var owner = (typeof w === 'object' && w.owner) ? w.owner : 'Kas Bersama';
+        walletMap[name] = { name: name, owner: owner, balance: 0 };
+      });
 
-      mockDatabase.transactions.forEach(function(tx) {
-        if (tx.type === 'Pengeluaran') {
-          monthExpense += tx.amount;
-          if (tx.scope === 'Kas Bersama') jointBalance -= tx.amount;
-        } else if (tx.type === 'Pemasukan') {
-          monthIncome += tx.amount;
-          if (tx.scope === 'Kas Bersama') jointBalance += tx.amount;
+      // Default opening balances for realistic demo
+      if (walletMap['Kas Tunai Rumah']) walletMap['Kas Tunai Rumah'].balance = 750000;
+      if (walletMap['Rekening BCA Bersama']) walletMap['Rekening BCA Bersama'].balance = 4500000;
+      if (walletMap['BCA Pribadi Suami']) walletMap['BCA Pribadi Suami'].balance = 3000000;
+      if (walletMap['BCA Pribadi Istri']) walletMap['BCA Pribadi Istri'].balance = 2500000;
+
+      var today = new Date();
+      var salDate = mockDatabase.salaryDate || 25;
+      var cycleStart, cycleEnd;
+      if (today.getDate() >= salDate) {
+        cycleStart = new Date(today.getFullYear(), today.getMonth(), salDate, 0, 0, 0);
+        cycleEnd = new Date(today.getFullYear(), today.getMonth() + 1, salDate - 1, 23, 59, 59);
+      } else {
+        cycleStart = new Date(today.getFullYear(), today.getMonth() - 1, salDate, 0, 0, 0);
+        cycleEnd = new Date(today.getFullYear(), today.getMonth(), salDate - 1, 23, 59, 59);
+      }
+
+      var cExp = 0;
+      var cInc = 0;
+      var cJointExp = 0;
+
+      var matchKey = function(wStr) {
+        if (!wStr) return null;
+        var clean = wStr.replace(/\s*\[.*?\]\s*$/, '').trim().toLowerCase();
+        for (var k in walletMap) {
+          if (k.toLowerCase() === clean || k.toLowerCase() === wStr.trim().toLowerCase()) return k;
+        }
+        return null;
+      };
+
+      (mockDatabase.transactions || []).forEach(function(tx) {
+        var dObj = new Date(tx.date + 'T00:00:00');
+        var amt = Number(tx.amount) || 0;
+        if (tx.type === 'Pemasukan') {
+          var kIn = matchKey(tx.wallet);
+          if (kIn) walletMap[kIn].balance += amt;
+        } else if (tx.type === 'Pengeluaran') {
+          var kOut = matchKey(tx.wallet);
+          if (kOut) walletMap[kOut].balance -= amt;
+        } else if (tx.type === 'Transfer') {
+          var parts = (tx.wallet || '').split(/\s+ke\s+/i);
+          if (parts.length === 2) {
+            var kFrom = matchKey(parts[0]);
+            var kTo = matchKey(parts[1]);
+            if (kFrom) walletMap[kFrom].balance -= amt;
+            if (kTo) walletMap[kTo].balance += amt;
+          }
+        }
+
+        if (dObj >= cycleStart && dObj <= cycleEnd) {
+          if (tx.type === 'Pengeluaran') {
+            cExp += amt;
+            if (tx.scope === 'Kas Bersama') cJointExp += amt;
+          } else if (tx.type === 'Pemasukan') {
+            cInc += amt;
+          }
         }
       });
 
+      var jBal = 0;
+      var wList = [];
+      for (var k in walletMap) {
+        wList.push(walletMap[k]);
+        if (walletMap[k].owner === 'Kas Bersama') jBal += walletMap[k].balance;
+      }
+
+      var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+      var cLabel = cycleStart.getDate() + ' ' + monthNames[cycleStart.getMonth()] + ' - ' +
+                   cycleEnd.getDate() + ' ' + monthNames[cycleEnd.getMonth()];
+
       return {
-        monthExpense: monthExpense,
-        monthIncome: monthIncome,
-        jointBalance: jointBalance
+        walletBalances: wList,
+        jointBalance: jBal,
+        monthExpense: cExp,
+        monthIncome: cInc,
+        cycleJointExpense: cJointExp,
+        cycleLabel: cLabel
       };
     }
 
@@ -372,6 +438,19 @@
                           message: 'Transaksi berhasil disimpan ke simulasi sheet'
                         });
                       }, 200);
+                    },
+                    deleteTransaction: function(trxId) {
+                      setTimeout(function() {
+                        mockDatabase.transactions = mockDatabase.transactions.filter(function(t) {
+                          return t.id !== trxId;
+                        });
+                        renderSimulatedTable();
+                        onSuccess({
+                          success: true,
+                          trxId: trxId,
+                          message: 'Transaksi ' + trxId + ' berhasil dihapus dari simulasi sheet'
+                        });
+                      }, 150);
                     },
                     saveConfigData: function(payload) {
                       setTimeout(function() {

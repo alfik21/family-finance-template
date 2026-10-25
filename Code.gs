@@ -210,17 +210,26 @@ function getInitialData() {
 
   var smartPresets = extractSmartPresets(allTxForPresets, presets, 6);
 
+  // Hitung saldo kumulatif riil dompet & ringkasan siklus gajian berjalan
+  var fin = calculateFinancialState(transSheet, wallets, salaryDate);
+
   var summary = {
-    jointBalance: 0,
-    monthExpense: 0,
-    monthIncome: 0
+    jointBalance: fin.jointBalance,
+    monthExpense: fin.cycleExpense,
+    monthIncome: fin.cycleIncome,
+    cycleJointExpense: fin.cycleJointExpense,
+    cycleLabel: fin.cycleLabel,
+    suamiBalance: fin.suamiBalance,
+    istriBalance: fin.istriBalance
   };
 
+  // Sinkronkan ke sheet DASHBOARD jika tersedia
   if (dashSheet) {
     try {
-      summary.monthIncome = Number(dashSheet.getRange('A6').getValue()) || 0;
-      summary.monthExpense = Number(dashSheet.getRange('E6').getValue()) || 0;
-      summary.jointBalance = Number(dashSheet.getRange('G6').getValue()) || 0;
+      dashSheet.getRange('A6').setValue(fin.cycleIncome);
+      dashSheet.getRange('C6').setValue(fin.cycleJointExpense);
+      dashSheet.getRange('E6').setValue(fin.cycleExpense);
+      dashSheet.getRange('G6').setValue(fin.jointBalance);
     } catch (e) {}
   }
 
@@ -239,12 +248,131 @@ function getInitialData() {
     },
     categories: categories,
     wallets: wallets,
+    walletBalances: fin.walletBalances,
     presets: smartPresets,
     defaultPresets: presets,
     salaryDate: salaryDate,
     recent: recent,
     summary: summary,
     pendingArchive: checkPendingArchive()
+  };
+}
+
+function calculateFinancialState(transSheet, wallets, salaryDate) {
+  var walletMap = {};
+  (wallets || []).forEach(function(w) {
+    var name = typeof w === 'object' ? w.name : w;
+    var owner = (typeof w === 'object' && w.owner) ? w.owner : 'Kas Bersama';
+    if (name) {
+      walletMap[name] = {
+        name: name,
+        owner: owner,
+        balance: 0
+      };
+    }
+  });
+
+  var today = new Date();
+  var salDate = Number(salaryDate) || 25;
+  var cycleStart, cycleEnd;
+  if (today.getDate() >= salDate) {
+    cycleStart = new Date(today.getFullYear(), today.getMonth(), salDate, 0, 0, 0);
+    cycleEnd = new Date(today.getFullYear(), today.getMonth() + 1, salDate - 1, 23, 59, 59);
+  } else {
+    cycleStart = new Date(today.getFullYear(), today.getMonth() - 1, salDate, 0, 0, 0);
+    cycleEnd = new Date(today.getFullYear(), today.getMonth(), salDate - 1, 23, 59, 59);
+  }
+
+  var cycleExpense = 0;
+  var cycleIncome = 0;
+  var cycleJointExpense = 0;
+
+  var matchWalletKey = function(wStr) {
+    if (!wStr) return null;
+    var clean = wStr.replace(/\s*\[.*?\]\s*$/, '').trim().toLowerCase();
+    for (var k in walletMap) {
+      if (k.toLowerCase() === clean || k.toLowerCase() === wStr.trim().toLowerCase()) {
+        return k;
+      }
+    }
+    return null;
+  };
+
+  if (transSheet) {
+    var lastRow = transSheet.getLastRow();
+    if (lastRow > 1) {
+      var rows = transSheet.getRange(2, 1, lastRow - 1, 11).getValues();
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        if (!r[0]) continue;
+
+        var rawDate = r[1];
+        var dObj = (rawDate instanceof Date) ? rawDate : new Date(rawDate);
+        var type = r[3];
+        var scope = r[5];
+        var walletStr = (r[6] || '').toString();
+        var amount = Number(r[7]) || 0;
+
+        // 1. Mutasi Akumulatif Riil Tiap Dompet
+        if (type === 'Pemasukan') {
+          var kIn = matchWalletKey(walletStr);
+          if (kIn) walletMap[kIn].balance += amount;
+        } else if (type === 'Pengeluaran') {
+          var kOut = matchWalletKey(walletStr);
+          if (kOut) walletMap[kOut].balance -= amount;
+        } else if (type === 'Transfer') {
+          var parts = walletStr.split(/\s+ke\s+/i);
+          if (parts.length === 2) {
+            var kFrom = matchWalletKey(parts[0]);
+            var kTo = matchWalletKey(parts[1]);
+            if (kFrom) walletMap[kFrom].balance -= amount;
+            if (kTo) walletMap[kTo].balance += amount;
+          }
+        }
+
+        // 2. Filter Mutasi Siklus Gajian Berjalan
+        if (!isNaN(dObj.getTime()) && dObj >= cycleStart && dObj <= cycleEnd) {
+          if (type === 'Pengeluaran') {
+            cycleExpense += amount;
+            if (scope === 'Kas Bersama') cycleJointExpense += amount;
+          } else if (type === 'Pemasukan') {
+            cycleIncome += amount;
+          }
+        }
+      }
+    }
+  }
+
+  var jointBalance = 0;
+  var suamiBalance = 0;
+  var istriBalance = 0;
+  var walletList = [];
+
+  for (var k in walletMap) {
+    var item = walletMap[k];
+    walletList.push(item);
+    if (item.owner === 'Kas Bersama') {
+      jointBalance += item.balance;
+    } else if (item.owner === 'Suami') {
+      suamiBalance += item.balance;
+    } else if (item.owner === 'Istri') {
+      istriBalance += item.balance;
+    }
+  }
+
+  var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  var cycleLabel = cycleStart.getDate() + ' ' + monthNames[cycleStart.getMonth()] + ' - ' +
+                   cycleEnd.getDate() + ' ' + monthNames[cycleEnd.getMonth()];
+
+  return {
+    walletBalances: walletList,
+    jointBalance: jointBalance,
+    suamiBalance: suamiBalance,
+    istriBalance: istriBalance,
+    cycleExpense: cycleExpense,
+    cycleIncome: cycleIncome,
+    cycleJointExpense: cycleJointExpense,
+    cycleLabel: cycleLabel
   };
 }
 
@@ -336,12 +464,24 @@ function closeAndArchiveYear(targetYear) {
 
       if (rowYr === targetYr) {
         archiveRows.push(row);
+        var walStr = (row[6] || '').toString();
         if (type === 'Pemasukan') {
           totalIncome += amount;
-          if (scope === 'Kas Bersama') carryoverBalance += amount;
+          if (scope === 'Kas Bersama' || walStr.indexOf('Kas Bersama') !== -1) carryoverBalance += amount;
         } else if (type === 'Pengeluaran') {
           totalExpense += amount;
-          if (scope === 'Kas Bersama') carryoverBalance -= amount;
+          if (scope === 'Kas Bersama' || walStr.indexOf('Kas Bersama') !== -1) carryoverBalance -= amount;
+        } else if (type === 'Transfer') {
+          var parts = walStr.split(/\s+ke\s+/i);
+          if (parts.length === 2) {
+            var fromIsJoint = parts[0].indexOf('Kas Bersama') !== -1;
+            var toIsJoint = parts[1].indexOf('Kas Bersama') !== -1;
+            if (toIsJoint && !fromIsJoint) {
+              carryoverBalance += amount;
+            } else if (fromIsJoint && !toIsJoint) {
+              carryoverBalance -= amount;
+            }
+          }
         }
       } else {
         remainingRows.push(row);
@@ -601,6 +741,54 @@ function submitTransaction(payload) {
     };
   } catch (error) {
     return { success: false, message: error.toString() };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function deleteTransaction(trxId) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+  } catch (e) {
+    return { success: false, message: 'Server sedang sibuk, coba sesaat lagi.' };
+  }
+
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var transSheet = ss.getSheetByName('TRANSAKSI');
+    if (!transSheet) {
+      return { success: false, message: 'Sheet TRANSAKSI tidak ditemukan.' };
+    }
+
+    var lastRow = transSheet.getLastRow();
+    if (lastRow <= 1) {
+      return { success: false, message: 'Tidak ada data transaksi di sheet.' };
+    }
+
+    var ids = transSheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    var rowToDelete = -1;
+    for (var i = 0; i < ids.length; i++) {
+      if ((ids[i][0] || '').toString().trim() === (trxId || '').toString().trim()) {
+        rowToDelete = i + 2;
+        break;
+      }
+    }
+
+    if (rowToDelete === -1) {
+      return { success: false, message: 'Transaksi ' + trxId + ' tidak ditemukan di sheet.' };
+    }
+
+    transSheet.deleteRow(rowToDelete);
+    SpreadsheetApp.flush();
+
+    return {
+      success: true,
+      trxId: trxId,
+      message: 'Transaksi ' + trxId + ' berhasil dihapus.'
+    };
+  } catch (err) {
+    return { success: false, message: err.toString() };
   } finally {
     lock.releaseLock();
   }

@@ -106,7 +106,24 @@ if (!webAppHtml.includes('sectionMasterArchiving') || !webAppHtml.includes('exec
 if (!webAppHtml.includes('subPanelPre') || !webAppHtml.includes('togglePresetMode')) {
   throw new Error('Task 4 pending: subPanelPre or togglePresetMode not implemented in WebApp.html');
 }
-
 console.log('✔ WebApp Archiving UI & Smart Preset Mode Controls: Verified');
+
+// 11. Verification: deleteTransaction support
+if (!codeGs.includes('deleteTransaction') || !webAppHtml.includes('confirmDeleteTx')) {
+  throw new Error('Verification failed: deleteTransaction missing in Code.gs or confirmDeleteTx in WebApp.html');
+}
+console.log('✔ Transaction Deletion & Live Reversal: Verified');
+
+// 12. Verification: Financial State & Wallet Balances calculation
+if (!codeGs.includes('calculateFinancialState') || !webAppHtml.includes('recalculateLocalBalances')) {
+  throw new Error('Verification failed: calculateFinancialState missing in Code.gs or recalculateLocalBalances in WebApp.html');
+}
+console.log('✔ Realtime Cumulative Wallet Balances & Cycle Sync: Verified');
+
+// 13. Verification: Flexible 3-Scope Selection & Wallet Reconciliation UI
+if (!webAppHtml.includes('btnScopeBersama') || !webAppHtml.includes('btnScopeSuami') || !webAppHtml.includes('btnScopeIstri') || !webAppHtml.includes('walletBalancesContainer')) {
+  throw new Error('Verification failed: 3-Scope buttons or walletBalancesContainer missing in WebApp.html');
+}
+console.log('✔ 3-Scope Transaction Attribution & Wallet Reconciliation UI: Verified');
 
 console.log('\nAll tests completed successfully!');

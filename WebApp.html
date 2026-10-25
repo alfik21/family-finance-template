@@ -128,17 +128,20 @@
 
               <!-- Scope / Peruntukan (Hanya Muncul saat Pengeluaran atau Pemasukan) -->
               <div id="sectionScope" class="mb-4">
-                <label id="labelScope" class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Peruntukan Pengeluaran</label>
-                <div class="grid grid-cols-2 gap-2">
-                  <button type="button" onclick="setScopeChoice('bersama')" id="btnScopeBersama" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all">
-                    <span id="textScopeBersama">Kebutuhan Bersama</span>
+                <label id="labelScope" class="mb-1.5 block text-xs font-semibold tracking-wide text-ink">Peruntukan Transaksi</label>
+                <div class="grid grid-cols-3 gap-1.5">
+                  <button type="button" onclick="setScopeChoice('bersama')" id="btnScopeBersama" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2 text-center text-xs font-bold text-sage-800 transition-all">
+                    <span id="textScopeBersama">Kas Bersama</span>
                   </button>
-                  <button type="button" onclick="setScopeChoice('pribadi')" id="btnScopePribadi" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
-                    <span id="textScopePribadi">Pribadi Saya</span>
+                  <button type="button" onclick="setScopeChoice('suami')" id="btnScopeSuami" class="touch-btn rounded-xl border border-borderline bg-white py-2 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
+                    <span id="textScopeSuami">Pribadi Suami</span>
+                  </button>
+                  <button type="button" onclick="setScopeChoice('istri')" id="btnScopeIstri" class="touch-btn rounded-xl border border-borderline bg-white py-2 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all">
+                    <span id="textScopeIstri">Pribadi Istri</span>
                   </button>
                 </div>
                 <p id="scopeHelpText" class="mt-1.5 text-[11px] text-muted">
-                  Mencatat belanja untuk keperluan rumah tangga bersama.
+                  Mencatat untuk pos operasional kas keluarga bersama.
                 </p>
               </div>
 
@@ -246,19 +249,50 @@
 
         <!-- Right Column on Desktop: Summary Cards & Live Transactions Feed (7 cols) -->
         <div class="lg:col-span-7 space-y-4">
-          <!-- Monthly Summary Bar -->
+          <!-- Realtime Financial Overview Bar -->
           <section class="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
             <div class="rounded-xl border border-borderline bg-white p-3.5 shadow-xs">
-              <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Pengeluaran Bulan Ini</span>
-              <div id="statMonthExpense" class="num-tabular mt-1 text-lg lg:text-xl font-bold text-ink">Rp 0</div>
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Saldo Kas Bersama</span>
+                <span class="rounded bg-sage-100 px-1.5 py-0.5 text-[9px] font-bold text-sage-800">Akumulatif</span>
+              </div>
+              <div id="statJointBalance" class="num-tabular mt-1 text-lg lg:text-xl font-bold text-sage-800">Rp 0</div>
+              <div class="text-[10px] text-muted mt-0.5">Semua rekening bersama</div>
             </div>
             <div class="rounded-xl border border-borderline bg-white p-3.5 shadow-xs">
-              <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Sisa Kas Berjalan</span>
-              <div id="statJointBalance" class="num-tabular mt-1 text-lg lg:text-xl font-bold text-sage-700">Rp 0</div>
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Beban Siklus Ini</span>
+                <span id="cycleLabelExpense" class="rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-600">Siklus</span>
+              </div>
+              <div id="statMonthExpense" class="num-tabular mt-1 text-lg lg:text-xl font-bold text-ink">Rp 0</div>
+              <div class="text-[10px] text-muted mt-0.5">Siklus gajian berjalan</div>
             </div>
             <div class="col-span-2 rounded-xl border border-borderline bg-white p-3.5 shadow-xs sm:col-span-1">
-              <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Pemasukan Bulan Ini</span>
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-medium tracking-wide uppercase text-muted">Masuk Siklus Ini</span>
+                <span id="cycleLabelIncome" class="rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-600">Siklus</span>
+              </div>
               <div id="statMonthIncome" class="num-tabular mt-1 text-lg lg:text-xl font-bold text-ink">Rp 0</div>
+              <div class="text-[10px] text-muted mt-0.5">Pemasukan siklus ini</div>
+            </div>
+          </section>
+
+          <!-- Saldo Tiap Dompet / Rekening (Realtime Reconciliation) -->
+          <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
+            <div class="mb-3 flex items-center justify-between border-b border-borderline pb-2.5">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-sage-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="14" x="2" y="5" rx="2"></rect>
+                  <line x1="2" x2="22" y1="10" y2="10"></line>
+                </svg>
+                <h2 class="text-xs font-bold uppercase tracking-wider text-muted">Saldo Dompet & Rekening</h2>
+              </div>
+              <span class="text-[11px] text-muted">Rincian Riil Tiap Akun</span>
+            </div>
+            <div id="walletBalancesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div class="rounded-xl border border-borderline bg-surface p-3 text-center text-xs text-muted col-span-full">
+                Memuat saldo dompet...
+              </div>
             </div>
           </section>
 
@@ -984,26 +1018,34 @@
     function setScopeChoice(choice) {
       currentScopeChoice = choice;
       var sBersama = document.getElementById('btnScopeBersama');
-      var sPribadi = document.getElementById('btnScopePribadi');
+      var sSuami = document.getElementById('btnScopeSuami');
+      var sIstri = document.getElementById('btnScopeIstri');
 
       var activeStyle = 'touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all';
       var inactiveStyle = 'touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all';
 
-      sBersama.className = choice === 'bersama' ? activeStyle : inactiveStyle;
-      sPribadi.className = choice === 'pribadi' ? activeStyle : inactiveStyle;
+      if (sBersama) sBersama.className = choice === 'bersama' ? activeStyle : inactiveStyle;
+      if (sSuami) sSuami.className = choice === 'suami' ? activeStyle : inactiveStyle;
+      if (sIstri) sIstri.className = choice === 'istri' ? activeStyle : inactiveStyle;
 
       var helpText = document.getElementById('scopeHelpText');
-      if (currentType === 'Pengeluaran') {
-        if (choice === 'bersama') {
-          helpText.textContent = 'Mencatat belanja untuk operasional rumah tangga bersama.';
-        } else {
-          helpText.textContent = 'Mencatat pengeluaran pribadi Anda (tidak memotong kas bersama).';
-        }
-      } else if (currentType === 'Pemasukan') {
-        if (choice === 'bersama') {
-          helpText.textContent = 'Uang masuk disetor untuk menambah saldo Kas Bersama rumah tangga.';
-        } else {
-          helpText.textContent = 'Uang masuk ke rekening pribadi Anda.';
+      if (helpText) {
+        if (currentType === 'Pengeluaran') {
+          if (choice === 'bersama') {
+            helpText.textContent = 'Mencatat belanja untuk operasional rumah tangga bersama.';
+          } else if (choice === 'suami') {
+            helpText.textContent = 'Mencatat pengeluaran pribadi Suami (kantong/dompet Suami).';
+          } else {
+            helpText.textContent = 'Mencatat pengeluaran pribadi Istri (kantong/dompet Istri).';
+          }
+        } else if (currentType === 'Pemasukan') {
+          if (choice === 'bersama') {
+            helpText.textContent = 'Uang masuk disetor untuk menambah saldo Kas Bersama rumah tangga.';
+          } else if (choice === 'suami') {
+            helpText.textContent = 'Pemasukan pribadi ke rekening Suami.';
+          } else {
+            helpText.textContent = 'Pemasukan pribadi ke rekening Istri.';
+          }
         }
       }
     }
@@ -1015,10 +1057,12 @@
       var sectionTransfer = document.getElementById('sectionTransfer');
       var labelScope = document.getElementById('labelScope');
       var textScopeBersama = document.getElementById('textScopeBersama');
-      var textScopePribadi = document.getElementById('textScopePribadi');
+      var textScopeSuami = document.getElementById('textScopeSuami');
+      var textScopeIstri = document.getElementById('textScopeIstri');
       var labelWallet = document.getElementById('labelWallet');
 
-      var isAyah = (appData.userRole.indexOf('Suami') !== -1 || appData.userRole.indexOf('Ayah') !== -1 || (appData.userEmail && appData.userEmail.toLowerCase().indexOf('suami') !== -1));
+      var sSuamiLabel = (appData.accounts && appData.accounts.suamiLabel) || 'Suami';
+      var sIstriLabel = (appData.accounts && appData.accounts.istriLabel) || 'Istri';
 
       if (currentType === 'Pengeluaran') {
         sectionScope.classList.remove('hidden');
@@ -1027,8 +1071,9 @@
         sectionTransfer.classList.add('hidden');
 
         labelScope.textContent = 'Peruntukan Pengeluaran';
-        textScopeBersama.textContent = 'Kebutuhan Bersama';
-        textScopePribadi.textContent = isAyah ? 'Pribadi Suami' : 'Pribadi Istri';
+        textScopeBersama.textContent = 'Kas Bersama';
+        textScopeSuami.textContent = 'Pribadi ' + sSuamiLabel;
+        textScopeIstri.textContent = 'Pribadi ' + sIstriLabel;
         labelWallet.textContent = 'Sumber Rekening / Dompet';
         
         renderOptions();
@@ -1041,8 +1086,9 @@
         sectionTransfer.classList.add('hidden');
 
         labelScope.textContent = 'Tujuan Alokasi Pemasukan';
-        textScopeBersama.textContent = 'Masuk Kas Bersama';
-        textScopePribadi.textContent = isAyah ? 'Rekening Suami' : 'Rekening Istri';
+        textScopeBersama.textContent = 'Kas Bersama';
+        textScopeSuami.textContent = 'Rekening ' + sSuamiLabel;
+        textScopeIstri.textContent = 'Rekening ' + sIstriLabel;
         labelWallet.textContent = 'Rekening Penerima';
 
         renderOptions();
@@ -1070,12 +1116,14 @@
 
     function resolveResolvedScope() {
       if (currentType === 'Transfer') return 'Transfer';
-      var isAyah = (appData.userRole.indexOf('Suami') !== -1 || appData.userRole.indexOf('Ayah') !== -1 || (appData.userEmail && appData.userEmail.toLowerCase().indexOf('suami') !== -1));
       if (currentScopeChoice === 'bersama') {
         return 'Kas Bersama';
-      } else {
-        return isAyah ? 'Pribadi Suami' : 'Pribadi Istri';
+      } else if (currentScopeChoice === 'suami') {
+        return 'Pribadi Suami';
+      } else if (currentScopeChoice === 'istri') {
+        return 'Pribadi Istri';
       }
+      return 'Kas Bersama';
     }
 
     function applyPreset(p) {
@@ -1087,8 +1135,40 @@
         document.getElementById('categorySelect').value = p.category;
       }
       if (p.scope) {
-        setScopeChoice(p.scope === 'Kas Bersama' ? 'bersama' : 'pribadi');
+        if (p.scope === 'Kas Bersama') currentScopeChoice = 'bersama';
+        else if (p.scope === 'Pribadi Suami') currentScopeChoice = 'suami';
+        else if (p.scope === 'Pribadi Istri') currentScopeChoice = 'istri';
+        else currentScopeChoice = 'bersama';
+        setScopeChoice(currentScopeChoice);
       }
+      if (p.name) {
+        document.getElementById('txNote').value = p.name;
+      }
+
+      // Otomatis pilihkan dompet yang relevan agar 1-klik simpan langsung siap
+      var walSelect = document.getElementById('walletSelect');
+      if (walSelect && walSelect.options.length > 1) {
+        var chosenWal = '';
+        if (p.wallet) {
+          chosenWal = p.wallet;
+        } else {
+          var targetOwner = (p.scope === 'Pribadi Suami') ? 'Suami' : ((p.scope === 'Pribadi Istri') ? 'Istri' : 'Kas Bersama');
+          for (var optIdx = 0; optIdx < walSelect.options.length; optIdx++) {
+            var optVal = walSelect.options[optIdx].value;
+            if (optVal && optVal.indexOf('[' + targetOwner + ']') !== -1) {
+              chosenWal = optVal;
+              break;
+            }
+          }
+          if (!chosenWal && walSelect.options[1]) {
+            chosenWal = walSelect.options[1].value;
+          }
+        }
+        if (chosenWal) {
+          walSelect.value = chosenWal;
+        }
+      }
+
       setType('Pengeluaran');
 
       displayInput.classList.add('ring-2', 'ring-sage-500');
@@ -1274,11 +1354,61 @@
       updateTransferRoutePreview();
     }
 
+    function renderWalletBalances() {
+      var container = document.getElementById('walletBalancesContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      var balances = appData.walletBalances || [];
+      if (!balances || balances.length === 0) {
+        balances = [];
+        (appData.wallets || []).forEach(function(w) {
+          var name = typeof w === 'object' ? w.name : w;
+          var owner = (typeof w === 'object' && w.owner) ? w.owner : 'Kas Bersama';
+          balances.push({ name: name, owner: owner, balance: 0 });
+        });
+      }
+
+      balances.forEach(function(wb) {
+        var card = document.createElement('div');
+        card.className = 'rounded-xl border border-borderline bg-surface p-2.5 flex flex-col justify-between hover:border-slate-300 transition-colors';
+
+        var ownerBadge = '';
+        if (wb.owner === 'Kas Bersama') {
+          ownerBadge = '<span class="rounded bg-sage-100 px-1.5 py-0.5 text-[9px] font-bold text-sage-800">Kas Bersama</span>';
+        } else if (wb.owner === 'Suami') {
+          ownerBadge = '<span class="rounded bg-blue-50 px-1.5 py-0.5 text-[9px] font-bold text-blue-700">Milik Suami</span>';
+        } else if (wb.owner === 'Istri') {
+          ownerBadge = '<span class="rounded bg-rose-50 px-1.5 py-0.5 text-[9px] font-bold text-rose-700">Milik Istri</span>';
+        } else {
+          ownerBadge = '<span class="rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-medium text-slate-700">' + wb.owner + '</span>';
+        }
+
+        var balColor = wb.balance > 0 ? 'text-sage-800 font-bold' : (wb.balance < 0 ? 'text-red-600 font-bold' : 'text-slate-600 font-semibold');
+
+        card.innerHTML = 
+          '<div class="flex items-center justify-between mb-1">' +
+            '<span class="text-xs font-semibold text-ink truncate pr-1" title="' + wb.name + '">' + wb.name + '</span>' +
+            ownerBadge +
+          '</div>' +
+          '<div class="num-tabular text-sm ' + balColor + '">' +
+            formatRupiah(wb.balance) +
+          '</div>';
+
+        container.appendChild(card);
+      });
+    }
+
     function renderSummary() {
       document.getElementById('statMonthExpense').textContent = formatRupiah(appData.summary.monthExpense);
       document.getElementById('statJointBalance').textContent = formatRupiah(appData.summary.jointBalance);
       document.getElementById('statMonthIncome').textContent = formatRupiah(appData.summary.monthIncome);
       
+      var cExp = document.getElementById('cycleLabelExpense');
+      var cInc = document.getElementById('cycleLabelIncome');
+      if (cExp && appData.summary.cycleLabel) cExp.textContent = appData.summary.cycleLabel;
+      if (cInc && appData.summary.cycleLabel) cInc.textContent = appData.summary.cycleLabel;
+
       if (appData.userEmail) {
         document.getElementById('userEmailBadge').textContent = appData.userEmail;
       } else {
@@ -1298,12 +1428,14 @@
           headerMasterBadge.className = 'rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 border border-slate-200';
         }
       }
+
+      renderWalletBalances();
     }
 
     function renderRecent() {
       var container = document.getElementById('recentTxContainer');
       if (!appData.recent || appData.recent.length === 0) {
-        container.innerHTML = '<div class="rounded-xl border border-borderline bg-white p-4 text-center text-xs text-muted">Belum ada transaksi bulan ini.</div>';
+        container.innerHTML = '<div class="rounded-xl border border-borderline bg-white p-4 text-center text-xs text-muted">Belum ada transaksi di riwayat.</div>';
         return;
       }
 
@@ -1324,29 +1456,74 @@
 
         var authorBadge = '';
         if (isSuami) {
-          authorBadge = '<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200">Suami (Ayah)</span>';
+          authorBadge = '<span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200">Suami</span>';
         } else if (isIstri) {
-          authorBadge = '<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 border border-rose-200">Istri (Bunda)</span>';
+          authorBadge = '<span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 border border-rose-200">Istri</span>';
         } else {
           authorBadge = '<span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">' + (tx.authorRole || (tx.author ? tx.author.split('@')[0] : 'Keluarga')) + '</span>';
         }
 
         card.innerHTML = 
-          '<div class="pr-2">' +
+          '<div class="pr-2 min-w-0 flex-1">' +
             '<div class="flex items-center gap-1.5 flex-wrap mb-1">' +
               '<span class="text-xs font-bold text-ink">' + (tx.category || tx.type) + '</span>' +
               '<span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-muted">' + (tx.scope || 'Bersama') + '</span>' +
               authorBadge +
             '</div>' +
-            '<div class="text-[11px] text-muted">' + 
+            '<div class="text-[11px] text-muted truncate">' + 
               tx.date + ' • ' + (tx.note || tx.wallet || 'Tanpa catatan') + 
             '</div>' +
           '</div>' +
-          '<div class="text-right shrink-0">' +
-            '<div class="num-tabular text-sm font-bold ' + amountClass + '">' + (sign ? sign + ' ' : '') + formatRupiah(tx.amount) + '</div>' +
+          '<div class="flex items-center gap-2 shrink-0 pl-2">' +
+            '<div class="text-right">' +
+              '<div class="num-tabular text-sm font-bold ' + amountClass + '">' + (sign ? sign + ' ' : '') + formatRupiah(tx.amount) + '</div>' +
+            '</div>' +
+            '<button type="button" onclick="confirmDeleteTx(\'' + tx.id + '\')" title="Hapus Transaksi" class="touch-btn rounded-lg p-1.5 text-muted hover:text-red-700 hover:bg-red-50 transition-colors">' +
+              '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>' +
+            '</button>' +
           '</div>';
         container.appendChild(card);
       });
+    }
+
+    function confirmDeleteTx(trxId) {
+      if (!confirm('Apakah Anda yakin ingin menghapus transaksi ' + trxId + '? Data akan dihapus dari spreadsheet.')) {
+        return;
+      }
+      setLoading(true);
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            setLoading(false);
+            if (res && res.success) {
+              showToast(res.message, true);
+              fetchServerData();
+            } else {
+              showToast('Gagal menghapus: ' + (res ? res.message : 'Error tidak diketahui'), false);
+            }
+          })
+          .withFailureHandler(function(err) {
+            setLoading(false);
+            showToast('Error koneksi: ' + err.message, false);
+          })
+          .deleteTransaction(trxId);
+      } else {
+        setTimeout(function() {
+          setLoading(false);
+          var removed = null;
+          appData.recent = (appData.recent || []).filter(function(x) {
+            if (x.id === trxId) { removed = x; return false; }
+            return true;
+          });
+          if (removed) {
+            recalculateLocalBalances();
+            renderSummary();
+            renderRecent();
+            saveCachedData();
+            showToast('Transaksi ' + trxId + ' berhasil dihapus (Mode Demo).', true);
+          }
+        }, 200);
+      }
     }
 
     // ==================== VIEW 2: REKAP SIKLUS LOGIC ====================
@@ -1948,6 +2125,86 @@
       } catch (e) {}
     }
 
+    function recalculateLocalBalances() {
+      var walletMap = {};
+      (appData.wallets || []).forEach(function(w) {
+        var name = typeof w === 'object' ? w.name : w;
+        var owner = (typeof w === 'object' && w.owner) ? w.owner : 'Kas Bersama';
+        walletMap[name] = { name: name, owner: owner, balance: 0 };
+      });
+
+      var today = new Date();
+      var salDate = appData.salaryDate || 25;
+      var cycleStart, cycleEnd;
+      if (today.getDate() >= salDate) {
+        cycleStart = new Date(today.getFullYear(), today.getMonth(), salDate, 0, 0, 0);
+        cycleEnd = new Date(today.getFullYear(), today.getMonth() + 1, salDate - 1, 23, 59, 59);
+      } else {
+        cycleStart = new Date(today.getFullYear(), today.getMonth() - 1, salDate, 0, 0, 0);
+        cycleEnd = new Date(today.getFullYear(), today.getMonth(), salDate - 1, 23, 59, 59);
+      }
+
+      var cExp = 0;
+      var cInc = 0;
+      var cJointExp = 0;
+
+      var matchKey = function(wStr) {
+        if (!wStr) return null;
+        var clean = wStr.replace(/\s*\[.*?\]\s*$/, '').trim().toLowerCase();
+        for (var k in walletMap) {
+          if (k.toLowerCase() === clean || k.toLowerCase() === wStr.trim().toLowerCase()) return k;
+        }
+        return null;
+      };
+
+      (appData.recent || []).forEach(function(tx) {
+        var dObj = new Date(tx.date + 'T00:00:00');
+        var amt = Number(tx.amount) || 0;
+        if (tx.type === 'Pemasukan') {
+          var kIn = matchKey(tx.wallet);
+          if (kIn) walletMap[kIn].balance += amt;
+        } else if (tx.type === 'Pengeluaran') {
+          var kOut = matchKey(tx.wallet);
+          if (kOut) walletMap[kOut].balance -= amt;
+        } else if (tx.type === 'Transfer') {
+          var parts = (tx.wallet || '').split(/\s+ke\s+/i);
+          if (parts.length === 2) {
+            var kFrom = matchKey(parts[0]);
+            var kTo = matchKey(parts[1]);
+            if (kFrom) walletMap[kFrom].balance -= amt;
+            if (kTo) walletMap[kTo].balance += amt;
+          }
+        }
+
+        if (dObj >= cycleStart && dObj <= cycleEnd) {
+          if (tx.type === 'Pengeluaran') {
+            cExp += amt;
+            if (tx.scope === 'Kas Bersama') cJointExp += amt;
+          } else if (tx.type === 'Pemasukan') {
+            cInc += amt;
+          }
+        }
+      });
+
+      var jBal = 0;
+      var wList = [];
+      for (var k in walletMap) {
+        wList.push(walletMap[k]);
+        if (walletMap[k].owner === 'Kas Bersama') jBal += walletMap[k].balance;
+      }
+
+      var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+      var cLabel = cycleStart.getDate() + ' ' + monthNames[cycleStart.getMonth()] + ' - ' +
+                   cycleEnd.getDate() + ' ' + monthNames[cycleEnd.getMonth()];
+
+      appData.walletBalances = wList;
+      appData.summary.jointBalance = jBal;
+      appData.summary.monthExpense = cExp;
+      appData.summary.monthIncome = cInc;
+      appData.summary.cycleJointExpense = cJointExp;
+      appData.summary.cycleLabel = cLabel;
+    }
+
     function fetchServerData() {
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
@@ -1955,6 +2212,7 @@
             if (data) {
               if (data.categories && data.categories.length) appData.categories = data.categories;
               if (data.wallets && data.wallets.length) appData.wallets = data.wallets;
+              if (data.walletBalances) appData.walletBalances = data.walletBalances;
               if (data.presets && data.presets.length) appData.presets = data.presets;
               if (data.salaryDate) appData.salaryDate = data.salaryDate;
               if (data.recent) appData.recent = data.recent;
@@ -1974,6 +2232,14 @@
             }
           })
           .getInitialData();
+      } else {
+        recalculateLocalBalances();
+        renderOptions();
+        renderPresets();
+        renderSummary();
+        renderRecent();
+        renderManageItems();
+        renderAccountView();
       }
     }
 
@@ -2054,7 +2320,7 @@
         setTimeout(function() {
           setLoading(false);
           appData.recent.unshift({
-            id: 'TRX-LOCAL',
+            id: 'TRX-' + Math.floor(100000 + Math.random() * 900000),
             date: payload.date,
             type: payload.type,
             category: payload.category,
@@ -2065,13 +2331,7 @@
             author: appData.userEmail || 'Local Demo',
             authorRole: appData.userRole
           });
-          if (payload.type === 'Pengeluaran') {
-            appData.summary.monthExpense += payload.amount;
-            if (payload.scope === 'Kas Bersama') appData.summary.jointBalance -= payload.amount;
-          } else if (payload.type === 'Pemasukan') {
-            appData.summary.monthIncome += payload.amount;
-            if (payload.scope === 'Kas Bersama') appData.summary.jointBalance += payload.amount;
-          }
+          recalculateLocalBalances();
           renderSummary();
           renderRecent();
           saveCachedData();
