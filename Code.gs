@@ -6,7 +6,7 @@
 function doGet(e) {
   var template = HtmlService.createTemplateFromFile('WebApp');
   return template.evaluate()
-    .setTitle('Kas Keluarga - Catat Keuangan')
+    .setTitle('Family Finance Tracker')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
