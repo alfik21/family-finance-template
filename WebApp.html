@@ -83,16 +83,20 @@
 
       <!-- Desktop Top Navigation Tabs (Hidden on Mobile, Visible on Desktop) -->
       <nav class="hidden lg:grid grid-cols-4 gap-1 rounded-xl bg-white p-1 border border-borderline shadow-2xs w-auto">
-        <button type="button" onclick="switchMainTab('record')" id="desktopNavTabRecord" class="touch-btn rounded-lg px-4 py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs">
+        <button type="button" onclick="switchMainTab('record')" id="desktopNavTabRecord" class="touch-btn rounded-lg px-4 py-2 text-xs font-bold transition-all bg-sage-800 text-white shadow-xs inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
           Catat
         </button>
-        <button type="button" onclick="switchMainTab('summary')" id="desktopNavTabSummary" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+        <button type="button" onclick="switchMainTab('summary')" id="desktopNavTabSummary" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M7 6h9"></path><path d="M7 10h9"></path><path d="M7 14h5"></path></svg>
           Rekap
         </button>
-        <button type="button" onclick="switchMainTab('manage')" id="desktopNavTabManage" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+        <button type="button" onclick="switchMainTab('manage')" id="desktopNavTabManage" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
           Kelola
         </button>
-        <button type="button" onclick="switchMainTab('account')" id="desktopNavTabAccount" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink">
+        <button type="button" onclick="switchMainTab('account')" id="desktopNavTabAccount" class="touch-btn rounded-lg px-4 py-2 text-xs font-medium transition-all text-muted hover:text-ink inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
           Akun
         </button>
       </nav>
@@ -705,19 +709,44 @@
 
   <!-- ==================== MOBILE BOTTOM NAVIGATION BAR ==================== -->
   <!-- Floating bottom bar ergonomic for thumb reach, visible on mobile, hidden on desktop -->
-  <nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-borderline px-3 py-2 shadow-lg lg:hidden">
+  <nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-borderline px-3 py-1.5 shadow-lg lg:hidden">
     <div class="mx-auto max-w-md grid grid-cols-4 gap-1">
-      <button type="button" onclick="switchMainTab('record')" id="mobileNavTabRecord" class="touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all bg-sage-800 text-white font-bold">
-        <span class="text-xs">Catat</span>
+      <button type="button" onclick="switchMainTab('record')" id="mobileNavTabRecord" class="touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all bg-sage-800 text-white font-bold shadow-xs">
+        <svg class="w-5 h-5 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+        <span class="text-[10px]">Catat</span>
       </button>
       <button type="button" onclick="switchMainTab('summary')" id="mobileNavTabSummary" class="touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all text-muted font-medium hover:text-ink">
-        <span class="text-xs">Rekap</span>
+        <svg class="w-5 h-5 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+          <path d="M7 6h9"></path>
+          <path d="M7 10h9"></path>
+          <path d="M7 14h5"></path>
+        </svg>
+        <span class="text-[10px]">Rekap</span>
       </button>
       <button type="button" onclick="switchMainTab('manage')" id="mobileNavTabManage" class="touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all text-muted font-medium hover:text-ink">
-        <span class="text-xs">Kelola</span>
+        <svg class="w-5 h-5 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="21" x2="4" y2="14"></line>
+          <line x1="4" y1="10" x2="4" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12" y2="3"></line>
+          <line x1="20" y1="21" x2="20" y2="16"></line>
+          <line x1="20" y1="12" x2="20" y2="3"></line>
+          <line x1="1" y1="14" x2="7" y2="14"></line>
+          <line x1="9" y1="8" x2="15" y2="8"></line>
+          <line x1="17" y1="16" x2="23" y2="16"></line>
+        </svg>
+        <span class="text-[10px]">Kelola</span>
       </button>
       <button type="button" onclick="switchMainTab('account')" id="mobileNavTabAccount" class="touch-btn flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all text-muted font-medium hover:text-ink">
-        <span class="text-xs">Akun</span>
+        <svg class="w-5 h-5 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span class="text-[10px]">Akun</span>
       </button>
     </div>
   </nav>
@@ -1127,14 +1156,51 @@
 
     function renderPresets() {
       var container = document.getElementById('presetsList');
+      if (!container) return;
       container.innerHTML = '';
       
       var activePresets = appData.presets;
-      if (appData.recent && appData.recent.length > 0) {
+      if (appData.presetMode !== 'manual' && appData.recent && appData.recent.length > 0) {
         activePresets = extractSmartPresets(appData.recent, appData.defaultPresets || appData.presets, 6);
+      } else if (appData.defaultPresets && appData.defaultPresets.length > 0) {
+        activePresets = appData.defaultPresets.slice(0, 6);
       }
 
-      activePresets.forEach(function(p) {
+      // Filter and sanitize presets to prevent '35000 Rp 0' anomalies
+      var cleanPresets = [];
+      (activePresets || []).forEach(function(p) {
+        if (!p) return;
+        var pName = (p.name || '').toString().trim();
+        var pAmt = Number(p.amount) || 0;
+
+        // If pName is purely digits (e.g. '35000') and pAmt is 0, repair it
+        if (/^\d+$/.test(pName) && pAmt === 0) {
+          pAmt = Number(pName);
+          pName = 'Belanja';
+        }
+
+        if (pName && !/^\d+$/.test(pName) && pAmt > 0) {
+          cleanPresets.push({
+            name: pName,
+            amount: pAmt,
+            category: p.category || 'Lain-lain',
+            scope: p.scope || 'Kas Bersama',
+            count: p.count || 0
+          });
+        }
+      });
+
+      if (cleanPresets.length === 0) {
+        cleanPresets = [
+          { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama' },
+          { name: 'Kopi Pagi', amount: 22000, category: 'Makan Luar & Jajan', scope: 'Pribadi Suami' },
+          { name: 'Belanja Sayur', amount: 75000, category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama' },
+          { name: 'Token Listrik', amount: 100000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' },
+          { name: 'Galon dan Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' }
+        ];
+      }
+
+      cleanPresets.forEach(function(p) {
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'touch-btn shrink-0 rounded-full border border-borderline bg-surface px-3 py-1.5 text-xs font-medium text-ink hover:bg-sage-100 hover:border-sage-200 transition-all';

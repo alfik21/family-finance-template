@@ -67,16 +67,54 @@ function getInitialData() {
       }
     }
 
-    var preValues = configSheet.getRange('G2:H20').getValues();
-    for (var k = 0; k < preValues.length; k++) {
-      var pName = preValues[k][0];
-      var pAmount = preValues[k][1];
-      if (pName && pName.toString().trim() !== '') {
+    // Baca preset cepat secara cerdas & tahan pergeseran kolom
+    var configHeaderRow = configSheet.getRange('A1:J1').getValues()[0];
+    var colPreset = 7;
+    var colNominal = 8;
+
+    for (var h = 0; h < configHeaderRow.length; h++) {
+      var hText = (configHeaderRow[h] || '').toString().toUpperCase();
+      if (hText.indexOf('PRESET') !== -1) {
+        colPreset = h + 1;
+      } else if (hText.indexOf('NOMINAL') !== -1) {
+        colNominal = h + 1;
+      }
+    }
+
+    var maxCol = Math.max(colPreset, colNominal, 8);
+    var preRaw = configSheet.getRange(2, 1, 19, maxCol).getValues();
+
+    for (var k = 0; k < preRaw.length; k++) {
+      var rowData = preRaw[k];
+      var rawName = (rowData[colPreset - 1] || '').toString().trim();
+      var rawAmt = Number(rowData[colNominal - 1]) || 0;
+
+      // Deteksi anomali: jika rawName berupa angka murni (seperti '35000') dan rawAmt 0,
+      // artinya kolom bergeser dari template versi sebelumnya (kolom F adalah nama, G adalah angka)
+      if (/^\d+$/.test(rawName) && rawAmt === 0 && colPreset > 1) {
+        var prevColVal = (rowData[colPreset - 2] || '').toString().trim();
+        if (prevColVal && isNaN(Number(prevColVal))) {
+          rawAmt = Number(rawName);
+          rawName = prevColVal;
+        }
+      }
+
+      if (rawName && !/^\d+$/.test(rawName) && rawAmt > 0) {
         presets.push({
-          name: pName.toString().trim(),
-          amount: Number(pAmount) || 0
+          name: rawName,
+          amount: rawAmt
         });
       }
+    }
+
+    if (presets.length === 0) {
+      presets = [
+        { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama' },
+        { name: 'Kopi Pagi', amount: 22000, category: 'Makan Luar & Jajan', scope: 'Pribadi Suami' },
+        { name: 'Belanja Sayur', amount: 75000, category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama' },
+        { name: 'Token Listrik', amount: 100000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' },
+        { name: 'Galon dan Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' }
+      ];
     }
 
     var salVal = settings['Siklus Gajian (Tgl)'];
