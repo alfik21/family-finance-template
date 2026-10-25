@@ -94,4 +94,9 @@ if (!codeGs.includes('extractSmartPresets')) {
   throw new Error('Task 1 pending: extractSmartPresets function not implemented in Code.gs');
 }
 
+// 9. Logic verification: Close & Archive Year functions
+if (!codeGs.includes('closeAndArchiveYear') || !codeGs.includes('checkPendingArchive')) {
+  throw new Error('Task 2 pending: closeAndArchiveYear or checkPendingArchive not implemented in Code.gs');
+}
+
 console.log('\nAll tests completed successfully!');

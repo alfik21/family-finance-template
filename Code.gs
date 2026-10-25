@@ -205,8 +205,226 @@ function getInitialData() {
     defaultPresets: presets,
     salaryDate: salaryDate,
     recent: recent,
-    summary: summary
+    summary: summary,
+    pendingArchive: checkPendingArchive()
   };
+}
+
+function checkPendingArchive() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var transSheet = ss.getSheetByName('TRANSAKSI');
+    if (!transSheet) return { hasPending: false, pendingYears: [] };
+
+    var lastRow = transSheet.getLastRow();
+    if (lastRow <= 1) return { hasPending: false, pendingYears: [] };
+
+    var currentYear = new Date().getFullYear();
+    var rawDates = transSheet.getRange(2, 2, lastRow - 1, 1).getValues();
+    var yearsMap = {};
+
+    for (var i = 0; i < rawDates.length; i++) {
+      var d = rawDates[i][0];
+      if (!d) continue;
+      var dateObj = (d instanceof Date) ? d : new Date(d);
+      var yr = dateObj.getFullYear();
+      if (!isNaN(yr) && yr < currentYear) {
+        yearsMap[yr] = true;
+      }
+    }
+
+    var pendingYears = Object.keys(yearsMap).map(Number).sort();
+    return {
+      hasPending: pendingYears.length > 0,
+      pendingYears: pendingYears
+    };
+  } catch (e) {
+    return { hasPending: false, pendingYears: [], error: e.toString() };
+  }
+}
+
+function closeAndArchiveYear(targetYear) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(15000);
+  } catch (e) {
+    return { success: false, message: 'Server sedang sibuk, silakan coba sesaat lagi.' };
+  }
+
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var configSheet = ss.getSheetByName('CONFIG');
+    var transSheet = ss.getSheetByName('TRANSAKSI');
+    if (!transSheet) return { success: false, message: 'Sheet TRANSAKSI tidak ditemukan.' };
+
+    var activeEmail = '';
+    try { activeEmail = Session.getActiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
+    var effEmail = '';
+    try { effEmail = Session.getEffectiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
+    var currentMaster = configSheet ? (configSheet.getRange('B6').getValue() || '').toString().toLowerCase().trim() : '';
+
+    if (activeEmail && activeEmail !== effEmail && activeEmail !== currentMaster) {
+      return { success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat melakukan tutup buku tahunan.' };
+    }
+
+    var lastRow = transSheet.getLastRow();
+    if (lastRow <= 1) {
+      return { success: false, message: 'Tidak ada data transaksi di sheet TRANSAKSI.' };
+    }
+
+    var allData = transSheet.getRange(2, 1, lastRow - 1, 11).getValues();
+    var targetYr = Number(targetYear);
+    if (!targetYr || isNaN(targetYr)) {
+      targetYr = new Date().getFullYear() - 1;
+    }
+
+    var archiveRows = [];
+    var remainingRows = [];
+    var totalIncome = 0;
+    var totalExpense = 0;
+    var netCashflow = 0;
+    var carryoverBalance = 0;
+
+    for (var i = 0; i < allData.length; i++) {
+      var row = allData[i];
+      var rawDate = row[1];
+      if (!rawDate) continue;
+
+      var dateObj = (rawDate instanceof Date) ? rawDate : new Date(rawDate);
+      var rowYr = dateObj.getFullYear();
+      var type = row[3];
+      var scope = row[5];
+      var amount = Number(row[7]) || 0;
+
+      if (rowYr === targetYr) {
+        archiveRows.push(row);
+        if (type === 'Pemasukan') {
+          totalIncome += amount;
+          if (scope === 'Kas Bersama') carryoverBalance += amount;
+        } else if (type === 'Pengeluaran') {
+          totalExpense += amount;
+          if (scope === 'Kas Bersama') carryoverBalance -= amount;
+        }
+      } else {
+        remainingRows.push(row);
+      }
+    }
+
+    if (archiveRows.length === 0) {
+      return { success: false, message: 'Tidak ditemukan transaksi untuk tahun ' + targetYr + ' di sheet TRANSAKSI.' };
+    }
+
+    netCashflow = totalIncome - totalExpense;
+
+    var archiveSheetName = 'ARSIP_' + targetYr;
+    var archiveSheet = ss.getSheetByName(archiveSheetName);
+    if (!archiveSheet) {
+      archiveSheet = ss.insertSheet(archiveSheetName);
+    } else {
+      archiveSheet.clear();
+    }
+
+    archiveSheet.setTabColor('#2d6a4f');
+
+    var titleRange = archiveSheet.getRange('A1:K1');
+    titleRange.merge();
+    titleRange.setValue('ARSIP TRANSAKSI TAHUN ' + targetYr + ' (DITUTUP SECARA PERMANEN)')
+      .setBackground('#1b4332')
+      .setFontColor('#ffffff')
+      .setFontWeight('bold')
+      .setFontSize(11)
+      .setHorizontalAlignment('center');
+
+    archiveSheet.getRange('A2:B2').merge().setValue('TOTAL PEMASUKAN TAHUNAN').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+    archiveSheet.getRange('C2:D2').merge().setValue('TOTAL PENGELUARAN TAHUNAN').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+    archiveSheet.getRange('E2:F2').merge().setValue('ARUS KAS BERSIH').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+    archiveSheet.getRange('G2:H2').merge().setValue('SALDO KAS DIOPER KE TAHUN BARU').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+    archiveSheet.getRange('I2:K2').merge().setValue('STATUS PENUTUPAN BUKU').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+
+    archiveSheet.getRange('A3:B3').merge().setValue(totalIncome).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor('#1b4332');
+    archiveSheet.getRange('C3:D3').merge().setValue(totalExpense).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor('#d32f2f');
+    archiveSheet.getRange('E3:F3').merge().setValue(netCashflow).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor(netCashflow >= 0 ? '#1b4332' : '#d32f2f');
+    archiveSheet.getRange('G3:H3').merge().setValue(carryoverBalance).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor('#2d6a4f');
+    archiveSheet.getRange('I3:K3').merge().setValue('Selesai Ditutup pada ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm')).setFontSize(9).setFontColor('#6c757d');
+
+    var headers = [
+      ['ID', 'TANGGAL', 'BULAN', 'TIPE', 'KATEGORI', 'PERUNTUKAN', 'DOMPET', 'NOMINAL', 'CATATAN', 'DIINPUT OLEH', 'WAKTU INPUT']
+    ];
+    archiveSheet.getRange(5, 1, 1, 11).setValues(headers)
+      .setBackground('#2d6a4f')
+      .setFontColor('#ffffff')
+      .setFontWeight('bold')
+      .setFontSize(9)
+      .setHorizontalAlignment('center');
+
+    var staticArchiveRows = [];
+    for (var a = 0; a < archiveRows.length; a++) {
+      var r = archiveRows[a];
+      var dateStr = (r[1] instanceof Date) ? Utilities.formatDate(r[1], Session.getScriptTimeZone(), 'yyyy-MM-dd') : r[1];
+      var monthStr = (r[2] && r[2].toString().indexOf('=') === -1) ? r[2] : (dateStr ? dateStr.toString().substring(0, 7) : '');
+      var createdStr = (r[10] instanceof Date) ? Utilities.formatDate(r[10], Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm') : r[10];
+
+      staticArchiveRows.push([
+        r[0],
+        dateStr,
+        monthStr,
+        r[3],
+        r[4],
+        r[5],
+        r[6],
+        Number(r[7]) || 0,
+        r[8] || '',
+        r[9] || '',
+        createdStr
+      ]);
+    }
+
+    archiveSheet.getRange(6, 1, staticArchiveRows.length, 11).setValues(staticArchiveRows);
+    archiveSheet.getRange(6, 8, staticArchiveRows.length, 1).setNumberFormat('Rp #,##0');
+    archiveSheet.setFrozenRows(5);
+
+    transSheet.getRange(2, 1, Math.max(1, lastRow - 1), 11).clearContent();
+
+    var nextYear = targetYr + 1;
+    var openingRow = [
+      'TRX-INIT-' + nextYear,
+      new Date(nextYear, 0, 1),
+      '=TEXT(B2, "yyyy-mm")',
+      'Pemasukan',
+      'Saldo Awal Tahun',
+      'Kas Bersama',
+      'Kas Tunai Rumah [Kas Bersama]',
+      carryoverBalance,
+      'Saldo bawaan tutup buku tahun ' + targetYr,
+      'Sistem Otomatis - Tutup Buku ' + targetYr,
+      new Date()
+    ];
+
+    var newTransRows = [openingRow];
+    for (var rem = 0; rem < remainingRows.length; rem++) {
+      newTransRows.push(remainingRows[rem]);
+    }
+
+    transSheet.getRange(2, 1, newTransRows.length, 11).setValues(newTransRows);
+    transSheet.getRange(2, 2, newTransRows.length, 1).setNumberFormat('yyyy-mm-dd');
+    transSheet.getRange(2, 8, newTransRows.length, 1).setNumberFormat('Rp #,##0');
+    transSheet.getRange(2, 11, newTransRows.length, 1).setNumberFormat('yyyy-mm-dd hh:mm');
+
+    SpreadsheetApp.flush();
+
+    return {
+      success: true,
+      archivedYear: targetYr,
+      archivedRows: archiveRows.length,
+      carryoverBalance: carryoverBalance,
+      sheetName: archiveSheetName,
+      message: 'Tutup buku tahun ' + targetYr + ' berhasil. ' + archiveRows.length + ' transaksi diarsipkan ke tab ' + archiveSheetName + ' dan saldo Kas Bersama (Rp ' + carryoverBalance.toLocaleString('id-ID') + ') telah dioper ke tahun baru.'
+    };
+  } catch (err) {
+    return { success: false, message: 'Terjadi kesalahan saat tutup buku: ' + err.toString() };
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function extractSmartPresets(transactions, defaultPresets, maxPresets) {
