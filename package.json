@@ -1,7 +1,7 @@
 {
-  "name": "couple-finance-template",
-  "version": "1.1.0",
-  "description": "Family & Couple Finance Tracker with Google Sheets and Mobile-First Apps Script PWA",
+  "name": "family-finance-template",
+  "version": "1.2.0",
+  "description": "Family Finance Tracker with Google Sheets and Mobile-First Apps Script PWA",
   "main": "Code.gs",
   "scripts": {
     "test": "node tests/validate.js",

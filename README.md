@@ -1,29 +1,29 @@
-# Family Finance Tracker (Couple Edition)
+# Family Finance Tracker (Couple & Family Edition)
 
-Sistem pencatatan dan pemantauan keuangan rumah tangga berbasis **Google Sheets** dan **Google Apps Script Web App (PWA)** dengan model *Hybrid* (Kas Bersama + Dompet Pribadi Suami & Istri).
+Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** dan **Google Apps Script Web App (PWA)** dengan model *Hybrid* (Kas Bersama + Dompet Pribadi Suami & Istri).
 
 ---
 
 ## Fitur Utama
 
 - **Model Hybrid**: Membedakan pos Kas Bersama rumah tangga (dapur, tagihan, sekolah anak, cicilan) dan pengeluaran pribadi masing-masing tanpa saling membatasi.
-- **Deteksi Akun Otomatis**: Mengenali email Google suami atau istri secara otomatis saat membuka Web App di smartphone.
-- **3 Menu Utama di Web App**:
-  1. `Catat`: Form cepat mobile-first dengan local caching (< 100ms), preset 1-tap, dan selector peruntukan cerdas (Bersama vs Pribadi).
-  2. `Rekap Siklus`: Menarik rekap kas berdasarkan **Siklus Gajian** (misal tgl 25 s/d 24), Bulan Kalender, atau rentang kustom dengan breakdown beban pasangan.
-  3. `Kelola`: Tambah/hapus Kategori Belanja dan Dompet / Rekening langsung dari HP tanpa perlu membuka spreadsheet di laptop.
-- **Google Sheets Minimalist (Sage Green)**: Tab Dashboard, Transaksi, Budget & Pos, serta Config yang otomatis digenerate tanpa perlu mendesain manual.
-- **Anti-AI Slop**: Tanpa gradien ungu generik, tanpa hiasan emoji berlebihan, dan angka rupiah menggunakan *tabular numerals* yang sejajar dan nyaman dibaca.
+- **Mobile Bottom Navigation**: Navigasi bawah ramah ibu jari pada layar smartphone (Catat, Rekap, Kelola, Akun) dan otomatis beralih ke header atas pada desktop.
+- **Sistem Akun Master & RBAC**: Akun Google pertama pembuat spreadsheet otomatis menjadi Akun Master dengan kontrol penuh; akun pasangan yang diundang berfokus mencatat transaksi dan memantau rekap keuangan.
+- **Kepemilikan Dompet Eksplisit**: Setiap rekening/dompet memiliki status kepemilikan yang jelas (Kas Bersama, Suami, atau Istri) dengan rute transfer dana yang transparan.
+- **Tombol Cepat Cerdas (Smart Habit-Based Presets)**: Menganalisis kebiasaan belanja berulang dan otomatis memunculkannya sebagai tombol cepat di formulir pencatatan.
+- **Tutup Buku & Arsip Tahunan**: Menjaga sheet transaksi aktif selalu ramping (< 2.000 baris/tahun) dengan memindahkan riwayat tahun lampau ke tab ARSIP_YYYY statis dan mengoper sisa saldo Kas Bersama ke tahun baru.
+- **Zero-Symbol & Zero-Emoji Minimalist**: Desain profesional dengan tipografi Plus Jakarta Sans angka tabular dan palet Warm Sage Green.
 
 ---
 
 ## Struktur File
 
 ```text
-├── Setup.gs          # Generator 1-klik untuk membangun dan memformat seluruh tab Google Sheets
-├── Code.gs           # Backend API Google Apps Script (doGet, getInitialData, submitTransaction)
+├── Setup.gs          # Generator otomatis struktur Google Sheets & menu tutup buku
+├── Code.gs           # Backend API Google Apps Script (RBAC, mutasi, arsip, smart presets)
 ├── WebApp.html       # Antarmuka PWA Mobile-First responsif
 ├── test-runner.html  # Simulator browser lokal untuk user testing sebelum deploy
+├── package.json      # Metadata proyek family-finance-template
 └── README.md         # Petunjuk instalasi dan operasional
 ```
 
@@ -34,10 +34,10 @@ Sistem pencatatan dan pemantauan keuangan rumah tangga berbasis **Google Sheets*
 Sebelum menghubungkan ke Google Drive, Anda dapat langsung mencoba alur kerja aplikasi secara lokal:
 
 1. Buka file `test-runner.html` langsung di browser Anda (klik ganda atau `Open with Google Chrome / Edge`).
-2. Di toolbar atas, coba ganti peran login: **Suami (Ayah)** atau **Istri (Bunda)**.
-3. Coba tap tombol cepat seperti **"Bensin Motor"** atau **"Sayur Pasar"**.
-4. Tekan **"Simpan Transaksi"** dan lihat tabel simulasi spreadsheet di panel kanan langsung terbarui secara realtime.
-5. Coba ganti ke **Desktop View** untuk melihat adaptasi tampilan di layar lebar.
+2. Di toolbar atas, coba ganti peran login: **Suami (Ayah - Master)** atau **Istri (Bunda - Diundang)**.
+3. Coba tap tombol cepat atau input pengeluaran.
+4. Tekan **"Simpan Pengeluaran"** dan lihat tabel simulasi spreadsheet di panel kanan langsung terbarui secara realtime.
+5. Coba ganti ke **Desktop View** untuk melihat adaptasi antarmuka di layar lebar.
 
 ---
 
@@ -50,9 +50,9 @@ Sebelum menghubungkan ke Google Drive, Anda dapat langsung mencoba alur kerja ap
 ### Langkah 2: Buka Apps Script & Salin Kode
 1. Di menu atas Google Sheets, klik **Extensions** (Ekstensi) > **Apps Script**.
 2. Di panel kiri Apps Script:
-   - Buat file skrip baru bernama `Setup.gs`, lalu salin seluruh isi file [`Setup.gs`](file:///J:/Aplikasi/couple-finance-template/Setup.gs).
-   - Di file default `Code.gs`, hapus isinya dan ganti dengan isi file [`Code.gs`](file:///J:/Aplikasi/couple-finance-template/Code.gs).
-   - Klik tombol **+** di sebelah Files > pilih **HTML** > beri nama `WebApp.html`. Hapus isinya dan salin seluruh isi file [`WebApp.html`](file:///J:/Aplikasi/couple-finance-template/WebApp.html).
+   - Buat file skrip baru bernama `Setup.gs`, lalu salin seluruh isi file `Setup.gs`.
+   - Di file default `Code.gs`, hapus isinya dan ganti dengan isi file `Code.gs`.
+   - Klik tombol **+** di sebelah Files > pilih **HTML** > beri nama `WebApp.html`. Hapus isinya dan salin seluruh isi file `WebApp.html`.
 3. Klik tombol **Save** (Ctrl+S / Cmd+S).
 
 ### Langkah 3: Jalankan Setup Otomatis Spreadsheet
@@ -64,9 +64,9 @@ Sebelum menghubungkan ke Google Drive, Anda dapat langsung mencoba alur kerja ap
 
 ### Langkah 4: Deploy Web App untuk Smartphone
 1. Di halaman Apps Script, klik tombol biru **Deploy** (Terapkan) di pojok kanan atas > pilih **New deployment** (Penerapan baru).
-2. Klik ikon gerigi ⚙️ di sebelah *Select type* > pilih **Web app**.
+2. Klik tombol gerigi di sebelah *Select type* > pilih **Web app**.
 3. Isi konfigurasi berikut:
-   - **Description**: `Kas Keluarga v1`
+   - **Description**: `Kas Keluarga v3`
    - **Execute as**: `User accessing the web app` *(Penting: agar transaksi otomatis mendeteksi email Google pasangan yang sedang input)*
    - **Who has access**: `Anyone with Google account`
 4. Klik **Deploy** dan salin **Web app URL** yang muncul.
