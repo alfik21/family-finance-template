@@ -12,7 +12,7 @@ files.forEach(f => {
 });
 
 // 2. HTML embedded scripts
-['WebApp.html', 'test-runner.html'].forEach(f => {
+['WebApp.html', 'test-runner.html', 'preview.html'].forEach(f => {
   const content = fs.readFileSync(f, 'utf8');
   const scripts = content.match(/<script[\s\S]*?>([\s\S]*?)<\/script>/gi) || [];
   scripts.forEach((s) => {
@@ -27,7 +27,7 @@ files.forEach(f => {
 // 3. Zero-Emoji / Zero-Symbol Verification
 // Regex for emoji characters
 const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA70}-\u{1FAFF}]/u;
-const checkedFiles = ['Code.gs', 'Setup.gs', 'WebApp.html', 'test-runner.html'];
+const checkedFiles = ['Code.gs', 'Setup.gs', 'WebApp.html', 'test-runner.html', 'preview.html'];
 let emojiDetected = false;
 
 checkedFiles.forEach(f => {

@@ -5,10 +5,35 @@
 
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu('Family Finance')
+    .createMenu('Family Finance Tracker')
+    .addItem('Buka Aplikasi (Modal)', 'openWebAppModal')
+    .addSeparator()
     .addItem('Jalankan Setup / Reset Template', 'setupFinanceTracker')
     .addItem('Tutup Buku & Arsipkan Tahun Lalu', 'menuCloseYearArchive')
+    .addItem('Petunjuk Pasang di HP (PWA)', 'menuShowMobileGuide')
     .addToUi();
+}
+
+function openWebAppModal() {
+  var html = HtmlService.createTemplateFromFile('WebApp')
+    .evaluate()
+    .setWidth(450)
+    .setHeight(760);
+  SpreadsheetApp.getUi().showModalDialog(html, 'Family Finance Tracker');
+}
+
+function menuShowMobileGuide() {
+  var ui = SpreadsheetApp.getUi();
+  ui.alert(
+    'Petunjuk Menggunakan Aplikasi di Smartphone',
+    'Untuk membuka aplikasi ini di smartphone Anda dan pasangan:\n\n' +
+    '1. Buka menu Ekstensi > Apps Script > Klik "Deploy" (Terapkan) > "New deployment" (Penerapan baru).\n' +
+    '2. Pilih tipe "Web app", atur "Execute as: User accessing the web app" dan "Who has access: Anyone".\n' +
+    '3. Salin URL Web App yang dihasilkan, lalu buka di Safari (iOS) atau Chrome (Android).\n' +
+    '4. Tambahkan ke Layar Utama (Add to Home Screen) agar tampil seperti aplikasi native tanpa instalasi Play Store/App Store!\n\n' +
+    '5. Pasangan Anda cukup membuka link yang sama di HP mereka setelah Anda membagikan akses edit spreadsheet ini.',
+    ui.ButtonSet.OK
+  );
 }
 
 function menuCloseYearArchive() {
@@ -100,22 +125,22 @@ function createConfigSheet(ss, palette) {
 
   var masterEmail = '';
   try {
-    masterEmail = Session.getEffectiveUser().getEmail() || 'suami@gmail.com';
+    masterEmail = Session.getEffectiveUser().getEmail() || '';
   } catch (e) {
-    masterEmail = 'suami@gmail.com';
+    masterEmail = '';
   }
 
   var configData = [
     ['Label Suami', 'Ayah', 'Belanja Pasar & Dapur', 'Kas Bersama', 'Kas Tunai Rumah', 'Kas Bersama', 'Bensin Motor', 35000],
-    ['Email Suami', 'suami@gmail.com', 'Makan Luar & Jajan', 'Kas Bersama', 'Rekening BCA Bersama', 'Kas Bersama', 'Kopi Pagi', 22000],
+    ['Email Suami', masterEmail, 'Makan Luar & Jajan', 'Kas Bersama', 'Rekening BCA Bersama', 'Kas Bersama', 'Kopi Pagi', 22000],
     ['Label Istri', 'Bunda', 'Listrik & Utilitas', 'Kas Bersama', 'BCA Pribadi Suami', 'Suami', 'Belanja Sayur', 75000],
-    ['Email Istri', 'istri@gmail.com', 'Internet & Pulsa', 'Kas Bersama', 'GoPay Suami', 'Suami', 'Galon dan Gas', 45000],
-    ['Email Master', masterEmail, 'Kebutuhan Anak & Les', 'Kas Bersama', 'BCA Pribadi Istri', 'Istri', 'Token Listrik', 100000],
+    ['Email Istri', '', 'Internet & Pulsa', 'Kas Bersama', 'GoPay Suami', 'Suami', 'Galon dan Gas', 45000],
+    ['Email Master', masterEmail, 'Kebutuhan Anak & Sekolah', 'Kas Bersama', 'BCA Pribadi Istri', 'Istri', 'Token Listrik', 100000],
     ['Peran Master', 'Suami', 'Transportasi & Bensin', 'Kas Bersama', 'ShopeePay Istri', 'Istri', 'Jajan Anak', 20000],
     ['Siklus Gajian (Tgl)', 25, 'Cicilan & Kewajiban', 'Kas Bersama', 'GoPay Istri', 'Istri', '', ''],
     ['Bulan Acuan', '=TEXT(TODAY(), "yyyy-mm")', 'Pribadi Suami', 'Pribadi Suami', '', '', '', ''],
     ['', '', 'Pribadi Istri', 'Pribadi Istri', '', '', '', ''],
-    ['', '', 'Sedekah & Orang Tua', 'Kas Bersama', '', '', '', ''],
+    ['', '', 'Sedekah & Sosial', 'Kas Bersama', '', '', '', ''],
     ['', '', 'Darurat & Tabungan', 'Kas Bersama', '', '', '', ''],
     ['', '', 'Lain-lain', 'Kas Bersama', '', '', '', '']
   ];
@@ -154,29 +179,16 @@ function createTransactionsSheet(ss, palette) {
 
   var initialRows = [
     [
-      'TRX-001',
+      'TRX-INIT-001',
       new Date(),
       '=TEXT(B2, "yyyy-mm")',
-      'Pengeluaran',
-      'Belanja Pasar & Dapur',
+      'Pemasukan',
+      'Saldo Awal Tahun',
       'Kas Bersama',
       'Rekening BCA Bersama [Kas Bersama]',
-      150000,
-      'Belanja mingguan pasar',
-      'Suami (Ayah) - suami@gmail.com',
-      new Date()
-    ],
-    [
-      'TRX-002',
-      new Date(),
-      '=TEXT(B3, "yyyy-mm")',
-      'Pengeluaran',
-      'Transportasi & Bensin',
-      'Pribadi Suami',
-      'BCA Pribadi Suami [Suami]',
-      50000,
-      'Isi bensin motor kantor',
-      'Suami (Ayah) - suami@gmail.com',
+      0,
+      'Saldo Awal Template (Silakan ganti angka 0 ini dengan saldo awal kas Anda)',
+      'Sistem Setup',
       new Date()
     ]
   ];
