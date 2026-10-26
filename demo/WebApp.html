@@ -1664,7 +1664,9 @@
               scopes[tx.scope] = (scopes[tx.scope] || 0) + tx.amount;
               catMap[tx.category] = (catMap[tx.category] || 0) + tx.amount;
             } else if (tx.type === 'Pemasukan') {
-              totalInc += tx.amount;
+              if (tx.category !== 'Saldo Awal Tahun') {
+                totalInc += tx.amount;
+              }
             }
           }
         });
@@ -2103,8 +2105,11 @@
             authorRole: 'Sistem'
           });
           appData.recent = remaining;
+          recalculateLocalBalances();
+          renderSummary();
           renderRecent();
           renderPresets();
+          saveCachedData();
           showToast('Tutup buku tahun ' + yr + ' berhasil (Mode Demo). Tab ARSIP_' + yr + ' disimulasikan.', true);
         }, 500);
       }

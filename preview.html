@@ -576,7 +576,16 @@
                     },
                     checkPendingArchive: function() {
                       setTimeout(function() {
-                        onSuccess({ hasPending: true, pendingYears: [2026] });
+                        var currentYear = new Date().getFullYear();
+                        var yearsMap = {};
+                        (mockDatabase.transactions || []).forEach(function(tx) {
+                          var yr = new Date(tx.date + 'T00:00:00').getFullYear();
+                          if (!isNaN(yr) && yr < currentYear) {
+                            yearsMap[yr] = true;
+                          }
+                        });
+                        var pending = Object.keys(yearsMap).map(Number).sort();
+                        onSuccess({ hasPending: pending.length > 0, pendingYears: pending });
                       }, 100);
                     },
                     closeAndArchiveYear: function(targetYear) {
@@ -585,11 +594,92 @@
                           onSuccess({ success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat melakukan tutup buku.' });
                           return;
                         }
+                        var yr = Number(targetYear) || (new Date().getFullYear() - 1);
+                        var remaining = [];
+                        var archivedCount = 0;
+                        mockDatabase.transactions.forEach(function(tx) {
+                          var txYr = new Date(tx.date + 'T00:00:00').getFullYear();
+                          if (txYr === yr) {
+                            archivedCount++;
+                          } else {
+                            remaining.push(tx);
+                          }
+                        });
+
+                        var nextYr = yr + 1;
+                        var carryover = calculateSummary().jointBalance || 1500000;
+                        remaining.unshift({
+                          id: 'TRX-INIT-' + nextYr,
+                          date: nextYr + '-01-01',
+                          type: 'Pemasukan',
+                          category: 'Saldo Awal Tahun',
+                          scope: 'Kas Bersama',
+                          wallet: 'Kas Tunai Rumah [Kas Bersama]',
+                          amount: carryover,
+                          note: 'Saldo bawaan tutup buku tahun ' + yr,
+                          author: 'sistem@keluarga.com',
+                          authorRole: 'Sistem'
+                        });
+
+                        mockDatabase.transactions = remaining;
+                        renderSimulatedTable();
+
                         onSuccess({
                           success: true,
-                          message: 'Tutup buku tahun ' + targetYear + ' berhasil disimulasikan.'
+                          archivedYear: yr,
+                          archivedRows: archivedCount,
+                          carryoverBalance: carryover,
+                          sheetName: 'ARSIP_' + yr,
+                          message: 'Tutup buku tahun ' + yr + ' berhasil. ' + archivedCount + ' baris transaksi diarsipkan ke tab ARSIP_' + yr + ' dan saldo dioper ke tahun baru.'
                         });
                       }, 250);
+                    },
+                    getPeriodSummary: function(startDate, endDate) {
+                      setTimeout(function() {
+                        var start = new Date(startDate + 'T00:00:00');
+                        var end = new Date(endDate + 'T23:59:59');
+                        var totalInc = 0;
+                        var totalExp = 0;
+                        var scopes = { 'Kas Bersama': 0, 'Pribadi Suami': 0, 'Pribadi Istri': 0 };
+                        var catMap = {};
+                        var count = 0;
+
+                        mockDatabase.transactions.forEach(function(tx) {
+                          var tDate = new Date(tx.date + 'T00:00:00');
+                          if (tDate >= start && tDate <= end) {
+                            count++;
+                            if (tx.type === 'Pengeluaran') {
+                              totalExp += tx.amount;
+                              scopes[tx.scope] = (scopes[tx.scope] || 0) + tx.amount;
+                              catMap[tx.category] = (catMap[tx.category] || 0) + tx.amount;
+                            } else if (tx.type === 'Pemasukan') {
+                              if (tx.category !== 'Saldo Awal Tahun') {
+                                totalInc += tx.amount;
+                              }
+                            }
+                          }
+                        });
+
+                        var cats = [];
+                        for (var c in catMap) {
+                          cats.push({
+                            category: c,
+                            amount: catMap[c],
+                            percentage: totalExp > 0 ? (catMap[c] / totalExp) * 100 : 0
+                          });
+                        }
+                        cats.sort(function(a, b) { return b.amount - a.amount; });
+
+                        onSuccess({
+                          success: true,
+                          totalIncome: totalInc,
+                          totalExpense: totalExp,
+                          netCashflow: totalInc - totalExp,
+                          byScope: scopes,
+                          byCategory: cats,
+                          txCount: count
+                        });
+                      }, 150);
                     }
                   };
                 }

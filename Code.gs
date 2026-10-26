@@ -956,7 +956,9 @@ function getPeriodSummary(startDateStr, endDateStr) {
 
           catMap[category] = (catMap[category] || 0) + amount;
         } else if (type === 'Pemasukan') {
-          totalIncome += amount;
+          if (category !== 'Saldo Awal Tahun') {
+            totalIncome += amount;
+          }
         }
       }
     }
