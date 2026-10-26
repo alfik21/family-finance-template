@@ -794,14 +794,14 @@
 
     var appData = {
       isMaster: true,
-      userEmail: '',
+      userEmail: 'suami@keluarga.com',
       userRole: 'Suami (Ayah)',
       accounts: {
         suamiLabel: 'Ayah',
-        suamiEmail: 'suami@gmail.com',
+        suamiEmail: 'suami@keluarga.com',
         istriLabel: 'Bunda',
-        istriEmail: 'istri@gmail.com',
-        masterEmail: 'suami@gmail.com',
+        istriEmail: 'istri@keluarga.com',
+        masterEmail: 'suami@keluarga.com',
         masterRole: 'Suami'
       },
       categories: [
@@ -875,47 +875,80 @@
       ];
     }
 
-    function toggleDemoRole() {
-      var isSuami = (appData.userRole.indexOf('Suami') !== -1 || appData.userRole.indexOf('Ayah') !== -1);
-      if (isSuami) {
-        appData.userRole = 'Istri (' + (appData.accounts.istriLabel || 'Bunda') + ')';
-        showToast('Beralih ke peran: ' + appData.userRole, true);
-      } else {
-        appData.userRole = 'Suami (' + (appData.accounts.suamiLabel || 'Ayah') + ')';
-        showToast('Beralih ke peran: ' + appData.userRole, true);
-      }
-      try {
-        localStorage.setItem('family_demo_role', appData.userRole);
-      } catch (e) {}
-      renderSummary();
-      renderAccountView();
-      updateDynamicUI();
-    }
+    function switchAppRole(targetRole, explicitIsMaster, explicitEmail) {
+      var isSuami = (targetRole && (targetRole.indexOf('Suami') !== -1 || targetRole.indexOf('Ayah') !== -1));
+      var sLabel = (appData.accounts && appData.accounts.suamiLabel) || 'Ayah';
+      var iLabel = (appData.accounts && appData.accounts.istriLabel) || 'Bunda';
+      var sEmail = (appData.accounts && appData.accounts.suamiEmail) || 'suami@keluarga.com';
+      var iEmail = (appData.accounts && appData.accounts.istriEmail) || 'istri@keluarga.com';
+      var masterRole = (appData.accounts && appData.accounts.masterRole) || 'Suami';
 
-    function setSimulatedRole(isMaster, roleName) {
-      appData.isMaster = isMaster;
-      appData.userRole = roleName;
+      var resolvedRole = isSuami ? ('Suami (' + sLabel + ')') : ('Istri (' + iLabel + ')');
+      var resolvedEmail = explicitEmail || (isSuami ? sEmail : iEmail);
+      var resolvedIsMaster = (explicitIsMaster !== undefined) ? explicitIsMaster : ((masterRole === 'Istri') ? (!isSuami) : isSuami);
+
+      appData.userRole = resolvedRole;
+      appData.userEmail = resolvedEmail;
+      appData.isMaster = resolvedIsMaster;
+
       try {
-        localStorage.setItem('family_demo_is_master', isMaster ? '1' : '0');
-        localStorage.setItem('family_demo_role', roleName);
+        localStorage.setItem('family_demo_role', resolvedRole);
+        localStorage.setItem('family_demo_email', resolvedEmail);
+        localStorage.setItem('family_demo_is_master', resolvedIsMaster ? '1' : '0');
       } catch (e) {}
 
-      var bMas = document.getElementById('btnSimMaster');
-      var bMem = document.getElementById('btnSimMember');
-      if (isMaster) {
-        bMas.className = 'touch-btn rounded-lg border-2 border-sage-800 bg-white py-2 text-center text-xs font-bold text-sage-800';
-        bMem.className = 'touch-btn rounded-lg border border-slate-200 bg-white py-2 text-center text-xs font-medium text-slate-600 hover:border-slate-400';
-      } else {
-        bMem.className = 'touch-btn rounded-lg border-2 border-sage-800 bg-white py-2 text-center text-xs font-bold text-sage-800';
-        bMas.className = 'touch-btn rounded-lg border border-slate-200 bg-white py-2 text-center text-xs font-medium text-slate-600 hover:border-slate-400';
+      // Update scope selection on Catat tab to match the active user
+      if (typeof currentType !== 'undefined' && currentType !== 'Transfer') {
+        if (typeof currentScopeChoice !== 'undefined') {
+          if (currentScopeChoice === 'suami' && !isSuami) {
+            if (typeof setScopeChoice === 'function') setScopeChoice('istri');
+          } else if (currentScopeChoice === 'istri' && isSuami) {
+            if (typeof setScopeChoice === 'function') setScopeChoice('suami');
+          }
+        }
       }
 
       renderSummary();
       renderAccountView();
       renderManageItems();
       updateDynamicUI();
-      showToast('Mode diubah: ' + (isMaster ? 'Akun Master' : 'Anggota Diundang'), true);
+
+      // Notify parent preview window if running inside iframe
+      if (window.parent && window.parent !== window) {
+        try {
+          window.parent.postMessage({
+            type: 'ROLE_CHANGED_FROM_APP',
+            userRole: resolvedRole,
+            userEmail: resolvedEmail,
+            isMaster: resolvedIsMaster
+          }, '*');
+          if (typeof window.parent.syncPreviewRoleUI === 'function') {
+            window.parent.syncPreviewRoleUI(resolvedRole, resolvedIsMaster);
+          }
+        } catch (e) {}
+      }
     }
+
+    function toggleDemoRole() {
+      var isSuami = (appData.userRole.indexOf('Suami') !== -1 || appData.userRole.indexOf('Ayah') !== -1);
+      var targetRole = isSuami ? 'Istri' : 'Suami';
+      switchAppRole(targetRole);
+      showToast('Beralih ke peran: ' + appData.userRole, true);
+    }
+
+    function setSimulatedRole(isMaster, roleName) {
+      switchAppRole(roleName, isMaster);
+      showToast('Mode diubah: ' + (appData.isMaster ? 'Akun Master' : 'Anggota Diundang'), true);
+    }
+
+    window.switchAppRole = switchAppRole;
+
+    window.addEventListener('message', function(event) {
+      if (!event.data) return;
+      if (event.data.type === 'SWITCH_USER') {
+        switchAppRole(event.data.userRole, event.data.isMaster, event.data.userEmail);
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
       initDefaultDate();
@@ -1908,7 +1941,7 @@
       var roleEl = document.getElementById('accountUserRole');
       var permEl = document.getElementById('accountUserPermissions');
 
-      if (emailEl) emailEl.textContent = appData.userEmail || (appData.isMaster ? 'suami@gmail.com' : 'istri@gmail.com');
+      if (emailEl) emailEl.textContent = appData.userEmail || (appData.isMaster ? 'suami@keluarga.com' : 'istri@keluarga.com');
       if (roleEl) roleEl.textContent = appData.userRole;
 
       if (appData.isMaster) {
@@ -1928,6 +1961,27 @@
         if (permEl) {
           permEl.textContent = 'Input Transaksi Saja';
           permEl.className = 'font-bold text-slate-600';
+        }
+      }
+
+      // Synchronize Testing Simulation Toggle Buttons
+      var isSuami = (appData.userRole && (appData.userRole.indexOf('Suami') !== -1 || appData.userRole.indexOf('Ayah') !== -1));
+      var bMas = document.getElementById('btnSimMaster');
+      var bMem = document.getElementById('btnSimMember');
+      if (bMas && bMem) {
+        var sLabel = (appData.accounts && appData.accounts.suamiLabel) || 'Ayah';
+        var iLabel = (appData.accounts && appData.accounts.istriLabel) || 'Bunda';
+        var masterRole = (appData.accounts && appData.accounts.masterRole) || 'Suami';
+
+        bMas.textContent = (masterRole === 'Suami' ? 'Akun Master (' + sLabel + ')' : 'Akun Diundang (' + sLabel + ')');
+        bMem.textContent = (masterRole === 'Istri' ? 'Akun Master (' + iLabel + ')' : 'Akun Diundang (' + iLabel + ')');
+
+        if (isSuami) {
+          bMas.className = 'touch-btn rounded-lg border-2 border-sage-800 bg-sage-50/50 py-2 text-center text-xs font-bold text-sage-800 shadow-2xs';
+          bMem.className = 'touch-btn rounded-lg border border-slate-200 bg-white py-2 text-center text-xs font-medium text-slate-600 hover:border-slate-400';
+        } else {
+          bMem.className = 'touch-btn rounded-lg border-2 border-rose-700 bg-rose-50/50 py-2 text-center text-xs font-bold text-rose-700 shadow-2xs';
+          bMas.className = 'touch-btn rounded-lg border border-slate-200 bg-white py-2 text-center text-xs font-medium text-slate-600 hover:border-slate-400';
         }
       }
 
@@ -2125,8 +2179,10 @@
         var cached = localStorage.getItem('family_finance_cache');
         var cachedRole = localStorage.getItem('family_demo_role');
         var cachedMaster = localStorage.getItem('family_demo_is_master');
+        var cachedEmail = localStorage.getItem('family_demo_email');
         if (cachedRole) appData.userRole = cachedRole;
         if (cachedMaster !== null) appData.isMaster = (cachedMaster === '1');
+        if (cachedEmail) appData.userEmail = cachedEmail;
         if (cached) {
           var parsed = JSON.parse(cached);
           if (parsed.categories) appData.categories = parsed.categories;

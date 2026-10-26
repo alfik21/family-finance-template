@@ -387,46 +387,66 @@
       });
     }
 
+    function syncPreviewRoleButtons(role, isMaster) {
+      var btnS = document.getElementById('btnRoleSuami');
+      var btnI = document.getElementById('btnRoleIstri');
+      var isSuami = (role && (role.indexOf('Suami') !== -1 || role.indexOf('Ayah') !== -1));
+      if (isSuami) {
+        if (btnS) btnS.className = 'touch-btn px-3 py-1.5 rounded-lg bg-emerald-800 text-white transition-all';
+        if (btnI) btnI.className = 'touch-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+      } else {
+        if (btnI) btnI.className = 'touch-btn px-3 py-1.5 rounded-lg bg-rose-700 text-white transition-all';
+        if (btnS) btnS.className = 'touch-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+      }
+    }
+
     function switchRole(email, role, isMaster) {
       currentUser.email = email;
       currentUser.role = role;
       currentUser.isMaster = isMaster;
 
-      var btnS = document.getElementById('btnRoleSuami');
-      var btnI = document.getElementById('btnRoleIstri');
-
-      if (isMaster) {
-        btnS.className = 'touch-btn px-3 py-1.5 rounded-lg bg-emerald-800 text-white transition-all';
-        btnI.className = 'touch-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
-      } else {
-        btnI.className = 'touch-btn px-3 py-1.5 rounded-lg bg-rose-700 text-white transition-all';
-        btnS.className = 'touch-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
-      }
+      syncPreviewRoleButtons(role, isMaster);
 
       var iframe = document.getElementById('appFrame');
       if (iframe && iframe.contentWindow) {
         try {
-          iframe.contentWindow.postMessage({
-            type: 'SWITCH_USER',
-            userEmail: currentUser.email,
-            userRole: currentUser.role,
-            isMaster: currentUser.isMaster
-          }, '*');
+          if (typeof iframe.contentWindow.switchAppRole === 'function') {
+            iframe.contentWindow.switchAppRole(role, isMaster, email);
+          } else {
+            iframe.contentWindow.postMessage({
+              type: 'SWITCH_USER',
+              userEmail: currentUser.email,
+              userRole: currentUser.role,
+              isMaster: currentUser.isMaster
+            }, '*');
 
-          if (iframe.contentWindow.appData) {
-            iframe.contentWindow.appData.userEmail = currentUser.email;
-            iframe.contentWindow.appData.userRole = currentUser.role;
-            iframe.contentWindow.appData.isMaster = currentUser.isMaster;
-            if (typeof iframe.contentWindow.renderSummary === 'function') iframe.contentWindow.renderSummary();
-            if (typeof iframe.contentWindow.renderManageItems === 'function') iframe.contentWindow.renderManageItems();
-            if (typeof iframe.contentWindow.renderAccountView === 'function') iframe.contentWindow.renderAccountView();
-            if (typeof iframe.contentWindow.updateDynamicUI === 'function') iframe.contentWindow.updateDynamicUI();
+            if (iframe.contentWindow.appData) {
+              iframe.contentWindow.appData.userEmail = currentUser.email;
+              iframe.contentWindow.appData.userRole = currentUser.role;
+              iframe.contentWindow.appData.isMaster = currentUser.isMaster;
+              if (typeof iframe.contentWindow.renderSummary === 'function') iframe.contentWindow.renderSummary();
+              if (typeof iframe.contentWindow.renderManageItems === 'function') iframe.contentWindow.renderManageItems();
+              if (typeof iframe.contentWindow.renderAccountView === 'function') iframe.contentWindow.renderAccountView();
+              if (typeof iframe.contentWindow.updateDynamicUI === 'function') iframe.contentWindow.updateDynamicUI();
+            }
           }
         } catch (e) {
-          console.warn('Direct frame access fallback:', e);
+          console.warn('Frame role switch error:', e);
         }
       }
     }
+
+    window.addEventListener('message', function(event) {
+      if (!event.data) return;
+      if (event.data.type === 'ROLE_CHANGED_FROM_APP') {
+        currentUser.email = event.data.userEmail;
+        currentUser.role = event.data.userRole;
+        currentUser.isMaster = event.data.isMaster;
+        syncPreviewRoleButtons(event.data.userRole, event.data.isMaster);
+      }
+    });
+
+    window.syncPreviewRoleUI = syncPreviewRoleButtons;
 
     function setViewMode(mode) {
       var container = document.getElementById('deviceContainer');
