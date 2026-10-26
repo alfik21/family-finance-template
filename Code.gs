@@ -336,7 +336,9 @@ function calculateFinancialState(transSheet, wallets, salaryDate) {
             cycleExpense += amount;
             if (scope === 'Kas Bersama') cycleJointExpense += amount;
           } else if (type === 'Pemasukan') {
-            cycleIncome += amount;
+            if (category !== 'Saldo Awal Tahun') {
+              cycleIncome += amount;
+            }
           }
         }
       }

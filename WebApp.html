@@ -836,16 +836,44 @@
         { name: 'GoPay Istri', owner: 'Istri' }
       ],
       presets: [
-        { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama' },
-        { name: 'Kopi Pagi', amount: 22000, category: 'Makan Luar & Jajan', scope: 'Pribadi Suami' },
-        { name: 'Sayur Pasar', amount: 75000, category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama' },
-        { name: 'Token Listrik', amount: 100000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' },
-        { name: 'Galon & Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama' }
+        { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]' },
+        { name: 'Kopi Pagi', amount: 22000, category: 'Makan Luar & Jajan', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami [Suami]' },
+        { name: 'Sayur Pasar', amount: 75000, category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]' },
+        { name: 'Token Listrik', amount: 100000, category: 'Listrik & Utilitas', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]' },
+        { name: 'Galon & Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]' }
       ],
       salaryDate: 25,
-      recent: [],
+      recent: getInitialDemoTransactions(),
       summary: { monthExpense: 0, jointBalance: 0, monthIncome: 0 }
     };
+
+    function getDemoDate(offsetDays) {
+      var d = new Date();
+      d.setDate(d.getDate() - (offsetDays || 0));
+      var yyyy = d.getFullYear();
+      var mm = String(d.getMonth() + 1).padStart(2, '0');
+      var dd = String(d.getDate()).padStart(2, '0');
+      return yyyy + '-' + mm + '-' + dd;
+    }
+
+    function getInitialDemoTransactions() {
+      return [
+        { id: 'TRX-001', date: getDemoDate(10), type: 'Pemasukan', category: 'Saldo Awal Tahun', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 3500000, note: 'Saldo kas awal bawaan di bank', author: 'sistem@keluarga.com', authorRole: 'Sistem' },
+        { id: 'TRX-002', date: getDemoDate(10), type: 'Pemasukan', category: 'Saldo Awal Tahun', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]', amount: 1000000, note: 'Uang tunai pegangan rumah', author: 'sistem@keluarga.com', authorRole: 'Sistem' },
+        { id: 'TRX-003', date: getDemoDate(10), type: 'Pemasukan', category: 'Saldo Awal Tahun', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami [Suami]', amount: 2500000, note: 'Saldo awal rekening ayah', author: 'suami@keluarga.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-004', date: getDemoDate(10), type: 'Pemasukan', category: 'Saldo Awal Tahun', scope: 'Pribadi Istri', wallet: 'BCA Pribadi Istri [Istri]', amount: 2000000, note: 'Saldo awal tabungan bunda', author: 'istri@keluarga.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-005', date: getDemoDate(1), type: 'Pemasukan', category: 'Gaji Suami', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 8500000, note: 'Gaji bulanan ayah disetor ke kas bersama', author: 'suami@keluarga.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-006', date: getDemoDate(1), type: 'Pemasukan', category: 'Gaji Istri', scope: 'Pribadi Istri', wallet: 'BCA Pribadi Istri [Istri]', amount: 5500000, note: 'Gaji bulanan bunda', author: 'istri@keluarga.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-007', date: getDemoDate(1), type: 'Transfer', category: 'Transfer Kas', scope: 'Transfer', wallet: 'Rekening BCA Bersama [Kas Bersama] ke Kas Tunai Rumah [Kas Bersama]', amount: 500000, note: 'Tarik tunai ATM belanja pasar', author: 'istri@keluarga.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-008', date: getDemoDate(1), type: 'Pengeluaran', category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 780000, note: 'Belanja bulanan supermarket', author: 'istri@keluarga.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-009', date: getDemoDate(1), type: 'Pengeluaran', category: 'Listrik & Utilitas', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 200000, note: 'Token listrik PLN rumah', author: 'suami@keluarga.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-010', date: getDemoDate(1), type: 'Pengeluaran', category: 'Internet & Pulsa', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 375000, note: 'Tagihan WiFi Indihome', author: 'suami@keluarga.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-011', date: getDemoDate(0), type: 'Pengeluaran', category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]', amount: 85000, note: 'Sayur bayam, ayam, & tahu tempe', author: 'istri@keluarga.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-012', date: getDemoDate(0), type: 'Pengeluaran', category: 'Transportasi & Bensin', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami [Suami]', amount: 35000, note: 'Bensin motor kantor', author: 'suami@keluarga.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-013', date: getDemoDate(0), type: 'Pengeluaran', category: 'Makan Luar & Jajan', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami [Suami]', amount: 22000, note: 'Kopi susu pagi kantor', author: 'suami@keluarga.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-014', date: getDemoDate(0), type: 'Pengeluaran', category: 'Pribadi Istri', scope: 'Pribadi Istri', wallet: 'BCA Pribadi Istri [Istri]', amount: 125000, note: 'Skincare serum & toner wajah', author: 'istri@keluarga.com', authorRole: 'Istri (Bunda)' }
+      ];
+    }
 
     function toggleDemoRole() {
       var isSuami = (appData.userRole.indexOf('Suami') !== -1 || appData.userRole.indexOf('Ayah') !== -1);
@@ -892,9 +920,14 @@
     document.addEventListener('DOMContentLoaded', function() {
       initDefaultDate();
       loadCachedData();
+      if (!appData.summary || !appData.summary.jointBalance) {
+        recalculateLocalBalances();
+      }
       renderOptions();
       renderPresets();
       updateDynamicUI();
+      renderSummary();
+      renderRecent();
       renderManageItems();
       renderAccountView();
       fetchServerData();
@@ -2181,7 +2214,9 @@
             cExp += amt;
             if (tx.scope === 'Kas Bersama') cJointExp += amt;
           } else if (tx.type === 'Pemasukan') {
-            cInc += amt;
+            if (tx.category !== 'Saldo Awal Tahun') {
+              cInc += amt;
+            }
           }
         }
       });
