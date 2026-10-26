@@ -5,8 +5,11 @@
   "main": "Code.gs",
   "scripts": {
     "test": "node tests/validate.js",
-    "push": "npx @google/clasp push",
-    "pull": "npx @google/clasp pull"
+    "sync": "node -e \"const fs=require('fs'); fs.copyFileSync('preview.html','index.html'); fs.copyFileSync('preview.html','demo/index.html'); fs.copyFileSync('WebApp.html','demo/WebApp.html'); console.log('Assets synchronized.');\"",
+    "push": "npx @google/clasp push -f",
+    "pull": "npx @google/clasp pull",
+    "deploy:gas": "npx @google/clasp push -f && npx @google/clasp deploy -i AKfycbweiRpK0Y4TOYkAbKx8QAcOn8G25YQB_NVUl0MpcIi1Pb5Dm5AcS66Iiz2AfX02sSZO -d \"Latest update\"",
+    "deploy:all": "npm test && npm run sync && npm run deploy:gas && git add -A && git commit -m \"deploy: automatic sync gas & web\" && git push origin master"
   },
   "keywords": [
     "finance-tracker",
