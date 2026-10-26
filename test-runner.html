@@ -164,18 +164,16 @@
       return [
         { id: 'TRX-001', date: getDemoDate(10), type: 'Pemasukan', category: 'Saldo Awal Tahun', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 3500000, note: 'Saldo kas awal bawaan di bank', author: 'sistem@keluarga.com', authorRole: 'Sistem' },
         { id: 'TRX-002', date: getDemoDate(10), type: 'Pemasukan', category: 'Saldo Awal Tahun', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]', amount: 1000000, note: 'Uang tunai pegangan rumah', author: 'sistem@keluarga.com', authorRole: 'Sistem' },
-        { id: 'TRX-003', date: getDemoDate(10), type: 'Pemasukan', category: 'Saldo Awal Tahun', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami [Suami]', amount: 2500000, note: 'Saldo awal rekening ayah', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
-        { id: 'TRX-004', date: getDemoDate(10), type: 'Pemasukan', category: 'Saldo Awal Tahun', scope: 'Pribadi Istri', wallet: 'BCA Pribadi Istri [Istri]', amount: 2000000, note: 'Saldo awal tabungan bunda', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
-        { id: 'TRX-005', date: getDemoDate(1), type: 'Pemasukan', category: 'Gaji Suami', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 8500000, note: 'Gaji bulanan ayah disetor ke kas bersama', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
-        { id: 'TRX-006', date: getDemoDate(1), type: 'Pemasukan', category: 'Gaji Istri', scope: 'Pribadi Istri', wallet: 'BCA Pribadi Istri [Istri]', amount: 5500000, note: 'Gaji bulanan bunda', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
-        { id: 'TRX-007', date: getDemoDate(1), type: 'Transfer', category: 'Transfer Kas', scope: 'Transfer', wallet: 'Rekening BCA Bersama [Kas Bersama] ke Kas Tunai Rumah [Kas Bersama]', amount: 500000, note: 'Tarik tunai ATM belanja pasar', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
-        { id: 'TRX-008', date: getDemoDate(1), type: 'Pengeluaran', category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 780000, note: 'Belanja bulanan supermarket', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
-        { id: 'TRX-009', date: getDemoDate(1), type: 'Pengeluaran', category: 'Listrik & Utilitas', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 200000, note: 'Token listrik PLN rumah', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
-        { id: 'TRX-010', date: getDemoDate(1), type: 'Pengeluaran', category: 'Internet & Pulsa', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 375000, note: 'Tagihan WiFi Indihome', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
-        { id: 'TRX-011', date: getDemoDate(0), type: 'Pengeluaran', category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]', amount: 85000, note: 'Sayur bayam, ayam, & tahu tempe', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
-        { id: 'TRX-012', date: getDemoDate(0), type: 'Pengeluaran', category: 'Transportasi & Bensin', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami [Suami]', amount: 35000, note: 'Bensin motor kantor', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
-        { id: 'TRX-013', date: getDemoDate(0), type: 'Pengeluaran', category: 'Makan Luar & Jajan', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami [Suami]', amount: 22000, note: 'Kopi susu pagi kantor', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
-        { id: 'TRX-014', date: getDemoDate(0), type: 'Pengeluaran', category: 'Pribadi Istri', scope: 'Pribadi Istri', wallet: 'BCA Pribadi Istri [Istri]', amount: 125000, note: 'Skincare serum & toner wajah', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' }
+        { id: 'TRX-003', date: getDemoDate(10), type: 'Pemasukan', category: 'Saldo Awal Tahun', scope: 'Kas Bersama', wallet: 'Tabungan Bersama [Kas Bersama]', amount: 2000000, note: 'Dana darurat keluarga', author: 'sistem@keluarga.com', authorRole: 'Sistem' },
+        { id: 'TRX-004', date: getDemoDate(1), type: 'Pemasukan', category: 'Setor Gaji Ayah', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 8500000, note: 'Gaji bulanan ayah disetor ke kas bersama', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-005', date: getDemoDate(1), type: 'Pemasukan', category: 'Setor Gaji Bunda', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 5500000, note: 'Gaji bulanan bunda disetor ke kas bersama', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-006', date: getDemoDate(1), type: 'Transfer', category: 'Transfer Kas', scope: 'Transfer', wallet: 'Rekening BCA Bersama [Kas Bersama] ke Kas Tunai Rumah [Kas Bersama]', amount: 500000, note: 'Tarik tunai ATM belanja pasar', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-007', date: getDemoDate(1), type: 'Pengeluaran', category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 780000, note: 'Belanja bulanan supermarket', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-008', date: getDemoDate(1), type: 'Pengeluaran', category: 'Listrik & Utilitas', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 200000, note: 'Token listrik PLN rumah', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-009', date: getDemoDate(1), type: 'Pengeluaran', category: 'Internet & Pulsa', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 375000, note: 'Tagihan WiFi Indihome', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-010', date: getDemoDate(0), type: 'Pengeluaran', category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]', amount: 85000, note: 'Sayur bayam, ayam, & tahu tempe', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' },
+        { id: 'TRX-011', date: getDemoDate(0), type: 'Pengeluaran', category: 'Uang Saku Ayah', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 500000, note: 'Penarikan uang saku operasional & jajan Ayah', author: 'suami@gmail.com', authorRole: 'Suami (Ayah)' },
+        { id: 'TRX-012', date: getDemoDate(0), type: 'Pengeluaran', category: 'Uang Saku Bunda', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]', amount: 500000, note: 'Penarikan uang saku keperluan pribadi Bunda', author: 'istri@gmail.com', authorRole: 'Istri (Bunda)' }
       ];
     }
 
@@ -197,26 +195,30 @@
         'Kebutuhan Anak & Les',
         'Transportasi & Bensin',
         'Cicilan & Kewajiban',
-        'Pribadi Suami',
-        'Pribadi Istri',
+        'Uang Saku Ayah',
+        'Uang Saku Bunda',
         'Sedekah & Orang Tua',
         'Darurat & Tabungan',
         'Lain-lain'
       ],
+      incomeCategories: [
+        'Setor Gaji Ayah',
+        'Setor Gaji Bunda',
+        'Bonus & THR',
+        'Hasil Usaha / Bisnis',
+        'Investasi & Dividen',
+        'Pemberian / Lainnya'
+      ],
       wallets: [
         { name: 'Kas Tunai Rumah', owner: 'Kas Bersama' },
         { name: 'Rekening BCA Bersama', owner: 'Kas Bersama' },
-        { name: 'BCA Pribadi Suami', owner: 'Suami' },
-        { name: 'GoPay Suami', owner: 'Suami' },
-        { name: 'BCA Pribadi Istri', owner: 'Istri' },
-        { name: 'ShopeePay Istri', owner: 'Istri' },
-        { name: 'GoPay Istri', owner: 'Istri' }
+        { name: 'Tabungan Bersama', owner: 'Kas Bersama' }
       ],
       presets: [
-        { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]' },
-        { name: 'Kopi Pagi', amount: 22000, category: 'Makan Luar & Jajan', scope: 'Pribadi Suami', wallet: 'BCA Pribadi Suami [Suami]' },
+        { name: 'Belanja Supermarket', amount: 350000, category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]' },
         { name: 'Sayur Pasar', amount: 75000, category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]' },
         { name: 'Token Listrik', amount: 100000, category: 'Listrik & Utilitas', scope: 'Kas Bersama', wallet: 'Rekening BCA Bersama [Kas Bersama]' },
+        { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]' },
         { name: 'Galon dan Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]' }
       ],
       salaryDate: 25
@@ -486,6 +488,35 @@
                         });
                       }, 150);
                     },
+                    updateTransaction: function(trxId, payload) {
+                      setTimeout(function() {
+                        var idx = mockDatabase.transactions.findIndex(function(t) { return t.id === trxId; });
+                        if (idx !== -1) {
+                          mockDatabase.transactions[idx] = Object.assign({}, mockDatabase.transactions[idx], {
+                            date: payload.date,
+                            type: payload.type,
+                            category: payload.category,
+                            scope: payload.scope,
+                            wallet: payload.wallet,
+                            amount: payload.amount,
+                            note: payload.note,
+                            author: currentUser.email,
+                            authorRole: currentUser.role
+                          });
+                          renderSimulatedTable();
+                          onSuccess({
+                            success: true,
+                            trxId: trxId,
+                            message: 'Transaksi ' + trxId + ' berhasil diperbarui di spreadsheet'
+                          });
+                        } else {
+                          onSuccess({
+                            success: false,
+                            message: 'Transaksi ' + trxId + ' tidak ditemukan'
+                          });
+                        }
+                      }, 150);
+                    },
                     saveConfigData: function(payload) {
                       setTimeout(function() {
                         if (!currentUser.isMaster) {
@@ -525,30 +556,69 @@
                         }
                         var yr = Number(targetYear) || 2026;
                         var remaining = [];
-                        var archivedCount = 0;
+                        var archiveRows = [];
                         mockDatabase.transactions.forEach(function(tx) {
                           var txYr = new Date(tx.date + 'T00:00:00').getFullYear();
                           if (txYr === yr) {
-                            archivedCount++;
+                            archiveRows.push(tx);
                           } else {
                             remaining.push(tx);
                           }
                         });
 
-                        var nextYr = yr + 1;
-                        var carryover = calculateSummary().jointBalance || 1500000;
-                        remaining.unshift({
-                          id: 'TRX-INIT-' + nextYr,
-                          date: nextYr + '-01-01',
-                          type: 'Pemasukan',
-                          category: 'Saldo Awal Tahun',
-                          scope: 'Kas Bersama',
-                          wallet: 'Kas Tunai Rumah [Kas Bersama]',
-                          amount: carryover,
-                          note: 'Saldo bawaan tutup buku tahun ' + yr,
-                          author: currentUser.email,
-                          authorRole: 'Sistem'
+                        var walletBalancesMap = {};
+                        (mockDatabase.wallets || []).forEach(function(w) {
+                          var wName = typeof w === 'object' ? w.name : w;
+                          var wOwner = typeof w === 'object' ? (w.owner || 'Kas Bersama') : 'Kas Bersama';
+                          walletBalancesMap[wName] = { name: wName, owner: wOwner, balance: 0 };
                         });
+
+                        var matchKeyLocal = function(wStr) {
+                          if (!wStr) return null;
+                          var clean = wStr.replace(/\s*\[.*?\]\s*$/, '').trim().toLowerCase();
+                          for (var k in walletBalancesMap) {
+                            if (k.toLowerCase() === clean || k.toLowerCase() === wStr.trim().toLowerCase()) return k;
+                          }
+                          return null;
+                        };
+
+                        archiveRows.forEach(function(tx) {
+                          var amt = Number(tx.amount) || 0;
+                          if (tx.type === 'Pemasukan') {
+                            var kIn = matchKeyLocal(tx.wallet);
+                            if (kIn) walletBalancesMap[kIn].balance += amt;
+                          } else if (tx.type === 'Pengeluaran') {
+                            var kOut = matchKeyLocal(tx.wallet);
+                            if (kOut) walletBalancesMap[kOut].balance -= amt;
+                          } else if (tx.type === 'Transfer') {
+                            var parts = (tx.wallet || '').split(/\s+ke\s+/i);
+                            if (parts.length === 2) {
+                              var kF = matchKeyLocal(parts[0]);
+                              var kT = matchKeyLocal(parts[1]);
+                              if (kF) walletBalancesMap[kF].balance -= amt;
+                              if (kT) walletBalancesMap[kT].balance += amt;
+                            }
+                          }
+                        });
+
+                        var nextYr = yr + 1;
+                        var seq = 1;
+                        for (var wk in walletBalancesMap) {
+                          var wObj = walletBalancesMap[wk];
+                          var dispName = wObj.name + ' [' + wObj.owner + ']';
+                          remaining.unshift({
+                            id: 'TRX-INIT-' + String(seq++).padStart(3, '0') + '-' + nextYr,
+                            date: nextYr + '-01-01',
+                            type: 'Pemasukan',
+                            category: 'Saldo Awal Tahun',
+                            scope: wObj.owner || 'Kas Bersama',
+                            wallet: dispName,
+                            amount: wObj.balance,
+                            note: 'Saldo bawaan tutup buku tahun ' + yr + ' (' + wObj.name + ')',
+                            author: currentUser.email,
+                            authorRole: 'Sistem'
+                          });
+                        }
 
                         mockDatabase.transactions = remaining;
                         renderSimulatedTable();
@@ -557,10 +627,9 @@
                         onSuccess({
                           success: true,
                           archivedYear: yr,
-                          archivedRows: archivedCount,
-                          carryoverBalance: carryover,
+                          archivedRows: archiveRows.length,
                           sheetName: 'ARSIP_' + yr,
-                          message: 'Tutup buku tahun ' + yr + ' berhasil. ' + archivedCount + ' transaksi diarsipkan ke tab ARSIP_' + yr + ' dan saldo kas dioper ke tahun baru.'
+                          message: 'Tutup buku tahun ' + yr + ' berhasil. ' + archiveRows.length + ' transaksi diarsipkan ke tab ARSIP_' + yr + ' dan saldo per dompet dioper ke tahun baru.'
                         });
                       }, 300);
                     },

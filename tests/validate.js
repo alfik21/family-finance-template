@@ -27,7 +27,7 @@ files.forEach(f => {
 // 3. Zero-Emoji / Zero-Symbol Verification
 // Regex for emoji characters
 const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA70}-\u{1FAFF}]/u;
-const checkedFiles = ['Code.gs', 'Setup.gs', 'WebApp.html', 'test-runner.html', 'preview.html'];
+const checkedFiles = ['Code.gs', 'Setup.gs', 'WebApp.html', 'test-runner.html', 'preview.html', 'demo/index.html', 'demo/WebApp.html'];
 let emojiDetected = false;
 
 checkedFiles.forEach(f => {
@@ -120,10 +120,34 @@ if (!codeGs.includes('calculateFinancialState') || !webAppHtml.includes('recalcu
 }
 console.log('✔ Realtime Cumulative Wallet Balances & Cycle Sync: Verified');
 
-// 13. Verification: Flexible 3-Scope Selection & Wallet Reconciliation UI
-if (!webAppHtml.includes('btnScopeBersama') || !webAppHtml.includes('btnScopeSuami') || !webAppHtml.includes('btnScopeIstri') || !webAppHtml.includes('walletBalancesContainer')) {
-  throw new Error('Verification failed: 3-Scope buttons or walletBalancesContainer missing in WebApp.html');
+// 13. Verification: Single-Scope Kas Bersama & Reconciliation
+if (!webAppHtml.includes('walletBalancesContainer') || !webAppHtml.includes('Kas Bersama')) {
+  throw new Error('Verification failed: walletBalancesContainer or Kas Bersama missing in WebApp.html');
 }
-console.log('✔ 3-Scope Transaction Attribution & Wallet Reconciliation UI: Verified');
+console.log('✔ Single-Scope Kas Bersama & Wallet Reconciliation UI: Verified');
+
+// 14. Verification: Quick Edit Transaction (Backend & Frontend)
+if (!codeGs.includes('function updateTransaction') || !webAppHtml.includes('startEditTransaction') || !webAppHtml.includes('bannerEditMode')) {
+  throw new Error('Verification failed: updateTransaction in Code.gs or startEditTransaction/bannerEditMode in WebApp.html missing');
+}
+console.log('✔ Quick Edit Transaction (updateTransaction & inline edit form): Verified');
+
+// 15. Verification: Initial Balance Input on Wallet Creation
+if (!webAppHtml.includes('inputNewWalletInitialBalance') || !webAppHtml.includes('Saldo Awal Tahun')) {
+  throw new Error('Verification failed: inputNewWalletInitialBalance missing in WebApp.html');
+}
+console.log('✔ Wallet Initial Balance Input & Opening Balance Generation: Verified');
+
+// 16. Verification: Salary Cycle Navigation
+if (!webAppHtml.includes('navigateSalaryCycle') || !webAppHtml.includes('btnPeriodPrevCycle') || !webAppHtml.includes('textActiveCycleRange')) {
+  throw new Error('Verification failed: navigateSalaryCycle or cycle navigation buttons missing in WebApp.html');
+}
+console.log('✔ Salary Cycle Navigation & Cycle Range Indicator: Verified');
+
+// 17. Verification: Multi-Wallet Carryover in Annual Closing
+if (!codeGs.includes('TRX-INIT-') || !codeGs.includes('walletMap') || !webAppHtml.includes('walletBalancesMap')) {
+  throw new Error('Verification failed: Multi-wallet carryover logic missing in Code.gs or WebApp.html');
+}
+console.log('✔ Multi-Wallet Balance Preservation in Yearly Archive: Verified');
 
 console.log('\nAll tests completed successfully!');

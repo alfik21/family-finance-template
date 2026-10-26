@@ -565,22 +565,75 @@ function closeAndArchiveYear(targetYear) {
 
     transSheet.getRange(2, 1, Math.max(1, lastRow - 1), 11).clearContent();
 
-    var nextYear = targetYr + 1;
-    var openingRow = [
-      'TRX-INIT-' + nextYear,
-      new Date(nextYear, 0, 1),
-      '=TEXT(B2, "yyyy-mm")',
-      'Pemasukan',
-      'Saldo Awal Tahun',
-      'Kas Bersama',
-      'Kas Tunai Rumah [Kas Bersama]',
-      carryoverBalance,
-      'Saldo bawaan tutup buku tahun ' + targetYr,
-      'Sistem Otomatis - Tutup Buku ' + targetYr,
-      new Date()
-    ];
+    // Hitung saldo riil per masing-masing dompet untuk tahun yang ditutup
+    var configData = loadConfigData(ss);
+    var wallets = configData.wallets || [];
+    var walletMap = {};
+    for (var w = 0; w < wallets.length; w++) {
+      var wItem = wallets[w];
+      var wName = typeof wItem === 'object' ? wItem.name : wItem;
+      var wOwner = typeof wItem === 'object' ? (wItem.owner || 'Kas Bersama') : 'Kas Bersama';
+      walletMap[wName] = { name: wName, owner: wOwner, balance: 0 };
+    }
 
-    var newTransRows = [openingRow];
+    var matchWalletKeyLocal = function(wStr) {
+      if (!wStr) return null;
+      var clean = wStr.replace(/\s*\[.*?\]\s*$/, '').trim().toLowerCase();
+      for (var k in walletMap) {
+        if (k.toLowerCase() === clean || k.toLowerCase() === wStr.trim().toLowerCase()) return k;
+      }
+      return null;
+    };
+
+    for (var a = 0; a < archiveRows.length; a++) {
+      var aRow = archiveRows[a];
+      var aType = aRow[3];
+      var aWalStr = (aRow[6] || '').toString();
+      var aAmount = Number(aRow[7]) || 0;
+
+      if (aType === 'Pemasukan') {
+        var kIn = matchWalletKeyLocal(aWalStr);
+        if (kIn) walletMap[kIn].balance += aAmount;
+      } else if (aType === 'Pengeluaran') {
+        var kOut = matchWalletKeyLocal(aWalStr);
+        if (kOut) walletMap[kOut].balance -= aAmount;
+      } else if (aType === 'Transfer') {
+        var parts = aWalStr.split(/\s+ke\s+/i);
+        if (parts.length === 2) {
+          var kFrom = matchWalletKeyLocal(parts[0]);
+          var kTo = matchWalletKeyLocal(parts[1]);
+          if (kFrom) walletMap[kFrom].balance -= aAmount;
+          if (kTo) walletMap[kTo].balance += aAmount;
+        }
+      }
+    }
+
+    var nextYear = targetYr + 1;
+    var openingRows = [];
+    var seq = 1;
+
+    for (var wk in walletMap) {
+      var wObj = walletMap[wk];
+      var displayName = wObj.name + ' [' + wObj.owner + ']';
+      openingRows.push([
+        'TRX-INIT-' + String(seq++).padStart(3, '0') + '-' + nextYear,
+        new Date(nextYear, 0, 1),
+        '=TEXT(B' + (openingRows.length + 2) + ', "yyyy-mm")',
+        'Pemasukan',
+        'Saldo Awal Tahun',
+        wObj.owner || 'Kas Bersama',
+        displayName,
+        wObj.balance,
+        'Saldo bawaan tutup buku tahun ' + targetYr + ' (' + wObj.name + ')',
+        'Sistem Otomatis - Tutup Buku ' + targetYr,
+        new Date()
+      ]);
+    }
+
+    var newTransRows = [];
+    for (var op = 0; op < openingRows.length; op++) {
+      newTransRows.push(openingRows[op]);
+    }
     for (var rem = 0; rem < remainingRows.length; rem++) {
       newTransRows.push(remainingRows[rem]);
     }
@@ -793,6 +846,80 @@ function deleteTransaction(trxId) {
     return { success: false, message: err.toString() };
   } finally {
     lock.releaseLock();
+  }
+}
+
+function updateTransaction(trxId, payload) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+  } catch (e) {
+    return { success: false, message: 'Server sedang sibuk, coba sesaat lagi.' };
+  }
+
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var transSheet = ss.getSheetByName('TRANSAKSI');
+    if (!transSheet) {
+      return { success: false, message: 'Sheet TRANSAKSI tidak ditemukan.' };
+    }
+
+    var lastRow = transSheet.getLastRow();
+    if (lastRow <= 1) {
+      return { success: false, message: 'Tidak ada data transaksi di sheet.' };
+    }
+
+    var ids = transSheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    var rowToUpdate = -1;
+    for (var i = 0; i < ids.length; i++) {
+      if ((ids[i][0] || '').toString().trim() === (trxId || '').toString().trim()) {
+        rowToUpdate = i + 2;
+        break;
+      }
+    }
+
+    if (rowToUpdate === -1) {
+      return { success: false, message: 'Transaksi ' + trxId + ' tidak ditemukan di sheet.' };
+    }
+
+    var rawDate = payload.date ? new Date(payload.date + 'T00:00:00') : new Date();
+    var amount = Number(payload.amount) || 0;
+    var type = payload.type || 'Pengeluaran';
+    var category = payload.category || 'Lain-lain';
+    var scope = payload.scope || 'Kas Bersama';
+    var wallet = payload.wallet || '';
+    var note = payload.note || '';
+
+    var updatedRow = [
+      trxId,
+      rawDate,
+      '=TEXT(B' + rowToUpdate + ', "yyyy-mm")',
+      type,
+      category,
+      scope,
+      wallet,
+      amount,
+      note,
+      payload.authorRole || payload.author || transSheet.getRange(rowToUpdate, 10).getValue(),
+      new Date()
+    ];
+
+    transSheet.getRange(rowToUpdate, 1, 1, 11).setValues([updatedRow]);
+    transSheet.getRange(rowToUpdate, 2).setNumberFormat('yyyy-mm-dd');
+    transSheet.getRange(rowToUpdate, 8).setNumberFormat('Rp #,##0');
+    transSheet.getRange(rowToUpdate, 11).setNumberFormat('yyyy-mm-dd hh:mm');
+
+    SpreadsheetApp.flush();
+
+    return {
+      success: true,
+      trxId: trxId,
+      message: 'Transaksi ' + trxId + ' berhasil diperbarui.'
+    };
+  } catch (err) {
+    return { success: false, message: 'Gagal memperbarui transaksi: ' + err.toString() };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
   }
 }
 
