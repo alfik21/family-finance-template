@@ -603,6 +603,7 @@
                           return;
                         }
                         if (payload.categories) mockDatabase.categories = payload.categories;
+                        if (payload.incomeCategories) mockDatabase.incomeCategories = payload.incomeCategories;
                         if (payload.wallets) mockDatabase.wallets = payload.wallets;
                         if (payload.salaryDate) mockDatabase.salaryDate = payload.salaryDate;
                         onSuccess({ success: true, message: 'Konfigurasi tersimpan di simulasi sheet' });
@@ -726,9 +727,14 @@
                         var end = new Date(endDate + 'T23:59:59');
                         var totalInc = 0;
                         var totalExp = 0;
+                        var uangSakuAyah = 0;
+                        var uangSakuBunda = 0;
                         var scopes = { 'Kas Bersama': 0, 'Pribadi Suami': 0, 'Pribadi Istri': 0 };
                         var catMap = {};
                         var count = 0;
+
+                        var sAyah = ((mockDatabase.accounts && mockDatabase.accounts.suamiLabel) || 'Ayah').toLowerCase();
+                        var sBunda = ((mockDatabase.accounts && mockDatabase.accounts.istriLabel) || 'Bunda').toLowerCase();
 
                         mockDatabase.transactions.forEach(function(tx) {
                           var tDate = new Date(tx.date + 'T00:00:00');
@@ -738,6 +744,13 @@
                               totalExp += tx.amount;
                               scopes[tx.scope] = (scopes[tx.scope] || 0) + tx.amount;
                               catMap[tx.category] = (catMap[tx.category] || 0) + tx.amount;
+
+                              var catLower = (tx.category || '').toLowerCase();
+                              if (catLower === 'uang saku ayah' || catLower === ('uang saku ' + sAyah)) {
+                                uangSakuAyah += tx.amount;
+                              } else if (catLower === 'uang saku bunda' || catLower === ('uang saku ' + sBunda)) {
+                                uangSakuBunda += tx.amount;
+                              }
                             } else if (tx.type === 'Pemasukan') {
                               if (tx.category !== 'Saldo Awal Tahun') {
                                 totalInc += tx.amount;
@@ -745,6 +758,8 @@
                             }
                           }
                         });
+
+                        var operasionalBersama = Math.max(0, totalExp - uangSakuAyah - uangSakuBunda);
 
                         var cats = [];
                         for (var c in catMap) {
@@ -762,6 +777,11 @@
                           totalExpense: totalExp,
                           netCashflow: totalInc - totalExp,
                           byScope: scopes,
+                          byPos: {
+                            operasional: operasionalBersama,
+                            ayah: uangSakuAyah,
+                            bunda: uangSakuBunda
+                          },
                           byCategory: cats,
                           txCount: count
                         });

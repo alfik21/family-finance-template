@@ -32,6 +32,7 @@ function getInitialData() {
   var dashSheet = ss.getSheetByName('DASHBOARD');
 
   var categories = [];
+  var incomeCategories = [];
   var wallets = [];
   var presets = [];
   var salaryDate = 25;
@@ -65,6 +66,24 @@ function getInitialData() {
           owner: walOwner
         });
       }
+    }
+
+    var incValues = configSheet.getRange('I2:I50').getValues();
+    for (var m = 0; m < incValues.length; m++) {
+      var incCat = incValues[m][0];
+      if (incCat && incCat.toString().trim() !== '') {
+        incomeCategories.push(incCat.toString().trim());
+      }
+    }
+    if (incomeCategories.length === 0) {
+      incomeCategories = [
+        'Setor Gaji Ayah',
+        'Setor Gaji Bunda',
+        'Bonus & THR',
+        'Hasil Usaha / Bisnis',
+        'Investasi & Dividen',
+        'Pemberian / Lainnya'
+      ];
     }
 
     // Baca preset cepat secara cerdas & tahan pergeseran kolom
@@ -247,6 +266,7 @@ function getInitialData() {
       masterRole: masterRole
     },
     categories: categories,
+    incomeCategories: incomeCategories,
     wallets: wallets,
     walletBalances: fin.walletBalances,
     presets: smartPresets,
@@ -955,6 +975,14 @@ function saveConfigData(payload) {
       }
     }
 
+    if (payload.incomeCategories && Array.isArray(payload.incomeCategories)) {
+      configSheet.getRange('I2:I50').clearContent();
+      var incRows = payload.incomeCategories.map(function(c) { return [c]; });
+      if (incRows.length > 0) {
+        configSheet.getRange(2, 9, incRows.length, 1).setValues(incRows);
+      }
+    }
+
     if (payload.wallets && Array.isArray(payload.wallets)) {
       configSheet.getRange('E2:F50').clearContent();
       var walRows = payload.wallets.map(function(w) {
@@ -1045,6 +1073,7 @@ function getPeriodSummary(startDateStr, endDateStr) {
         totalExpense: 0,
         netCashflow: 0,
         byScope: { 'Kas Bersama': 0, 'Pribadi Suami': 0, 'Pribadi Istri': 0 },
+        byPos: { operasional: 0, ayah: 0, bunda: 0 },
         byCategory: [],
         txCount: 0
       };
@@ -1056,6 +1085,8 @@ function getPeriodSummary(startDateStr, endDateStr) {
 
     var totalIncome = 0;
     var totalExpense = 0;
+    var uangSakuAyah = 0;
+    var uangSakuBunda = 0;
     var byScope = { 'Kas Bersama': 0, 'Pribadi Suami': 0, 'Pribadi Istri': 0 };
     var catMap = {};
     var count = 0;
@@ -1082,6 +1113,13 @@ function getPeriodSummary(startDateStr, endDateStr) {
           }
 
           catMap[category] = (catMap[category] || 0) + amount;
+
+          var catLower = category.toLowerCase();
+          if (catLower === 'uang saku ayah' || catLower.indexOf('uang saku ayah') !== -1) {
+            uangSakuAyah += amount;
+          } else if (catLower === 'uang saku bunda' || catLower.indexOf('uang saku bunda') !== -1) {
+            uangSakuBunda += amount;
+          }
         } else if (type === 'Pemasukan') {
           if (category !== 'Saldo Awal Tahun') {
             totalIncome += amount;
@@ -1089,6 +1127,8 @@ function getPeriodSummary(startDateStr, endDateStr) {
         }
       }
     }
+
+    var operasionalBersama = Math.max(0, totalExpense - uangSakuAyah - uangSakuBunda);
 
     var byCategory = [];
     for (var catName in catMap) {
@@ -1110,6 +1150,11 @@ function getPeriodSummary(startDateStr, endDateStr) {
       totalExpense: totalExpense,
       netCashflow: totalIncome - totalExpense,
       byScope: byScope,
+      byPos: {
+        operasional: operasionalBersama,
+        ayah: uangSakuAyah,
+        bunda: uangSakuBunda
+      },
       byCategory: byCategory,
       txCount: count
     };

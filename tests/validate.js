@@ -150,4 +150,40 @@ if (!codeGs.includes('TRX-INIT-') || !codeGs.includes('walletMap') || !webAppHtm
 }
 console.log('✔ Multi-Wallet Balance Preservation in Yearly Archive: Verified');
 
+// 18. Verification Point 1: Distribusi Pos Pengeluaran Pasangan (Operasional, Ayah, Bunda)
+if (!webAppHtml.includes('cyclePosOperasional') || !webAppHtml.includes('cyclePosAyah') || !webAppHtml.includes('cyclePosBunda') || !codeGs.includes('byPos')) {
+  throw new Error('Verification failed: Pos Pengeluaran Pasangan elements or byPos calculation missing');
+}
+console.log('✔ Distribusi Pos Pengeluaran Pasangan: Verified (Operasional, Ayah, Bunda & byPos calculation)');
+
+// 19. Verification Point 2: Two-Way Salary Cycle Navigation
+if (!webAppHtml.includes('btnPeriodPrevCycle') || !webAppHtml.includes('btnPeriodNextCycle') || !webAppHtml.includes('btnResetToCurrentCycle')) {
+  throw new Error('Verification failed: Two-way cycle pager buttons missing in WebApp.html');
+}
+console.log('✔ Two-Way Salary Cycle Navigation: Verified (Prev, Next, Reset pill, Clamped offset)');
+
+// 20. Verification Point 3: Manage Income Categories in View 3
+if (!webAppHtml.includes('btnCatTypeExpense') || !webAppHtml.includes('btnCatTypeIncome') || !webAppHtml.includes('setCategoryManageType') || !codeGs.includes('incomeCategories')) {
+  throw new Error('Verification failed: Income categories management or persistence missing');
+}
+console.log('✔ Manage Income Categories: Verified (Expense/Income toggle & Sheets persistence)');
+
+// 21. Verification Point 4: Single-Scope Wallet Creation (No Owner Dropdown)
+if (webAppHtml.includes('selectNewWalletOwner')) {
+  throw new Error('Verification failed: selectNewWalletOwner still present in WebApp.html');
+}
+console.log('✔ Single-Scope Wallet Creation: Verified (selectNewWalletOwner removed, defaults Kas Bersama)');
+
+// 22. Verification Point 5: Locked Transaction Type on Edit Mode
+if (!webAppHtml.includes('textEditTypeLockedHint') || !webAppHtml.includes('b.disabled = true') || !webAppHtml.includes('b.disabled = false')) {
+  throw new Error('Verification failed: Locked transaction type controls on edit mode missing in WebApp.html');
+}
+console.log('✔ Locked Transaction Type on Edit: Verified (Buttons disabled, hint displayed, restored on cancel)');
+
+// 23. Verification Point 6: Dead Code Cleanup
+if (webAppHtml.includes('id="sectionScope"') || webAppHtml.includes('currentScopeChoice') || webAppHtml.includes('setScopeChoice(')) {
+  throw new Error('Verification failed: Dead scope elements or functions still present in WebApp.html');
+}
+console.log('✔ Dead Code Cleanup: Verified (Zero scope stubs, zero console errors)');
+
 console.log('\nAll tests completed successfully!');

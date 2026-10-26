@@ -136,7 +136,7 @@
               <input type="hidden" id="editingTxId" value="">
 
               <!-- Type Selector (Pengeluaran vs Pemasukan vs Transfer) -->
-              <div class="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/60">
+              <div class="mb-2 grid grid-cols-3 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/60">
                 <button type="button" onclick="setType('Pengeluaran')" id="btnTypeExpense" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all bg-sage-800 text-white shadow-xs">
                   Pengeluaran
                 </button>
@@ -147,18 +147,7 @@
                   Transfer Kas
                 </button>
               </div>
-
-              <!-- Scope Section: Single-Scope Kas Bersama Policy -->
-              <div id="sectionScope" class="hidden">
-                <button type="button" id="btnScopeBersama"></button>
-                <button type="button" id="btnScopeSuami"></button>
-                <button type="button" id="btnScopeIstri"></button>
-                <span id="textScopeBersama">Kas Bersama</span>
-                <span id="textScopeSuami">Pribadi Suami</span>
-                <span id="textScopeIstri">Pribadi Istri</span>
-                <span id="labelScope"></span>
-                <p id="scopeHelpText"></p>
-              </div>
+              <p id="textEditTypeLockedHint" class="hidden mb-3 text-center text-[11px] font-semibold text-amber-700 bg-amber-50 py-1 px-2 rounded-lg border border-amber-200">Tipe transaksi tidak dapat diubah saat mengedit</p>
 
               <!-- Amount Input Field -->
               <div class="mb-4">
@@ -338,23 +327,31 @@
           <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm space-y-3">
             <div class="flex items-center justify-between">
               <h2 class="text-xs font-bold uppercase tracking-wider text-ink">Navigasi Siklus Gajian</h2>
-              <span id="labelActiveCycleBadge" class="rounded-full bg-sage-100 px-2 py-0.5 text-[10px] font-bold text-sage-800 border border-sage-200">Siklus Berjalan</span>
+              <div class="flex items-center gap-1.5">
+                <button type="button" id="btnResetToCurrentCycle" onclick="navigateSalaryCycle(0)" class="hidden touch-btn rounded-full bg-sage-800 px-2.5 py-0.5 text-[10px] font-bold text-white hover:bg-sage-700 transition-all">
+                  Kembali ke Siklus Saat Ini
+                </button>
+                <span id="labelActiveCycleBadge" class="rounded-full bg-sage-100 px-2 py-0.5 text-[10px] font-bold text-sage-800 border border-sage-200">Siklus Berjalan</span>
+              </div>
             </div>
             
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" onclick="navigateSalaryCycle(-1)" id="btnPeriodPrevCycle" class="touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 hover:text-ink transition-all flex items-center justify-center gap-1">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                <span>Siklus Sebelumnya</span>
+            <!-- Two-Way Pager Layout: [ < Siklus Lalu ] [ Banner Rentang Siklus ] [ Siklus Depan > ] -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-stretch">
+              <button type="button" onclick="navigateSalaryCycle(-1)" id="btnPeriodPrevCycle" class="touch-btn sm:col-span-3 rounded-xl border border-borderline bg-white py-2.5 px-2 text-center text-xs font-semibold text-ink hover:border-slate-400 hover:bg-slate-50 transition-all flex items-center justify-center gap-1">
+                <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <span>Siklus Lalu</span>
               </button>
-              <button type="button" onclick="navigateSalaryCycle(0)" id="btnPeriodCurrentCycle" class="touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all flex items-center justify-center gap-1">
-                <span>Siklus Berjalan</span>
-              </button>
-            </div>
 
-            <!-- Date Range Indicator Banner -->
-            <div class="rounded-xl bg-surface border border-borderline/80 p-2.5 text-center">
-              <span class="text-[11px] text-muted block">Rentang Tanggal Siklus</span>
-              <span id="textActiveCycleRange" class="text-xs font-bold text-ink">Memuat rentang siklus...</span>
+              <!-- Date Range Indicator Banner in Center -->
+              <div class="sm:col-span-6 rounded-xl bg-surface border border-borderline/80 py-2 px-3 text-center flex flex-col justify-center">
+                <span class="text-[10px] text-muted font-medium block">Rentang Tanggal Siklus</span>
+                <span id="textActiveCycleRange" class="text-xs font-bold text-ink">Memuat rentang siklus...</span>
+              </div>
+
+              <button type="button" onclick="navigateSalaryCycle(1)" id="btnPeriodNextCycle" class="touch-btn sm:col-span-3 rounded-xl border border-borderline bg-white py-2.5 px-2 text-center text-xs font-semibold text-ink hover:border-slate-400 hover:bg-slate-50 transition-all flex items-center justify-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-borderline">
+                <span>Siklus Depan</span>
+                <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
             </div>
 
             <!-- Custom Date Range Accordion / Pickers -->
@@ -376,38 +373,38 @@
             </details>
           </section>
 
-          <!-- Breakdown Beban Pasangan (Kas Bersama vs Pribadi) -->
+          <!-- Breakdown Pos Pasangan -->
           <section class="rounded-2xl border border-borderline bg-white p-4 shadow-sm">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-ink mb-3">Distribusi Beban Pasangan</h3>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink mb-3">Distribusi Pos Pengeluaran Pasangan</h3>
             
             <div class="space-y-3">
               <div>
                 <div class="flex justify-between text-xs font-semibold mb-1">
-                  <span>Kas Bersama</span>
-                  <span id="cycleScopeJoint" class="num-tabular font-bold text-ink">Rp 0</span>
+                  <span>Operasional Rumah Tangga Bersama</span>
+                  <span id="cyclePosOperasional" class="num-tabular font-bold text-ink">Rp 0 (0%)</span>
                 </div>
                 <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                  <div id="barScopeJoint" class="h-full bg-sage-700 transition-all" style="width: 0%"></div>
+                  <div id="barPosOperasional" class="h-full bg-sage-700 transition-all" style="width: 0%"></div>
                 </div>
               </div>
 
               <div>
                 <div class="flex justify-between text-xs font-semibold mb-1">
-                  <span>Pribadi Suami</span>
-                  <span id="cycleScopeSuami" class="num-tabular font-bold text-ink">Rp 0</span>
+                  <span id="labelPosAyah">Uang Saku Ayah</span>
+                  <span id="cyclePosAyah" class="num-tabular font-bold text-ink">Rp 0 (0%)</span>
                 </div>
                 <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                  <div id="barScopeSuami" class="h-full bg-slate-600 transition-all" style="width: 0%"></div>
+                  <div id="barPosAyah" class="h-full bg-slate-600 transition-all" style="width: 0%"></div>
                 </div>
               </div>
 
               <div>
                 <div class="flex justify-between text-xs font-semibold mb-1">
-                  <span>Pribadi Istri</span>
-                  <span id="cycleScopeIstri" class="num-tabular font-bold text-ink">Rp 0</span>
+                  <span id="labelPosBunda">Uang Saku Bunda</span>
+                  <span id="cyclePosBunda" class="num-tabular font-bold text-ink">Rp 0 (0%)</span>
                 </div>
                 <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                  <div id="barScopeIstri" class="h-full bg-amber-600 transition-all" style="width: 0%"></div>
+                  <div id="barPosBunda" class="h-full bg-amber-600 transition-all" style="width: 0%"></div>
                 </div>
               </div>
             </div>
@@ -470,9 +467,21 @@
 
       <!-- SUB-PANEL 1: KELOLA KATEGORI -->
       <div id="subPanelCat" class="space-y-3 max-w-2xl mx-auto">
+        <!-- Toggle Mini: Kategori Pengeluaran vs Kategori Pemasukan -->
+        <div class="grid grid-cols-2 gap-1 rounded-xl bg-sage-50 p-1 border border-borderline/60">
+          <button type="button" onclick="setCategoryManageType('expense')" id="btnCatTypeExpense" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all bg-sage-800 text-white shadow-xs flex items-center justify-center gap-1.5">
+            <span>Kategori Pengeluaran</span>
+            <span id="countCatExpenseBadge" class="rounded-full bg-white/20 px-1.5 py-0.2 text-[10px]">0</span>
+          </button>
+          <button type="button" onclick="setCategoryManageType('income')" id="btnCatTypeIncome" class="touch-btn rounded-lg py-2 text-xs font-semibold transition-all text-muted hover:text-ink flex items-center justify-center gap-1.5">
+            <span>Kategori Pemasukan</span>
+            <span id="countCatIncomeBadge" class="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-muted">0</span>
+          </button>
+        </div>
+
         <!-- Add New Category Card (Master only) -->
         <div id="cardAddCategory" class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
-          <label for="inputNewCategory" class="block text-xs font-bold text-ink mb-1.5">Tambah Kategori Baru</label>
+          <label for="inputNewCategory" id="labelCatAddTitle" class="block text-xs font-bold text-ink mb-1.5">Tambah Kategori Pengeluaran Baru</label>
           <div class="flex gap-2">
             <input type="text" id="inputNewCategory" placeholder="Misal: Les Musik, Kucing, Skincare..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
             <button type="button" onclick="addNewCategory()" class="touch-btn shrink-0 rounded-xl bg-sage-800 px-4 py-2.5 text-xs font-bold text-white hover:bg-sage-700">
@@ -484,7 +493,7 @@
         <!-- Category Items List -->
         <div class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs">
           <div class="flex items-center justify-between mb-2.5 border-b border-borderline pb-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-muted">Daftar Kategori Aktif</span>
+            <span id="labelCatListTitle" class="text-xs font-bold uppercase tracking-wider text-muted">Daftar Kategori Pengeluaran Aktif</span>
             <span id="labelCatDeleteHint" class="text-[11px] text-muted">Ketuk Hapus untuk menghapus</span>
           </div>
           <div id="manageCategoryList" class="divide-y divide-borderline/60 max-h-[400px] overflow-y-auto pr-1">
@@ -498,26 +507,19 @@
         <!-- Add New Wallet Card (Master only) -->
         <div id="cardAddWallet" class="rounded-2xl border border-borderline bg-white p-3.5 shadow-xs space-y-2.5">
           <label class="block text-xs font-bold text-ink">Tambah Rekening / Dompet Baru</label>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div class="sm:col-span-2">
-              <input type="text" id="inputNewWallet" placeholder="Nama dompet (misal: Bank Mandiri, SeaBank)..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
-            </div>
+          <div class="space-y-2">
             <div>
-              <select id="selectNewWalletOwner" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2 text-xs font-medium text-ink focus:border-sage-700 focus:outline-none">
-                <option value="Kas Bersama">Kas Bersama</option>
-                <option value="Suami">Milik Suami</option>
-                <option value="Istri">Milik Istri</option>
-              </select>
+              <input type="text" id="inputNewWallet" placeholder="Nama dompet (misal: Bank Mandiri, SeaBank)..." class="w-full rounded-xl border border-borderline bg-surface px-3 py-2.5 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
             </div>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div class="sm:col-span-2">
-              <input type="text" inputmode="numeric" id="inputNewWalletInitialBalance" placeholder="Saldo saat ini (cth: 1.500.000, opsional)" oninput="formatCurrencyInput(this)" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
-            </div>
-            <div class="flex justify-end">
-              <button type="button" onclick="addNewWallet()" class="touch-btn w-full rounded-xl bg-sage-800 px-4 py-2 text-xs font-bold text-white hover:bg-sage-700">
-                Tambah Dompet
-              </button>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="sm:col-span-2">
+                <input type="text" inputmode="numeric" id="inputNewWalletInitialBalance" placeholder="Saldo saat ini (cth: 1.500.000, opsional)" oninput="formatCurrencyInput(this)" class="w-full rounded-xl border border-borderline bg-surface px-3 py-2 text-xs font-medium text-ink placeholder:text-muted focus:border-sage-700 focus:bg-white focus:outline-none">
+              </div>
+              <div class="flex justify-end">
+                <button type="button" onclick="addNewWallet()" class="touch-btn w-full rounded-xl bg-sage-800 px-4 py-2 text-xs font-bold text-white hover:bg-sage-700">
+                  Tambah Dompet
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -823,8 +825,8 @@
     // State Management
     var currentMainTab = 'record'; // 'record' | 'summary' | 'manage' | 'account'
     var currentManageSubTab = 'categories'; // 'categories' | 'wallets' | 'salary'
+    var currentManageCategoryType = 'expense'; // 'expense' | 'income'
     var currentType = 'Pengeluaran';
-    var currentScopeChoice = 'bersama'; // 'bersama' | 'pribadi'
 
     var appData = {
       isMaster: true,
@@ -924,17 +926,6 @@
         localStorage.setItem('family_demo_email', resolvedEmail);
         localStorage.setItem('family_demo_is_master', resolvedIsMaster ? '1' : '0');
       } catch (e) {}
-
-      // Update scope selection on Catat tab to match the active user
-      if (typeof currentType !== 'undefined' && currentType !== 'Transfer') {
-        if (typeof currentScopeChoice !== 'undefined') {
-          if (currentScopeChoice === 'suami' && !isSuami) {
-            if (typeof setScopeChoice === 'function') setScopeChoice('istri');
-          } else if (currentScopeChoice === 'istri' && isSuami) {
-            if (typeof setScopeChoice === 'function') setScopeChoice('suami');
-          }
-        }
-      }
 
       renderSummary();
       renderAccountView();
@@ -1094,7 +1085,9 @@
       input.value = val === 0 ? '' : val.toLocaleString('id-ID');
     }
 
-    function setType(type) {
+    function setType(type, force) {
+      var editingId = (document.getElementById('editingTxId') || {}).value;
+      if (editingId && !force) return;
       currentType = type;
       var btnExp = document.getElementById('btnTypeExpense');
       var btnInc = document.getElementById('btnTypeIncome');
@@ -1108,7 +1101,6 @@
       btnTrf.className = 'touch-btn rounded-lg py-2 text-xs font-semibold transition-all ' + (type === 'Transfer' ? activeClass : inactiveClass);
 
       var btnSubmit = document.getElementById('btnSubmitText');
-      var editingId = (document.getElementById('editingTxId') || {}).value;
       if (editingId) {
         btnSubmit.innerText = 'Perbarui Transaksi';
       } else if (type === 'Pengeluaran') {
@@ -1122,89 +1114,28 @@
       updateDynamicUI();
     }
 
-    function setScopeChoice(choice) {
-      currentScopeChoice = choice;
-      var sBersama = document.getElementById('btnScopeBersama');
-      var sSuami = document.getElementById('btnScopeSuami');
-      var sIstri = document.getElementById('btnScopeIstri');
-
-      var activeStyle = 'touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all';
-      var inactiveStyle = 'touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 transition-all';
-
-      if (sBersama) sBersama.className = choice === 'bersama' ? activeStyle : inactiveStyle;
-      if (sSuami) sSuami.className = choice === 'suami' ? activeStyle : inactiveStyle;
-      if (sIstri) sIstri.className = choice === 'istri' ? activeStyle : inactiveStyle;
-
-      var helpText = document.getElementById('scopeHelpText');
-      if (helpText) {
-        if (currentType === 'Pengeluaran') {
-          if (choice === 'bersama') {
-            helpText.textContent = 'Mencatat belanja untuk operasional rumah tangga bersama.';
-          } else if (choice === 'suami') {
-            helpText.textContent = 'Mencatat pengeluaran pribadi Suami (kantong/dompet Suami).';
-          } else {
-            helpText.textContent = 'Mencatat pengeluaran pribadi Istri (kantong/dompet Istri).';
-          }
-        } else if (currentType === 'Pemasukan') {
-          if (choice === 'bersama') {
-            helpText.textContent = 'Uang masuk disetor untuk menambah saldo Kas Bersama rumah tangga.';
-          } else if (choice === 'suami') {
-            helpText.textContent = 'Pemasukan pribadi ke rekening Suami.';
-          } else {
-            helpText.textContent = 'Pemasukan pribadi ke rekening Istri.';
-          }
-        }
-      }
-    }
-
     function updateDynamicUI() {
-      var sectionScope = document.getElementById('sectionScope');
       var sectionPresets = document.getElementById('sectionPresets');
       var sectionCatAndWallet = document.getElementById('sectionCatAndWallet');
       var sectionTransfer = document.getElementById('sectionTransfer');
-      var labelScope = document.getElementById('labelScope');
-      var textScopeBersama = document.getElementById('textScopeBersama');
-      var textScopeSuami = document.getElementById('textScopeSuami');
-      var textScopeIstri = document.getElementById('textScopeIstri');
       var labelWallet = document.getElementById('labelWallet');
 
-      var sSuamiLabel = (appData.accounts && appData.accounts.suamiLabel) || 'Suami';
-      var sIstriLabel = (appData.accounts && appData.accounts.istriLabel) || 'Istri';
-
-      if (sectionScope) sectionScope.classList.add('hidden');
-
       if (currentType === 'Pengeluaran') {
-        sectionPresets.classList.remove('hidden');
-        sectionCatAndWallet.classList.remove('hidden');
-        sectionTransfer.classList.add('hidden');
-
-        if (labelScope) labelScope.textContent = 'Peruntukan Pengeluaran';
-        if (textScopeBersama) textScopeBersama.textContent = 'Kas Bersama';
-        if (textScopeSuami) textScopeSuami.textContent = 'Pribadi ' + sSuamiLabel;
-        if (textScopeIstri) textScopeIstri.textContent = 'Pribadi ' + sIstriLabel;
+        if (sectionPresets) sectionPresets.classList.remove('hidden');
+        if (sectionCatAndWallet) sectionCatAndWallet.classList.remove('hidden');
+        if (sectionTransfer) sectionTransfer.classList.add('hidden');
         if (labelWallet) labelWallet.textContent = 'Sumber Rekening / Dompet';
-        
         renderOptions();
-        setScopeChoice(currentScopeChoice);
-
       } else if (currentType === 'Pemasukan') {
-        sectionPresets.classList.add('hidden');
-        sectionCatAndWallet.classList.remove('hidden');
-        sectionTransfer.classList.add('hidden');
-
-        if (labelScope) labelScope.textContent = 'Tujuan Alokasi Pemasukan';
-        if (textScopeBersama) textScopeBersama.textContent = 'Kas Bersama';
-        if (textScopeSuami) textScopeSuami.textContent = 'Rekening ' + sSuamiLabel;
-        if (textScopeIstri) textScopeIstri.textContent = 'Rekening ' + sIstriLabel;
+        if (sectionPresets) sectionPresets.classList.add('hidden');
+        if (sectionCatAndWallet) sectionCatAndWallet.classList.remove('hidden');
+        if (sectionTransfer) sectionTransfer.classList.add('hidden');
         if (labelWallet) labelWallet.textContent = 'Rekening Penerima';
-
         renderOptions();
-        setScopeChoice(currentScopeChoice);
-
       } else if (currentType === 'Transfer') {
-        sectionPresets.classList.add('hidden');
-        sectionCatAndWallet.classList.add('hidden');
-        sectionTransfer.classList.remove('hidden');
+        if (sectionPresets) sectionPresets.classList.add('hidden');
+        if (sectionCatAndWallet) sectionCatAndWallet.classList.add('hidden');
+        if (sectionTransfer) sectionTransfer.classList.remove('hidden');
         renderOptions();
         updateTransferRoutePreview();
       }
@@ -1233,13 +1164,6 @@
       if (p.category) {
         document.getElementById('categorySelect').value = p.category;
       }
-      if (p.scope) {
-        if (p.scope === 'Kas Bersama') currentScopeChoice = 'bersama';
-        else if (p.scope === 'Pribadi Suami') currentScopeChoice = 'suami';
-        else if (p.scope === 'Pribadi Istri') currentScopeChoice = 'istri';
-        else currentScopeChoice = 'bersama';
-        setScopeChoice(currentScopeChoice);
-      }
       if (p.name) {
         document.getElementById('txNote').value = p.name;
       }
@@ -1247,21 +1171,9 @@
       // Otomatis pilihkan dompet yang relevan agar 1-klik simpan langsung siap
       var walSelect = document.getElementById('walletSelect');
       if (walSelect && walSelect.options.length > 1) {
-        var chosenWal = '';
-        if (p.wallet) {
-          chosenWal = p.wallet;
-        } else {
-          var targetOwner = (p.scope === 'Pribadi Suami') ? 'Suami' : ((p.scope === 'Pribadi Istri') ? 'Istri' : 'Kas Bersama');
-          for (var optIdx = 0; optIdx < walSelect.options.length; optIdx++) {
-            var optVal = walSelect.options[optIdx].value;
-            if (optVal && optVal.indexOf('[' + targetOwner + ']') !== -1) {
-              chosenWal = optVal;
-              break;
-            }
-          }
-          if (!chosenWal && walSelect.options[1]) {
-            chosenWal = walSelect.options[1].value;
-          }
+        var chosenWal = p.wallet || '';
+        if (!chosenWal && walSelect.options[1]) {
+          chosenWal = walSelect.options[1].value;
         }
         if (chosenWal) {
           walSelect.value = chosenWal;
@@ -1647,7 +1559,19 @@
       var formTitle = document.getElementById('formHeaderTitle');
       if (formTitle) formTitle.textContent = 'Edit Transaksi #' + tx.id;
 
-      setType(tx.type || 'Pengeluaran');
+      setType(tx.type || 'Pengeluaran', true);
+
+      var btnExp = document.getElementById('btnTypeExpense');
+      var btnInc = document.getElementById('btnTypeIncome');
+      var btnTrf = document.getElementById('btnTypeTransfer');
+      var hintLock = document.getElementById('textEditTypeLockedHint');
+      [btnExp, btnInc, btnTrf].forEach(function(b) {
+        if (b) {
+          b.disabled = true;
+          b.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+      });
+      if (hintLock) hintLock.classList.remove('hidden');
 
       var dInput = document.getElementById('displayAmount');
       var rInput = document.getElementById('rawAmount');
@@ -1687,8 +1611,21 @@
       if (banner) banner.classList.add('hidden');
       var formTitle = document.getElementById('formHeaderTitle');
       if (formTitle) formTitle.textContent = 'Input Transaksi Baru';
+
+      var btnExp = document.getElementById('btnTypeExpense');
+      var btnInc = document.getElementById('btnTypeIncome');
+      var btnTrf = document.getElementById('btnTypeTransfer');
+      var hintLock = document.getElementById('textEditTypeLockedHint');
+      [btnExp, btnInc, btnTrf].forEach(function(b) {
+        if (b) {
+          b.disabled = false;
+          b.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+      });
+      if (hintLock) hintLock.classList.add('hidden');
+
       resetForm();
-      setType(currentType || 'Pengeluaran');
+      setType(currentType || 'Pengeluaran', true);
     }
 
     // ==================== VIEW 2: REKAP SIKLUS LOGIC ====================
@@ -1699,27 +1636,28 @@
         currentCycleOffset = 0;
       } else {
         currentCycleOffset += offset;
+        if (currentCycleOffset > 0) currentCycleOffset = 0;
       }
 
       var btnPrev = document.getElementById('btnPeriodPrevCycle');
-      var btnCurr = document.getElementById('btnPeriodCurrentCycle');
+      var btnNext = document.getElementById('btnPeriodNextCycle');
+      var btnReset = document.getElementById('btnResetToCurrentCycle');
       var badge = document.getElementById('labelActiveCycleBadge');
 
-      var act = 'touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2.5 text-center text-xs font-bold text-sage-800 transition-all flex items-center justify-center gap-1';
-      var inact = 'touch-btn rounded-xl border border-borderline bg-white py-2.5 text-center text-xs font-medium text-muted hover:border-slate-400 hover:text-ink transition-all flex items-center justify-center gap-1';
+      if (btnNext) {
+        btnNext.disabled = (currentCycleOffset >= 0);
+      }
 
       if (currentCycleOffset === 0) {
-        if (btnCurr) btnCurr.className = act;
-        if (btnPrev) btnPrev.className = inact;
+        if (btnReset) btnReset.classList.add('hidden');
         if (badge) {
           badge.textContent = 'Siklus Berjalan';
           badge.className = 'rounded-full bg-sage-100 px-2 py-0.5 text-[10px] font-bold text-sage-800 border border-sage-200';
         }
       } else {
-        if (btnPrev) btnPrev.className = act;
-        if (btnCurr) btnCurr.className = inact;
+        if (btnReset) btnReset.classList.remove('hidden');
         if (badge) {
-          var diffText = currentCycleOffset === -1 ? 'Siklus Lalu' : (Math.abs(currentCycleOffset) + ' Siklus Lalu');
+          var diffText = currentCycleOffset === -1 ? '1 Siklus Lalu' : (Math.abs(currentCycleOffset) + ' Siklus Lalu');
           badge.textContent = diffText;
           badge.className = 'rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900 border border-amber-200';
         }
@@ -1774,9 +1712,9 @@
       var act = 'touch-btn rounded-xl border-2 border-sage-800 bg-sage-50 py-2 text-center text-xs font-bold text-sage-800';
       var inact = 'touch-btn rounded-xl border border-borderline bg-white py-2 text-center text-xs font-medium text-muted hover:border-slate-400';
 
-      bSal.className = filterType === 'salary' ? act : inact;
-      bThis.className = filterType === 'this_month' ? act : inact;
-      bLast.className = filterType === 'last_month' ? act : inact;
+      if (bSal) bSal.className = filterType === 'salary' ? act : inact;
+      if (bThis) bThis.className = filterType === 'this_month' ? act : inact;
+      if (bLast) bLast.className = filterType === 'last_month' ? act : inact;
 
       if (filterType === 'salary') {
         if (today.getDate() >= salDate) {
@@ -1821,8 +1759,13 @@
 
         var totalInc = 0;
         var totalExp = 0;
+        var uangSakuAyah = 0;
+        var uangSakuBunda = 0;
         var scopes = { 'Kas Bersama': 0, 'Pribadi Suami': 0, 'Pribadi Istri': 0 };
         var catMap = {};
+
+        var sAyahLabel = ((appData.accounts && appData.accounts.suamiLabel) || 'Ayah').toLowerCase();
+        var sBundaLabel = ((appData.accounts && appData.accounts.istriLabel) || 'Bunda').toLowerCase();
 
         (appData.recent || []).forEach(function(tx) {
           var tDate = new Date(tx.date + 'T00:00:00');
@@ -1831,6 +1774,13 @@
               totalExp += tx.amount;
               scopes[tx.scope] = (scopes[tx.scope] || 0) + tx.amount;
               catMap[tx.category] = (catMap[tx.category] || 0) + tx.amount;
+
+              var catLower = (tx.category || '').toLowerCase();
+              if (catLower === 'uang saku ayah' || catLower === ('uang saku ' + sAyahLabel)) {
+                uangSakuAyah += tx.amount;
+              } else if (catLower === 'uang saku bunda' || catLower === ('uang saku ' + sBundaLabel)) {
+                uangSakuBunda += tx.amount;
+              }
             } else if (tx.type === 'Pemasukan') {
               if (tx.category !== 'Saldo Awal Tahun') {
                 totalInc += tx.amount;
@@ -1838,6 +1788,8 @@
             }
           }
         });
+
+        var operasionalBersama = Math.max(0, totalExp - uangSakuAyah - uangSakuBunda);
 
         var cats = [];
         for (var c in catMap) {
@@ -1850,6 +1802,11 @@
           totalExpense: totalExp,
           netCashflow: totalInc - totalExp,
           byScope: scopes,
+          byPos: {
+            operasional: operasionalBersama,
+            ayah: uangSakuAyah,
+            bunda: uangSakuBunda
+          },
           byCategory: cats
         });
       }
@@ -1863,18 +1820,52 @@
       netElem.textContent = formatRupiah(data.netCashflow);
       netElem.className = 'num-tabular mt-1 text-sm lg:text-base font-bold ' + (data.netCashflow >= 0 ? 'text-sage-800' : 'text-red-700');
 
-      var totalExp = data.totalExpense || 1;
-      var joint = (data.byScope && data.byScope['Kas Bersama']) || 0;
-      var suami = (data.byScope && data.byScope['Pribadi Suami']) || 0;
-      var istri = (data.byScope && data.byScope['Pribadi Istri']) || 0;
+      var totalExp = data.totalExpense || 0;
+      var byPos = data.byPos || {};
+      var operasional = (byPos.operasional !== undefined) ? byPos.operasional : Math.max(0, totalExp - (byPos.ayah || 0) - (byPos.bunda || 0));
+      var ayah = byPos.ayah || 0;
+      var bunda = byPos.bunda || 0;
 
-      document.getElementById('cycleScopeJoint').textContent = formatRupiah(joint) + ' (' + Math.round((joint / totalExp) * 100) + '%)';
-      document.getElementById('cycleScopeSuami').textContent = formatRupiah(suami) + ' (' + Math.round((suami / totalExp) * 100) + '%)';
-      document.getElementById('cycleScopeIstri').textContent = formatRupiah(istri) + ' (' + Math.round((istri / totalExp) * 100) + '%)';
+      var pctOp = totalExp > 0 ? Math.round((operasional / totalExp) * 100) : 0;
+      var pctAyah = totalExp > 0 ? Math.round((ayah / totalExp) * 100) : 0;
+      var pctBunda = totalExp > 0 ? Math.round((bunda / totalExp) * 100) : 0;
 
-      document.getElementById('barScopeJoint').style.width = Math.min(100, Math.round((joint / totalExp) * 100)) + '%';
-      document.getElementById('barScopeSuami').style.width = Math.min(100, Math.round((suami / totalExp) * 100)) + '%';
-      document.getElementById('barScopeIstri').style.width = Math.min(100, Math.round((istri / totalExp) * 100)) + '%';
+      var sAyahLabel = (appData.accounts && appData.accounts.suamiLabel) || 'Ayah';
+      var sBundaLabel = (appData.accounts && appData.accounts.istriLabel) || 'Bunda';
+
+      var elLblAyah = document.getElementById('labelPosAyah');
+      var elLblBunda = document.getElementById('labelPosBunda');
+      if (elLblAyah) elLblAyah.textContent = 'Uang Saku ' + sAyahLabel;
+      if (elLblBunda) elLblBunda.textContent = 'Uang Saku ' + sBundaLabel;
+
+      var elOp = document.getElementById('cyclePosOperasional');
+      var elAyah = document.getElementById('cyclePosAyah');
+      var elBunda = document.getElementById('cyclePosBunda');
+      var barOp = document.getElementById('barPosOperasional');
+      var barAyah = document.getElementById('barPosAyah');
+      var barBunda = document.getElementById('barPosBunda');
+
+      if (elOp) elOp.textContent = formatRupiah(operasional) + ' (' + pctOp + '%)';
+      if (elAyah) elAyah.textContent = formatRupiah(ayah) + ' (' + pctAyah + '%)';
+      if (elBunda) elBunda.textContent = formatRupiah(bunda) + ' (' + pctBunda + '%)';
+
+      if (barOp) barOp.style.width = Math.min(100, pctOp) + '%';
+      if (barAyah) barAyah.style.width = Math.min(100, pctAyah) + '%';
+      if (barBunda) barBunda.style.width = Math.min(100, pctBunda) + '%';
+
+      // Backward compatibility aliases if any element exists
+      var elJoint = document.getElementById('cycleScopeJoint');
+      var elSuami = document.getElementById('cycleScopeSuami');
+      var elIstri = document.getElementById('cycleScopeIstri');
+      var bJoint = document.getElementById('barScopeJoint');
+      var bSuami = document.getElementById('barScopeSuami');
+      var bIstri = document.getElementById('barScopeIstri');
+      if (elJoint) elJoint.textContent = formatRupiah(operasional) + ' (' + pctOp + '%)';
+      if (elSuami) elSuami.textContent = formatRupiah(ayah) + ' (' + pctAyah + '%)';
+      if (elIstri) elIstri.textContent = formatRupiah(bunda) + ' (' + pctBunda + '%)';
+      if (bJoint) bJoint.style.width = Math.min(100, pctOp) + '%';
+      if (bSuami) bSuami.style.width = Math.min(100, pctAyah) + '%';
+      if (bIstri) bIstri.style.width = Math.min(100, pctBunda) + '%';
 
       var catContainer = document.getElementById('cycleCategoryBreakdown');
       if (!data.byCategory || data.byCategory.length === 0) {
@@ -1899,8 +1890,51 @@
     }
 
     // ==================== VIEW 3: KELOLA WITH RBAC ====================
+    function setCategoryManageType(type) {
+      currentManageCategoryType = type;
+      var bExp = document.getElementById('btnCatTypeExpense');
+      var bInc = document.getElementById('btnCatTypeIncome');
+      var actClass = 'touch-btn rounded-lg py-2 text-xs font-semibold transition-all bg-sage-800 text-white shadow-xs flex items-center justify-center gap-1.5';
+      var inactClass = 'touch-btn rounded-lg py-2 text-xs font-semibold transition-all text-muted hover:text-ink flex items-center justify-center gap-1.5';
+      
+      if (bExp) bExp.className = type === 'expense' ? actClass : inactClass;
+      if (bInc) bInc.className = type === 'income' ? actClass : inactClass;
+
+      var lblTitle = document.getElementById('labelCatAddTitle');
+      var inpCat = document.getElementById('inputNewCategory');
+      var lblListTitle = document.getElementById('labelCatListTitle');
+
+      if (type === 'income') {
+        if (lblTitle) lblTitle.textContent = 'Tambah Kategori Pemasukan Baru';
+        if (inpCat) inpCat.placeholder = 'Misal: Sewa Kontrakan, Jualan Online, Dividen...';
+        if (lblListTitle) lblListTitle.textContent = 'Daftar Kategori Pemasukan Aktif';
+      } else {
+        if (lblTitle) lblTitle.textContent = 'Tambah Kategori Pengeluaran Baru';
+        if (inpCat) inpCat.placeholder = 'Misal: Les Musik, Kucing, Skincare...';
+        if (lblListTitle) lblListTitle.textContent = 'Daftar Kategori Pengeluaran Aktif';
+      }
+
+      renderManageItems();
+    }
+
     function renderManageItems() {
-      document.getElementById('countCatBadge').textContent = appData.categories.length;
+      if (!appData.incomeCategories || !appData.incomeCategories.length) {
+        appData.incomeCategories = [
+          'Setor Gaji Ayah',
+          'Setor Gaji Bunda',
+          'Bonus & THR',
+          'Hasil Usaha / Bisnis',
+          'Investasi & Dividen',
+          'Pemberian / Lainnya'
+        ];
+      }
+
+      var countBadge = document.getElementById('countCatBadge');
+      if (countBadge) countBadge.textContent = appData.categories.length + appData.incomeCategories.length;
+      var countExpBadge = document.getElementById('countCatExpenseBadge');
+      if (countExpBadge) countExpBadge.textContent = appData.categories.length;
+      var countIncBadge = document.getElementById('countCatIncomeBadge');
+      if (countIncBadge) countIncBadge.textContent = appData.incomeCategories.length;
       document.getElementById('countWalBadge').textContent = appData.wallets.length;
 
       var rbacWarning = document.getElementById('manageRbacWarning');
@@ -1929,18 +1963,22 @@
         if (labelWalHint) labelWalHint.textContent = 'Mode baca saja';
       }
 
+      var isIncome = (currentManageCategoryType === 'income');
+      var listToRender = isIncome ? appData.incomeCategories : appData.categories;
       var catBox = document.getElementById('manageCategoryList');
       catBox.innerHTML = '';
-      appData.categories.forEach(function(cat, idx) {
+      listToRender.forEach(function(cat, idx) {
         var row = document.createElement('div');
         row.className = 'flex items-center justify-between py-2.5 px-1 hover:bg-surface transition-colors rounded-lg';
         
         var deleteBtn = appData.isMaster ? 
           '<button type="button" onclick="removeCategory(' + idx + ')" title="Hapus kategori" class="text-xs text-muted hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 font-medium transition-colors">Hapus</button>' : '';
 
+        var badgeBg = isIncome ? 'bg-emerald-100 text-emerald-800' : 'bg-sage-100 text-sage-800';
+
         row.innerHTML = 
           '<div class="flex items-center gap-2.5">' +
-            '<span class="flex h-5 w-5 items-center justify-center rounded-md bg-sage-100 text-[10px] font-bold text-sage-800">' + (idx + 1) + '</span>' +
+            '<span class="flex h-5 w-5 items-center justify-center rounded-md ' + badgeBg + ' text-[10px] font-bold">' + (idx + 1) + '</span>' +
             '<span class="text-xs font-semibold text-ink">' + cat + '</span>' +
           '</div>' + deleteBtn;
         catBox.appendChild(row);
@@ -1989,12 +2027,17 @@
       var input = document.getElementById('inputNewCategory');
       var val = input.value.trim();
       if (!val) return;
-      if (appData.categories.indexOf(val) === -1) {
-        appData.categories.push(val);
+
+      var isIncome = (currentManageCategoryType === 'income');
+      var targetList = isIncome ? appData.incomeCategories : appData.categories;
+
+      if (targetList.indexOf(val) === -1) {
+        targetList.push(val);
         input.value = '';
         renderManageItems();
         renderOptions();
-        showToast('Kategori ditambahkan. Jangan lupa klik "Simpan Perubahan".', true);
+        saveCachedData();
+        showToast('Kategori ' + (isIncome ? 'pemasukan' : 'pengeluaran') + ' ditambahkan. Jangan lupa klik "Simpan Perubahan".', true);
       } else {
         showToast('Kategori sudah ada dalam daftar', false);
       }
@@ -2005,13 +2048,17 @@
         showToast('Hanya Akun Master yang dapat menghapus kategori', false);
         return;
       }
-      if (appData.categories.length <= 1) {
+      var isIncome = (currentManageCategoryType === 'income');
+      var targetList = isIncome ? appData.incomeCategories : appData.categories;
+
+      if (targetList.length <= 1) {
         showToast('Minimal harus ada 1 kategori', false);
         return;
       }
-      var removed = appData.categories.splice(idx, 1);
+      var removed = targetList.splice(idx, 1);
       renderManageItems();
       renderOptions();
+      saveCachedData();
       showToast('Kategori "' + removed[0] + '" dihapus.', true);
     }
 
@@ -2021,10 +2068,9 @@
         return;
       }
       var input = document.getElementById('inputNewWallet');
-      var ownerSel = document.getElementById('selectNewWalletOwner');
       var initBalInput = document.getElementById('inputNewWalletInitialBalance');
       var val = input.value.trim();
-      var owner = (ownerSel && ownerSel.value) || 'Kas Bersama';
+      var owner = 'Kas Bersama';
       var initBal = initBalInput ? (Number(initBalInput.value.replace(/[^0-9]/g, '')) || 0) : 0;
       if (!val) return;
 
@@ -2107,6 +2153,7 @@
 
       var payload = {
         categories: appData.categories,
+        incomeCategories: appData.incomeCategories,
         wallets: appData.wallets,
         salaryDate: sDate
       };
