@@ -27,7 +27,7 @@ files.forEach(f => {
 // 3. Zero-Emoji / Zero-Symbol Verification
 // Regex for emoji characters
 const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA70}-\u{1FAFF}]/u;
-const checkedFiles = ['Code.gs', 'Setup.gs', 'WebApp.html', 'test-runner.html', 'preview.html', 'demo/index.html', 'demo/WebApp.html'];
+const checkedFiles = ['Code.gs', 'Setup.gs', 'WebApp.html', 'test-runner.html', 'preview.html', 'demo/preview.html', 'demo/WebApp.html'];
 let emojiDetected = false;
 
 checkedFiles.forEach(f => {
