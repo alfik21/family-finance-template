@@ -10,9 +10,6 @@
 **Berkas Lembar Uji Terkait**:
 - Workbook Template Kosong (.xlsx): [`docs/02_PRODUCT_TESTING_CHECKLIST.xlsx`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.xlsx)
 - Spesifikasi Lembar Uji Markdown: [`docs/02_PRODUCT_TESTING_CHECKLIST.md`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.md)
-- Berkas CSV Tab 1 (Dashboard): [`docs/02_PRODUCT_TESTING_CHECKLIST_TAB1_DASHBOARD.csv`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST_TAB1_DASHBOARD.csv)
-- Berkas CSV Tab 2 (Matriks): [`docs/02_PRODUCT_TESTING_CHECKLIST_TAB2_MATRIKS.csv`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST_TAB2_MATRIKS.csv)
-- Berkas CSV Kompilasi Ringkas: [`docs/02_PRODUCT_TESTING_CHECKLIST.csv`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.csv)
 
 ---
 

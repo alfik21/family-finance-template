@@ -6,11 +6,7 @@
 **Divisi Penanggung Jawab (PIC)**: Finance + Operations  
 **Status Produk**: Baru Selesai Dikembangkan (Fresh Build) — Belum Diuji oleh Pengguna Asli  
 **Dokumen Panduan & SOP Uji**: [`docs/02_PANDUAN_PENGUJIAN_PRODUK.md`](file:///J:/Aplikasi/family-finance-template/docs/02_PANDUAN_PENGUJIAN_PRODUK.md)  
-**Berkas Spreadsheet Multi-Sheet Kosong (.xlsx)**: [`docs/02_PRODUCT_TESTING_CHECKLIST.xlsx`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.xlsx)  
-**Berkas CSV Kosong Per-Sheet**:  
-- Tab 1: [`docs/02_PRODUCT_TESTING_CHECKLIST_TAB1_DASHBOARD.csv`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST_TAB1_DASHBOARD.csv)  
-- Tab 2: [`docs/02_PRODUCT_TESTING_CHECKLIST_TAB2_MATRIKS.csv`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST_TAB2_MATRIKS.csv)  
-- Berkas CSV Ringkas Standar: [`docs/02_PRODUCT_TESTING_CHECKLIST.csv`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.csv)  
+**Berkas Spreadsheet Lembar Kerja Uji (.xlsx)**: [`docs/02_PRODUCT_TESTING_CHECKLIST.xlsx`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.xlsx)  
 
 ---
 
