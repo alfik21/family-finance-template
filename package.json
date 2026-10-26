@@ -5,7 +5,7 @@
   "main": "Code.gs",
   "scripts": {
     "test": "node tests/validate.js",
-    "sync": "node -e \"const fs=require('fs'); fs.copyFileSync('preview.html','index.html'); fs.copyFileSync('preview.html','demo/index.html'); fs.copyFileSync('WebApp.html','demo/WebApp.html'); console.log('Assets synchronized.');\"",
+    "sync": "node -e \"const fs=require('fs'); fs.copyFileSync('preview.html','demo/index.html'); fs.copyFileSync('WebApp.html','demo/WebApp.html'); console.log('Demo assets synchronized to demo/');\"",
     "push": "npx @google/clasp push -f",
     "pull": "npx @google/clasp pull",
     "deploy:gas": "npx @google/clasp push -f && npx @google/clasp deploy -i AKfycbweiRpK0Y4TOYkAbKx8QAcOn8G25YQB_NVUl0MpcIi1Pb5Dm5AcS66Iiz2AfX02sSZO -d \"Latest update\"",
