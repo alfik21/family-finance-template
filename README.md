@@ -16,14 +16,31 @@ Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** da
 
 ---
 
-## Struktur File
+## Struktur File & Folder
 
 ```text
+├── docs/
+│   ├── 01_PRODUCT_BRIEF_AND_REQUIREMENTS.docx # Dokumen Word/Docs Product Brief & spesifikasi produk
+│   ├── 01_PRODUCT_BRIEF_AND_REQUIREMENTS.md   # Format Markdown Product Brief & target market
+│   ├── 02_PANDUAN_PENGUJIAN_PRODUK.docx       # Dokumen Word/Docs SOP pengujian mutu produk
+│   ├── 02_PANDUAN_PENGUJIAN_PRODUK.md         # Format Markdown SOP pengujian mutu 2 fase
+│   ├── 02_PRODUCT_TESTING_CHECKLIST.xlsx      # Workbook Google Sheets/Excel 2-tab kosong untuk QA
+│   ├── 02_PRODUCT_TESTING_CHECKLIST.md        # Spesifikasi matriks kasus uji QA & UAT
+│   ├── 03_USER_GUIDE.docx                     # Dokumen Word/Docs panduan lengkap pembeli
+│   ├── 03_USER_GUIDE.md                       # Format Markdown panduan pengguna 4 halaman
+│   ├── 04_LICENSE_AND_TERMS_OF_USE.docx       # Dokumen Word/Docs surat perjanjian lisensi
+│   ├── 04_LICENSE_AND_TERMS_OF_USE.md         # Format Markdown lisensi komersial & terms of use
+│   └── README.md                              # Indeks katalog dokumentasi penjualan & operasional
+├── scripts/
+│   ├── generate-docs-docx.js    # Generator otomatis berkas Word/Docs (.docx) siap baca
+│   └── generate-testing-xlsx.js # Generator otomatis berkas Google Sheets / Excel (.xlsx) QA
 ├── Setup.gs          # Generator otomatis struktur Google Sheets & menu tutup buku
 ├── Code.gs           # Backend API Google Apps Script (RBAC, mutasi, arsip, smart presets)
 ├── WebApp.html       # Antarmuka PWA Mobile-First responsif
 ├── test-runner.html  # Simulator browser lokal untuk user testing sebelum deploy
-├── package.json      # Metadata proyek family-finance-template
+├── preview.html      # Pratinjau interaktif aplikasi untuk promosi/demo
+├── setup_guide.md    # Panduan lengkap penjual: Master sheet, trik URL /copy, & deployment
+├── package.json      # Metadata proyek family-finance-template & npm scripts
 └── README.md         # Petunjuk instalasi dan operasional
 ```
 

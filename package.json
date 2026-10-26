@@ -5,6 +5,9 @@
   "main": "Code.gs",
   "scripts": {
     "test": "node tests/validate.js",
+    "docs:xlsx": "node scripts/generate-testing-xlsx.js",
+    "docs:docx": "node scripts/generate-docs-docx.js",
+    "docs:all": "node scripts/generate-testing-xlsx.js && node scripts/generate-docs-docx.js",
     "sync": "node -e \"const fs=require('fs'); fs.copyFileSync('preview.html','demo/preview.html'); fs.copyFileSync('WebApp.html','demo/WebApp.html'); fs.copyFileSync('vercel.json','demo/vercel.json'); console.log('Demo assets synchronized to demo/');\"",
     "push": "npx @google/clasp push -f",
     "pull": "npx @google/clasp pull",
