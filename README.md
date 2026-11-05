@@ -87,7 +87,7 @@ Sebelum menghubungkan ke Google Drive, Anda dapat langsung mencoba alur kerja ap
 1. Di halaman Apps Script, klik tombol biru **Deploy** (Terapkan) di pojok kanan atas > pilih **New deployment** (Penerapan baru).
 2. Klik tombol gerigi di sebelah *Select type* > pilih **Web app**.
 3. Isi konfigurasi berikut:
-   - **Description**: `Kas Keluarga v3`
+   - **Description**: `Finance Tracker : Family Edition v3`
    - **Execute as**: `User accessing the web app` *(Penting: agar transaksi otomatis mendeteksi email Google pasangan yang sedang input)*
    - **Who has access**: `Anyone with Google account`
 4. Klik **Deploy** dan salin **Web app URL** yang muncul.
@@ -97,4 +97,4 @@ Kirimkan URL Web App tersebut ke WhatsApp pasangan Anda:
 - **Di iPhone (Safari)**: Buka link > tap ikon **Share** (kotak panah ke atas) > pilih **Add to Home Screen**.
 - **Di Android (Chrome)**: Buka link > tap menu titik tiga di pojok kanan atas > pilih **Add to Home screen** / **Install app**.
 
-Kini aplikasi Kas Keluarga dapat diakses layaknya aplikasi native dari layar utama HP dalam 1 detik.
+Kini aplikasi Finance Tracker : Family Edition dapat diakses layaknya aplikasi native dari layar utama HP dalam 1 detik.
