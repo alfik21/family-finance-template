@@ -30,10 +30,14 @@ Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** da
 │   ├── 03_USER_GUIDE.md                       # Format Markdown panduan pengguna 4 halaman
 │   ├── 04_LICENSE_AND_TERMS_OF_USE.docx       # Dokumen Word/Docs surat perjanjian lisensi
 │   ├── 04_LICENSE_AND_TERMS_OF_USE.md         # Format Markdown lisensi komersial & terms of use
+│   ├── 05_QC_BUG_REPORT_AND_FIXLOG.md         # Laporan 29 temuan QA pra-rilis & catatan perbaikan
 │   └── README.md                              # Indeks katalog dokumentasi penjualan & operasional
 ├── scripts/
 │   ├── generate-docs-docx.js    # Generator otomatis berkas Word/Docs (.docx) siap baca
 │   └── generate-testing-xlsx.js # Generator otomatis berkas Google Sheets / Excel (.xlsx) QA
+├── tests/
+│   ├── validate.js    # Suite regresi lama (struktur, formula, fungsi bantu)
+│   └── qc-audit.js    # Suite QC pra-komersial: RBAC, scope, arsip, validasi, keamanan
 ├── Setup.gs          # Generator otomatis struktur Google Sheets & menu tutup buku
 ├── Code.gs           # Backend API Google Apps Script (RBAC, mutasi, arsip, smart presets)
 ├── WebApp.html       # Antarmuka PWA Mobile-First responsif

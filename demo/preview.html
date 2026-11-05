@@ -219,6 +219,16 @@
       isMaster: true
     };
 
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function getDemoDate(offsetDays) {
       var d = new Date();
       d.setDate(d.getDate() - (offsetDays || 0));
@@ -396,11 +406,11 @@
           '<span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold bg-slate-100 text-slate-700">' + (t.author ? t.author.split('@')[0] : 'Keluarga') + '</span>');
 
         tr.innerHTML = 
-          '<td class="py-2 px-2.5 text-slate-500 whitespace-nowrap">' + t.date + '</td>' +
-          '<td class="py-2 px-2.5 font-medium text-slate-900">' + t.category + '</td>' +
-          '<td class="py-2 px-2.5"><span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-600">' + t.scope + '</span></td>' +
-          '<td class="py-2 px-2.5 text-[11px] text-slate-600 max-w-[140px] truncate" title="' + (t.wallet || '') + '">' + (t.wallet || '-') + '</td>' +
-          '<td class="py-2 px-2.5 ' + color + ' whitespace-nowrap">' + (sign ? sign + ' ' : '') + 'Rp ' + t.amount.toLocaleString('id-ID') + '</td>' +
+          '<td class="py-2 px-2.5 text-slate-500 whitespace-nowrap">' + escapeHtml(t.date) + '</td>' +
+          '<td class="py-2 px-2.5 font-medium text-slate-900">' + escapeHtml(t.category) + '</td>' +
+          '<td class="py-2 px-2.5"><span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-600">' + escapeHtml(t.scope) + '</span></td>' +
+          '<td class="py-2 px-2.5 text-[11px] text-slate-600 max-w-[140px] truncate" title="' + escapeHtml(t.wallet || '') + '">' + escapeHtml(t.wallet || '-') + '</td>' +
+          '<td class="py-2 px-2.5 ' + color + ' whitespace-nowrap">' + (sign ? sign + ' ' : '') + 'Rp ' + Number(t.amount || 0).toLocaleString('id-ID') + '</td>' +
           '<td class="py-2 px-2.5">' + authorBadge + '</td>';
         tbody.appendChild(tr);
       });

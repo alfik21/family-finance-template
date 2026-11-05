@@ -28,7 +28,7 @@ function menuShowMobileGuide() {
     'Petunjuk Menggunakan Aplikasi di Smartphone',
     'Untuk membuka aplikasi ini di smartphone Anda dan pasangan:\n\n' +
     '1. Buka menu Ekstensi > Apps Script > Klik "Deploy" (Terapkan) > "New deployment" (Penerapan baru).\n' +
-    '2. Pilih tipe "Web app", atur "Execute as: User accessing the web app" dan "Who has access: Anyone".\n' +
+    '2. Pilih tipe "Web app", atur "Execute as: User accessing the web app" dan "Who has access: Anyone with Google account".\n' +
     '3. Salin URL Web App yang dihasilkan, lalu buka di Safari (iOS) atau Chrome (Android).\n' +
     '4. Tambahkan ke Layar Utama (Add to Home Screen) agar tampil seperti aplikasi native tanpa instalasi Play Store/App Store!\n\n' +
     '5. Pasangan Anda cukup membuka link yang sama di HP mereka setelah Anda membagikan akses edit spreadsheet ini.',
@@ -115,9 +115,9 @@ function createConfigSheet(ss, palette) {
   sheet.setTabColor(palette.primaryLight);
 
   var headers = [
-    ['PENGATURAN KELUARGA', '', 'KATEGORI PENGELUARAN', 'ALOKASI POS', 'DOMPET / REKENING', 'PEMILIK DOMPET', 'PRESET CEPAT', 'NOMINAL DEFAULT']
+    ['PENGATURAN KELUARGA', '', 'KATEGORI PENGELUARAN', 'ALOKASI POS', 'DOMPET / REKENING', 'PEMILIK DOMPET', 'PRESET CEPAT', 'NOMINAL DEFAULT', 'KATEGORI PEMASUKAN', 'KATEGORI TOMBOL']
   ];
-  sheet.getRange(1, 1, 1, 8).setValues(headers)
+  sheet.getRange(1, 1, 1, 10).setValues(headers)
     .setBackground(palette.primaryDark)
     .setFontColor(palette.white)
     .setFontWeight('bold')
@@ -130,24 +130,26 @@ function createConfigSheet(ss, palette) {
     masterEmail = '';
   }
 
+  // Kolom J (KATEGORI TOMBOL) = kategori yang terisi saat tombol cepat ditekan,
+  // sehingga satu ketukan preset sudah mengisi nominal + kategori sekaligus (TC-INP-05).
   var configData = [
-    ['Label Suami', 'Ayah', 'Belanja Pasar & Dapur', 'Kas Bersama', 'Kas Tunai Rumah', 'Kas Bersama', 'Bensin Motor', 35000],
-    ['Email Suami', masterEmail, 'Makan Luar & Jajan', 'Kas Bersama', 'Rekening BCA Bersama', 'Kas Bersama', 'Kopi Pagi', 22000],
-    ['Label Istri', 'Bunda', 'Listrik & Utilitas', 'Kas Bersama', 'BCA Pribadi Suami', 'Suami', 'Belanja Sayur', 75000],
-    ['Email Istri', '', 'Internet & Pulsa', 'Kas Bersama', 'GoPay Suami', 'Suami', 'Galon dan Gas', 45000],
-    ['Email Master', masterEmail, 'Kebutuhan Anak & Sekolah', 'Kas Bersama', 'BCA Pribadi Istri', 'Istri', 'Token Listrik', 100000],
-    ['Peran Master', 'Suami', 'Transportasi & Bensin', 'Kas Bersama', 'ShopeePay Istri', 'Istri', 'Jajan Anak', 20000],
-    ['Siklus Gajian (Tgl)', 25, 'Cicilan & Kewajiban', 'Kas Bersama', 'GoPay Istri', 'Istri', '', ''],
-    ['Bulan Acuan', '=TEXT(TODAY(), "yyyy-mm")', 'Pribadi Suami', 'Pribadi Suami', '', '', '', ''],
-    ['', '', 'Pribadi Istri', 'Pribadi Istri', '', '', '', ''],
-    ['', '', 'Sedekah & Sosial', 'Kas Bersama', '', '', '', ''],
-    ['', '', 'Darurat & Tabungan', 'Kas Bersama', '', '', '', ''],
-    ['', '', 'Lain-lain', 'Kas Bersama', '', '', '', '']
+    ['Label Suami', 'Ayah', 'Belanja Pasar & Dapur', 'Kas Bersama', 'Kas Tunai Rumah', 'Kas Bersama', 'Bensin Motor', 35000, 'Setor Gaji Ayah', 'Transportasi & Bensin'],
+    ['Email Suami', masterEmail, 'Makan Luar & Jajan', 'Kas Bersama', 'Rekening BCA Bersama', 'Kas Bersama', 'Kopi Pagi', 22000, 'Setor Gaji Bunda', 'Makan Luar & Jajan'],
+    ['Label Istri', 'Bunda', 'Listrik & Utilitas', 'Kas Bersama', 'BCA Pribadi Suami', 'Suami', 'Belanja Sayur', 75000, 'Bonus & THR', 'Belanja Pasar & Dapur'],
+    ['Email Istri', '', 'Internet & Pulsa', 'Kas Bersama', 'GoPay Suami', 'Suami', 'Galon dan Gas', 45000, 'Hasil Usaha / Bisnis', 'Listrik & Utilitas'],
+    ['Email Master', masterEmail, 'Kebutuhan Anak & Sekolah', 'Kas Bersama', 'BCA Pribadi Istri', 'Istri', 'Token Listrik', 100000, 'Investasi & Dividen', 'Listrik & Utilitas'],
+    ['Peran Master', 'Suami', 'Transportasi & Bensin', 'Kas Bersama', 'ShopeePay Istri', 'Istri', 'Jajan Anak', 20000, 'Pemberian / Lainnya', 'Lain-lain'],
+    ['Siklus Gajian (Tgl)', 25, 'Cicilan & Kewajiban', 'Kas Bersama', 'GoPay Istri', 'Istri', '', '', '', ''],
+    ['Bulan Acuan', '=TEXT(TODAY(), "yyyy-mm")', 'Pribadi Suami', 'Pribadi Suami', '', '', '', '', '', ''],
+    ['', '', 'Pribadi Istri', 'Pribadi Istri', '', '', '', '', '', ''],
+    ['', '', 'Sedekah & Sosial', 'Kas Bersama', '', '', '', '', '', ''],
+    ['', '', 'Darurat & Tabungan', 'Kas Bersama', '', '', '', '', '', ''],
+    ['', '', 'Lain-lain', 'Kas Bersama', '', '', '', '', '', '']
   ];
 
-  sheet.getRange(2, 1, configData.length, 8).setValues(configData);
+  sheet.getRange(2, 1, configData.length, 10).setValues(configData);
   sheet.getRange(2, 8, configData.length, 1).setNumberFormat('Rp #,##0');
-  sheet.getRange(1, 1, configData.length + 1, 8).setFontFamily('Roboto');
+  sheet.getRange(1, 1, configData.length + 1, 10).setFontFamily('Roboto');
   
   sheet.setColumnWidth(1, 150);
   sheet.setColumnWidth(2, 190);
@@ -157,6 +159,8 @@ function createConfigSheet(ss, palette) {
   sheet.setColumnWidth(6, 140);
   sheet.setColumnWidth(7, 160);
   sheet.setColumnWidth(8, 140);
+  sheet.setColumnWidth(9, 180);
+  sheet.setColumnWidth(10, 200);
 }
 
 function createTransactionsSheet(ss, palette) {
@@ -201,7 +205,7 @@ function createTransactionsSheet(ss, palette) {
 
   var configSheet = ss.getSheetByName('CONFIG');
   var categoryRule = SpreadsheetApp.newDataValidation()
-    .requireValueInRange(configSheet.getRange('C2:C20'), true)
+    .requireValueInRange(configSheet.getRange('C2:C50'), true)
     .build();
   sheet.getRange('E2:E5000').setDataValidation(categoryRule);
 

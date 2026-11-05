@@ -9,3 +9,9 @@ Thumbs.db
 
 # Dokumen Word (Binary)
 *.docx
+
+# Clasp & Personal Environment Keys
+.clasp.json
+.env
+.env.*
+*.local

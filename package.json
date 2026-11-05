@@ -2,16 +2,16 @@
   "name": "family-finance-template",
   "version": "1.2.0",
   "description": "Family Finance Tracker with Google Sheets and Mobile-First Apps Script PWA",
-  "main": "Code.gs",
+  "main": "tests/validate.js",
   "scripts": {
-    "test": "node tests/validate.js",
+    "test": "node tests/validate.js && node tests/qc-audit.js",
     "docs:xlsx": "node scripts/generate-testing-xlsx.js",
     "docs:docx": "node scripts/generate-docs-docx.js",
     "docs:all": "node scripts/generate-testing-xlsx.js && node scripts/generate-docs-docx.js",
     "sync": "node -e \"const fs=require('fs'); fs.copyFileSync('preview.html','demo/preview.html'); fs.copyFileSync('WebApp.html','demo/WebApp.html'); fs.copyFileSync('vercel.json','demo/vercel.json'); console.log('Demo assets synchronized to demo/');\"",
     "push": "npx @google/clasp push -f",
     "pull": "npx @google/clasp pull",
-    "deploy:gas": "npx @google/clasp push -f && npx @google/clasp deploy -i AKfycbweiRpK0Y4TOYkAbKx8QAcOn8G25YQB_NVUl0MpcIi1Pb5Dm5AcS66Iiz2AfX02sSZO -d \"Latest update\"",
+    "deploy:gas": "npx @google/clasp push -f && npx @google/clasp deploy -d \"Latest update\"",
     "deploy:all": "npm test && npm run sync && npm run deploy:gas && git add -A && git commit -m \"deploy: automatic sync gas & web\" && git push origin master"
   },
   "keywords": [
@@ -22,5 +22,9 @@
     "pwa"
   ],
   "author": "Antigravity Pair Programming",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "docx": "^9.2.0",
+    "exceljs": "^4.4.0"
+  }
 }

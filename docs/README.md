@@ -14,6 +14,7 @@ Dokumen ini merupakan panduan katalog dokumentasi komersial dan operasional prod
 | 2b | **Product Testing Checklist (Blank Template)** | Lembar kerja kosong untuk verifikasi rumus & fungsi fitur | Google Sheets | Finance + Operations | Workbook 2 Tab (.xlsx): [`docs/02_PRODUCT_TESTING_CHECKLIST.xlsx`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.xlsx)<br>Spesifikasi (.md): [`docs/02_PRODUCT_TESTING_CHECKLIST.md`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.md) |
 | 3 | **User Guide** | Panduan penggunaan untuk pembeli | PDF | Operations | Berkas Word / Docs (.docx): [`docs/03_USER_GUIDE.docx`](file:///J:/Aplikasi/family-finance-template/docs/03_USER_GUIDE.docx)<br>Markdown: [`docs/03_USER_GUIDE.md`](file:///J:/Aplikasi/family-finance-template/docs/03_USER_GUIDE.md) |
 | 4 | **License & Terms of Use** | Mengatur hak penggunaan, distribusi, dan ketentuan pembelian | PDF | Operations + Finance | Berkas Word / Docs (.docx): [`docs/04_LICENSE_AND_TERMS_OF_USE.docx`](file:///J:/Aplikasi/family-finance-template/docs/04_LICENSE_AND_TERMS_OF_USE.docx)<br>Markdown: [`docs/04_LICENSE_AND_TERMS_OF_USE.md`](file:///J:/Aplikasi/family-finance-template/docs/04_LICENSE_AND_TERMS_OF_USE.md) |
+| 5 | **Laporan Bug QC & Catatan Perbaikan** | Rekam jejak 29 temuan QA pra-rilis: bukti, penyebab, perbaikan, dan pemetaan ke TC | Markdown | Finance + Operations | Markdown: [`docs/05_QC_BUG_REPORT_AND_FIXLOG.md`](file:///J:/Aplikasi/family-finance-template/docs/05_QC_BUG_REPORT_AND_FIXLOG.md) |
 
 ---
 
@@ -53,6 +54,16 @@ Dokumen ini merupakan panduan katalog dokumentasi komersial dan operasional prod
   2. Lakukan pratinjau cetak (*Print Preview*) ke ukuran kertas A4 (tepat 2 halaman).
   3. Ekspor menjadi berkas `Family_Finance_Tracker_License_and_Terms_v1.2.0.pdf`.
   4. Sertakan berkas PDF ini di dalam paket serah terima pembeli di Lynk.id / Mayar / Gumroad.
+
+---
+
+### 6. Dokumen 5: Laporan Bug QC & Catatan Perbaikan (Format: Markdown internal)
+- **Format Sumber**: [`05_QC_BUG_REPORT_AND_FIXLOG.md`](file:///J:/Aplikasi/family-finance-template/docs/05_QC_BUG_REPORT_AND_FIXLOG.md)
+- **Fungsi**: Rekam jejak audit pra-komersial: **29 temuan** (6 Critical, 8 High, 9 Medium, 6 Low) beserta bukti gagal, penyebab akar, perbaikan yang diterapkan, dan pemetaan ke 26 TC pada checklist pengujian. Berisi pula 3 keputusan desain yang diterima secara sadar dan daftar tindak lanjut sebelum rilis.
+- **Cara Menjalankan Uji Ulang**:
+  1. `npm test` -> menjalankan `tests/validate.js` + `tests/qc-audit.js`; target akhir **35 LULUS, 0 GAGAL**.
+  2. `npm run sync` -> memastikan `demo/*` identik dengan sumber.
+  3. Baseline "sebelum perbaikan" (28 gagal) direproduksi dengan `git stash push -- Code.gs WebApp.html appsscript.json Setup.gs demo/WebApp.html`, jalankan `node tests/qc-audit.js`, lalu `git stash pop`.
 
 ---
 

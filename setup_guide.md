@@ -34,8 +34,8 @@ Sebagai penjual, Anda cukup membuat **1 Master Spreadsheet** sekali saja. Pembel
    * Pada file bawaan `Code.gs`, hapus isinya dan tempel kode dari file [`Code.gs`](file:///J:/Aplikasi/family-finance-template/Code.gs).
    * Klik tombol **+** di sebelah *Files* > pilih **Script** > beri nama `Setup.gs`. Tempel kode dari file [`Setup.gs`](file:///J:/Aplikasi/family-finance-template/Setup.gs).
    * Klik tombol **+** di sebelah *Files* > pilih **HTML** > beri nama `WebApp.html`. Tempel kode dari file [`WebApp.html`](file:///J:/Aplikasi/family-finance-template/WebApp.html).
-   * *(Opsional)*: Klik ikon roda gigi ⚙️ (*Project Settings*) di panel kiri > centang *"Show 'appsscript.json' manifest file in editor"*. Buka `appsscript.json` dan pastikan isinya sama dengan [`appsscript.json`](file:///J:/Aplikasi/family-finance-template/appsscript.json).
-3. Klik tombol **Simpan** (ikon disket 💾 atau `Ctrl + S`).
+   * *(Opsional)*: Klik ikon gerigi (*Project Settings*) di panel kiri > centang *"Show 'appsscript.json' manifest file in editor"*. Buka `appsscript.json` dan pastikan isinya sama dengan [`appsscript.json`](file:///J:/Aplikasi/family-finance-template/appsscript.json).
+3. Klik tombol **Simpan** (`Ctrl + S`).
 
 ### C. Jalankan Setup Otomatis Template
 1. Kembali ke tab Google Sheets, lalu lakukan **Refresh halaman (F5)**.
@@ -64,7 +64,7 @@ Agar antarmuka web app bisa dibuka dari smartphone:
 3. Atur konfigurasi:
    * **Description**: `Family Finance Tracker v1.0`
    * **Execute as**: `User accessing the web app` *(Sangat penting: agar sistem otomatis mendeteksi email Google suami atau istri yang sedang mencatat)*
-   * **Who has access**: `Anyone` *(atau `Anyone with Google account`)*
+   * **Who has access**: `Anyone with Google account` *(Wajib - sesuai `appsscript.json`; `Anyone` akan membuat pengguna tanpa email dan RBAC jadi tidak berlaku)*
 4. Klik **Deploy**.
 5. Salin **Web app URL** yang muncul (simpan URL ini).
 
@@ -79,12 +79,12 @@ Saat menjual di platform digital seperti **Lynk.id, Mayar, Gumroad, Shopee, atau
    **"Siapa saja yang memiliki link" -> "Pelihat" (*Anyone with the link -> Viewer*)**.
 3. Klik **Salin link** (*Copy link*). Format aslinya adalah:
    ```text
-   https://docs.google.com/spreadsheets/d/1wC4EQjbDMF_lolij68y_Qpe4XtRfJDrbEic9TMOR1bMuJ2QoCD1ql0Lr/edit?usp=sharing
+   https://docs.google.com/spreadsheets/d/ID_SPREADSHEET_MASTER_ANDA/edit?usp=sharing
    ```
 4. Ganti bagian akhir `/edit?usp=sharing` menjadi **/copy**.  
    Contoh link yang diberikan ke pembeli:
    ```text
-   https://docs.google.com/spreadsheets/d/1wC4EQjbDMF_lolij68y_Qpe4XtRfJDrbEic9TMOR1bMuJ2QoCD1ql0Lr/copy
+   https://docs.google.com/spreadsheets/d/ID_SPREADSHEET_MASTER_ANDA/copy
    ```
 5. **Keajaiban Link `/copy`**:  
    Ketika pembeli mengklik link tersebut, Google Sheets akan langsung menampilkan tombol besar:  
@@ -152,16 +152,16 @@ Anda bisa menyalin teks promosi ini untuk deskripsi produk di Lynk.id, Mayar, Sh
 > Kenalkan **Family Finance Tracker**, solusi pencatatan keuangan rumah tangga berbasis Google Sheets & Web App yang dirancang khusus untuk pasangan suami-istri modern.
 >
 > **Fitur Unggulan:**  
-> ✅ **Akses Kolaboratif Suami-Istri**: Akun Master mengatur pos anggaran, pasangan bisa input transaksi bersama secara realtime.  
-> ✅ **Tampilan Web App Elegan di HP**: Navigasi bawah ramah jempol (*Thumb-Friendly*), tanpa perlu instal aplikasi berat dari Play Store/App Store.  
-> ✅ **Model Hybrid (Bersama vs Pribadi)**: Jelas membedakan beban Kas Bersama dan kantong pribadi masing-masing.  
-> ✅ **Saldo Realtime per Rekening**: Pantau sisa uang di rekening BCA bersama, dompet tunai rumah, hingga GoPay/ShopeePay.  
-> ✅ **Fitur Transfer Saldo**: Setor uang belanja bulanan dari rekening suami ke kas bersama otomatis mengalirkan saldo.  
-> ✅ **Tombol Cepat 1-Klik**: Catat bensin, belanja sayur, atau token listrik dalam 1 ketukan.  
-> ✅ **Tutup Buku & Arsip Tahunan**: Sheet tetap ringan bertahun-tahun tanpa lemot.  
-> ✅ **100% Sekali Beli, Milik Anda Selamanya**: Data tersimpan aman di Google Drive pribadi Anda.
+> - **Akses Kolaboratif Suami-Istri**: Akun Master mengatur pos anggaran, pasangan bisa input transaksi bersama secara realtime.  
+> - **Tampilan Web App Elegan di HP**: Navigasi bawah ramah jempol (*Thumb-Friendly*), tanpa perlu instal aplikasi berat dari Play Store/App Store.  
+> - **Model Hybrid (Bersama vs Pribadi)**: Jelas membedakan beban Kas Bersama dan kantong pribadi masing-masing.  
+> - **Saldo Realtime per Rekening**: Pantau sisa uang di rekening BCA bersama, dompet tunai rumah, hingga GoPay/ShopeePay.  
+> - **Fitur Transfer Saldo**: Setor uang belanja bulanan dari rekening suami ke kas bersama otomatis mengalirkan saldo.  
+> - **Tombol Cepat 1-Klik**: Catat bensin, belanja sayur, atau token listrik dalam 1 ketukan.  
+> - **Tutup Buku & Arsip Tahunan**: Sheet tetap ringan bertahun-tahun tanpa lemot.  
+> - **100% Sekali Beli, Milik Anda Selamanya**: Data tersimpan aman di Google Drive pribadi Anda.
 >
-> 📦 **Yang Anda Dapatkan:**  
+> **Yang Anda Dapatkan:**  
 > - Link Akses Google Sheets Master Siap Duplikasi (Sekali Klik)  
 > - Kode Web App Mobile Terintegrasi  
 > - Video & Dokumen Panduan Pemasangan Lengkap (Mudah dipahami pemula)

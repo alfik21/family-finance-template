@@ -11,6 +11,38 @@ function doGet(e) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
+/**
+ * Email pemilik spreadsheet (otoritas tertinggi, selalu dikenali sebagai Master).
+ * Dipakai karena Session.getEffectiveUser() pada deployment
+ * "Execute as: User accessing the web app" SELALU sama dengan pengguna aktif,
+ * sehingga tidak bisa dijadikan penanda hak akses (akan membuat RBAC bocor).
+ */
+function getSpreadsheetOwnerEmail_(ss) {
+  try {
+    return (ss && ss.getOwner ? (ss.getOwner().getEmail() || '') : '').toLowerCase().trim();
+  } catch (e) {
+    return '';
+  }
+}
+
+/**
+ * Pemeriksaan hak akses Master (fail-closed):
+ * - Pengguna tanpa email teridentifikasi -> BUKAN Master.
+ * - Master = email pada CONFIG!B6 ATAU pemilik spreadsheet.
+ */
+function isMasterAccess_(ss, configSheet, activeEmailRaw) {
+  var active = (activeEmailRaw || '').toLowerCase().trim();
+  if (!active) return false;
+
+  var master = '';
+  try {
+    if (configSheet) master = (configSheet.getRange('B6').getValue() || '').toString().toLowerCase().trim();
+  } catch (e) {}
+
+  var owner = getSpreadsheetOwnerEmail_(ss);
+  return (master && active === master) || (owner && active === owner);
+}
+
 function getInitialData() {
   var userEmail = '';
   try {
@@ -27,9 +59,9 @@ function getInitialData() {
   }
 
   var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ownerEmail = getSpreadsheetOwnerEmail_(ss);
   var configSheet = ss.getSheetByName('CONFIG');
   var transSheet = ss.getSheetByName('TRANSAKSI');
-  var dashSheet = ss.getSheetByName('DASHBOARD');
 
   var categories = [];
   var incomeCategories = [];
@@ -90,6 +122,7 @@ function getInitialData() {
     var configHeaderRow = configSheet.getRange('A1:J1').getValues()[0];
     var colPreset = 7;
     var colNominal = 8;
+    var colPresetCat = 10; // kolom J: KATEGORI TOMBOL (opsional, versi template baru)
 
     for (var h = 0; h < configHeaderRow.length; h++) {
       var hText = (configHeaderRow[h] || '').toString().toUpperCase();
@@ -97,16 +130,19 @@ function getInitialData() {
         colPreset = h + 1;
       } else if (hText.indexOf('NOMINAL') !== -1) {
         colNominal = h + 1;
+      } else if (hText.indexOf('KATEGORI TOMBOL') !== -1) {
+        colPresetCat = h + 1;
       }
     }
 
-    var maxCol = Math.max(colPreset, colNominal, 8);
+    var maxCol = Math.max(colPreset, colNominal, colPresetCat, 8);
     var preRaw = configSheet.getRange(2, 1, 19, maxCol).getValues();
 
     for (var k = 0; k < preRaw.length; k++) {
       var rowData = preRaw[k];
       var rawName = (rowData[colPreset - 1] || '').toString().trim();
       var rawAmt = Number(rowData[colNominal - 1]) || 0;
+      var rawCat = (rowData[colPresetCat - 1] || '').toString().trim();
 
       // Deteksi anomali: jika rawName berupa angka murni (seperti '35000') dan rawAmt 0,
       // artinya kolom bergeser dari template versi sebelumnya (kolom F adalah nama, G adalah angka)
@@ -121,10 +157,16 @@ function getInitialData() {
       if (rawName && !/^\d+$/.test(rawName) && rawAmt > 0) {
         presets.push({
           name: rawName,
-          amount: rawAmt
+          amount: rawAmt,
+          category: rawCat
         });
       }
     }
+
+    // Kompatibilitas mundur (sheet lama tanpa kolom KATEGORI TOMBOL):
+    // inferensi kategori preset dari riwayat transaksi berlabel sama.
+    // (dilakukan SETELAH allTxForPresets terisi - lihat bawah)
+
 
     if (presets.length === 0) {
       presets = [
@@ -146,19 +188,18 @@ function getInitialData() {
   var suamiEmail = (settings['Email Suami'] || '').toString().trim();
   var istriLabel = settings['Label Istri'] || 'Bunda';
   var istriEmail = (settings['Email Istri'] || '').toString().trim();
-  var masterEmail = (settings['Email Master'] || effectiveEmail || '').toString().trim();
+  var masterEmail = (settings['Email Master'] || ownerEmail || '').toString().trim();
   var masterRole = (settings['Peran Master'] || 'Suami').toString().trim();
 
-  // Deteksi RBAC: Apakah pengguna aktif adalah Master?
+  // Deteksi RBAC: hanya email Master (CONFIG B6) atau pemilik spreadsheet.
+  // TIDAK memakai effectiveEmail sebagai penanda (lihat getSpreadsheetOwnerEmail_).
   var isMaster = false;
   var cleanActive = (userEmail || '').toLowerCase().trim();
   var cleanMaster = masterEmail.toLowerCase();
-  var cleanEff = effectiveEmail.toLowerCase();
+  var cleanOwner = ownerEmail.toLowerCase();
 
-  if (!cleanActive) {
-    // Mode demo lokal atau permission restricted
-    isMaster = true;
-  } else if ((cleanEff && cleanActive === cleanEff) || (cleanMaster && cleanActive === cleanMaster)) {
+  if (cleanActive && ((cleanMaster && cleanActive === cleanMaster) ||
+      (cleanOwner && cleanActive === cleanOwner))) {
     isMaster = true;
   }
 
@@ -227,6 +268,9 @@ function getInitialData() {
     }
   }
 
+  // Kompatibilitas mundur: lengkapi kategori preset dari riwayat transaksi
+  enrichPresetCategories_(presets, allTxForPresets);
+
   var smartPresets = extractSmartPresets(allTxForPresets, presets, 6);
 
   // Hitung saldo kumulatif riil dompet & ringkasan siklus gajian berjalan
@@ -242,15 +286,10 @@ function getInitialData() {
     istriBalance: fin.istriBalance
   };
 
-  // Sinkronkan ke sheet DASHBOARD jika tersedia
-  if (dashSheet) {
-    try {
-      dashSheet.getRange('A6').setValue(fin.cycleIncome);
-      dashSheet.getRange('C6').setValue(fin.cycleJointExpense);
-      dashSheet.getRange('E6').setValue(fin.cycleExpense);
-      dashSheet.getRange('G6').setValue(fin.jointBalance);
-    } catch (e) {}
-  }
+  // CATATAN QC: TIDAK ada tulisan ke DASHBOARD di sini.
+  // Sel formula bulanan DASHBOARD (A6/C6/E6/G6: =A6-E6, SUMIFS, dll.) HARUS hidup.
+  // Menimpanya dengan nilai statis siklus gajian merusak TC-BAL-04 & TC-SUM-01.
+  // Data ringkasan dikirim ke UI melalui objek `summary` di bawah.
 
   return {
     userEmail: userEmail,
@@ -329,6 +368,7 @@ function calculateFinancialState(transSheet, wallets, salaryDate) {
         var rawDate = r[1];
         var dObj = (rawDate instanceof Date) ? rawDate : new Date(rawDate);
         var type = r[3];
+        var category = (r[4] || '').toString();
         var scope = r[5];
         var walletStr = (r[6] || '').toString();
         var amount = Number(r[7]) || 0;
@@ -431,6 +471,56 @@ function checkPendingArchive() {
   }
 }
 
+function loadConfigData(ss) {
+  var configSheet = ss.getSheetByName('CONFIG');
+  var wallets = [];
+  var categories = [];
+  var incomeCategories = [];
+  var salaryDate = 25;
+
+  if (configSheet) {
+    var walValues = configSheet.getRange('E2:F50').getValues();
+    for (var j = 0; j < walValues.length; j++) {
+      var walName = (walValues[j][0] || '').toString().trim();
+      var walOwner = (walValues[j][1] || '').toString().trim() || 'Kas Bersama';
+      if (walName !== '') {
+        wallets.push({
+          name: walName,
+          owner: walOwner
+        });
+      }
+    }
+
+    var catValues = configSheet.getRange('C2:C50').getValues();
+    for (var i = 0; i < catValues.length; i++) {
+      var cat = catValues[i][0];
+      if (cat && cat.toString().trim() !== '') {
+        categories.push(cat.toString().trim());
+      }
+    }
+
+    var incValues = configSheet.getRange('I2:I50').getValues();
+    for (var m = 0; m < incValues.length; m++) {
+      var incCat = incValues[m][0];
+      if (incCat && incCat.toString().trim() !== '') {
+        incomeCategories.push(incCat.toString().trim());
+      }
+    }
+
+    var salVal = configSheet.getRange('B8').getValue();
+    if (salVal && !isNaN(Number(salVal))) {
+      salaryDate = Number(salVal);
+    }
+  }
+
+  return {
+    wallets: wallets,
+    categories: categories,
+    incomeCategories: incomeCategories,
+    salaryDate: salaryDate
+  };
+}
+
 function closeAndArchiveYear(targetYear) {
   var lock = LockService.getScriptLock();
   try {
@@ -446,12 +536,9 @@ function closeAndArchiveYear(targetYear) {
     if (!transSheet) return { success: false, message: 'Sheet TRANSAKSI tidak ditemukan.' };
 
     var activeEmail = '';
-    try { activeEmail = Session.getActiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
-    var effEmail = '';
-    try { effEmail = Session.getEffectiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
-    var currentMaster = configSheet ? (configSheet.getRange('B6').getValue() || '').toString().toLowerCase().trim() : '';
+    try { activeEmail = Session.getActiveUser().getEmail(); } catch (e) {}
 
-    if (activeEmail && activeEmail !== effEmail && activeEmail !== currentMaster) {
+    if (!isMasterAccess_(ss, configSheet, activeEmail)) {
       return { success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat melakukan tutup buku tahunan.' };
     }
 
@@ -516,76 +603,10 @@ function closeAndArchiveYear(targetYear) {
 
     netCashflow = totalIncome - totalExpense;
 
-    var archiveSheetName = 'ARSIP_' + targetYr;
-    var archiveSheet = ss.getSheetByName(archiveSheetName);
-    if (!archiveSheet) {
-      archiveSheet = ss.insertSheet(archiveSheetName);
-    } else {
-      archiveSheet.clear();
-    }
-
-    archiveSheet.setTabColor('#2d6a4f');
-
-    var titleRange = archiveSheet.getRange('A1:K1');
-    titleRange.merge();
-    titleRange.setValue('ARSIP TRANSAKSI TAHUN ' + targetYr + ' (DITUTUP SECARA PERMANEN)')
-      .setBackground('#1b4332')
-      .setFontColor('#ffffff')
-      .setFontWeight('bold')
-      .setFontSize(11)
-      .setHorizontalAlignment('center');
-
-    archiveSheet.getRange('A2:B2').merge().setValue('TOTAL PEMASUKAN TAHUNAN').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
-    archiveSheet.getRange('C2:D2').merge().setValue('TOTAL PENGELUARAN TAHUNAN').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
-    archiveSheet.getRange('E2:F2').merge().setValue('ARUS KAS BERSIH').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
-    archiveSheet.getRange('G2:H2').merge().setValue('SALDO KAS DIOPER KE TAHUN BARU').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
-    archiveSheet.getRange('I2:K2').merge().setValue('STATUS PENUTUPAN BUKU').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
-
-    archiveSheet.getRange('A3:B3').merge().setValue(totalIncome).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor('#1b4332');
-    archiveSheet.getRange('C3:D3').merge().setValue(totalExpense).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor('#d32f2f');
-    archiveSheet.getRange('E3:F3').merge().setValue(netCashflow).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor(netCashflow >= 0 ? '#1b4332' : '#d32f2f');
-    archiveSheet.getRange('G3:H3').merge().setValue(carryoverBalance).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor('#2d6a4f');
-    archiveSheet.getRange('I3:K3').merge().setValue('Selesai Ditutup pada ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm')).setFontSize(9).setFontColor('#6c757d');
-
-    var headers = [
-      ['ID', 'TANGGAL', 'BULAN', 'TIPE', 'KATEGORI', 'PERUNTUKAN', 'DOMPET', 'NOMINAL', 'CATATAN', 'DIINPUT OLEH', 'WAKTU INPUT']
-    ];
-    archiveSheet.getRange(5, 1, 1, 11).setValues(headers)
-      .setBackground('#2d6a4f')
-      .setFontColor('#ffffff')
-      .setFontWeight('bold')
-      .setFontSize(9)
-      .setHorizontalAlignment('center');
-
-    var staticArchiveRows = [];
-    for (var a = 0; a < archiveRows.length; a++) {
-      var r = archiveRows[a];
-      var dateStr = (r[1] instanceof Date) ? Utilities.formatDate(r[1], Session.getScriptTimeZone(), 'yyyy-MM-dd') : r[1];
-      var monthStr = (r[2] && r[2].toString().indexOf('=') === -1) ? r[2] : (dateStr ? dateStr.toString().substring(0, 7) : '');
-      var createdStr = (r[10] instanceof Date) ? Utilities.formatDate(r[10], Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm') : r[10];
-
-      staticArchiveRows.push([
-        r[0],
-        dateStr,
-        monthStr,
-        r[3],
-        r[4],
-        r[5],
-        r[6],
-        Number(r[7]) || 0,
-        r[8] || '',
-        r[9] || '',
-        createdStr
-      ]);
-    }
-
-    archiveSheet.getRange(6, 1, staticArchiveRows.length, 11).setValues(staticArchiveRows);
-    archiveSheet.getRange(6, 8, staticArchiveRows.length, 1).setNumberFormat('Rp #,##0');
-    archiveSheet.setFrozenRows(5);
-
-    transSheet.getRange(2, 1, Math.max(1, lastRow - 1), 11).clearContent();
-
-    // Hitung saldo riil per masing-masing dompet untuk tahun yang ditutup
+    // --- TAHAP 1: HITUNG DULU (tanpa menyentuh sheet TRANSAKSI) -------------
+    // Semua pembacaan/kegagalan di sini harus terjadi SEBELUM ada tulisan
+    // apa pun ke TRANSAKSI, agar kegagalan tidak pernah meninggalkan
+    // keadaan setengah jadi (data tahun berjalan hilang tanpa arsip).
     var configData = loadConfigData(ss);
     var wallets = configData.wallets || [];
     var walletMap = {};
@@ -658,7 +679,83 @@ function closeAndArchiveYear(targetYear) {
       newTransRows.push(remainingRows[rem]);
     }
 
-    transSheet.getRange(2, 1, newTransRows.length, 11).setValues(newTransRows);
+    // Susun isi ARSIP di memori dulu; hanya ditulis setelah semua hitungan valid
+    var archiveSheetName = 'ARSIP_' + targetYr;
+    var archiveSheet = ss.getSheetByName(archiveSheetName);
+    if (!archiveSheet) {
+      archiveSheet = ss.insertSheet(archiveSheetName);
+    } else {
+      archiveSheet.clear();
+    }
+
+    archiveSheet.setTabColor('#2d6a4f');
+
+    var titleRange = archiveSheet.getRange('A1:K1');
+    titleRange.merge();
+    titleRange.setValue('ARSIP TRANSAKSI TAHUN ' + targetYr + ' (DITUTUP SECARA PERMANEN)')
+      .setBackground('#1b4332')
+      .setFontColor('#ffffff')
+      .setFontWeight('bold')
+      .setFontSize(11)
+      .setHorizontalAlignment('center');
+
+    archiveSheet.getRange('A2:B2').merge().setValue('TOTAL PEMASUKAN TAHUNAN').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+    archiveSheet.getRange('C2:D2').merge().setValue('TOTAL PENGELUARAN TAHUNAN').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+    archiveSheet.getRange('E2:F2').merge().setValue('ARUS KAS BERSIH').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+    archiveSheet.getRange('G2:H2').merge().setValue('SALDO KAS DIOPER KE TAHUN BARU').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+    archiveSheet.getRange('I2:K2').merge().setValue('STATUS PENUTUPAN BUKU').setFontSize(9).setFontWeight('bold').setFontColor('#6c757d').setBackground('#f8f9fa');
+
+    archiveSheet.getRange('A3:B3').merge().setValue(totalIncome).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor('#1b4332');
+    archiveSheet.getRange('C3:D3').merge().setValue(totalExpense).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor('#d32f2f');
+    archiveSheet.getRange('E3:F3').merge().setValue(netCashflow).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor(netCashflow >= 0 ? '#1b4332' : '#d32f2f');
+    archiveSheet.getRange('G3:H3').merge().setValue(carryoverBalance).setNumberFormat('Rp #,##0').setFontWeight('bold').setFontSize(11).setFontColor('#2d6a4f');
+    archiveSheet.getRange('I3:K3').merge().setValue('Selesai Ditutup pada ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm')).setFontSize(9).setFontColor('#6c757d');
+
+    var headers = [
+      ['ID', 'TANGGAL', 'BULAN', 'TIPE', 'KATEGORI', 'PERUNTUKAN', 'DOMPET', 'NOMINAL', 'CATATAN', 'DIINPUT OLEH', 'WAKTU INPUT']
+    ];
+    archiveSheet.getRange(5, 1, 1, 11).setValues(headers)
+      .setBackground('#2d6a4f')
+      .setFontColor('#ffffff')
+      .setFontWeight('bold')
+      .setFontSize(9)
+      .setHorizontalAlignment('center');
+
+    var staticArchiveRows = [];
+    for (var a = 0; a < archiveRows.length; a++) {
+      var r = archiveRows[a];
+      var dateStr = (r[1] instanceof Date) ? Utilities.formatDate(r[1], Session.getScriptTimeZone(), 'yyyy-MM-dd') : r[1];
+      var monthStr = (r[2] && r[2].toString().indexOf('=') === -1) ? r[2] : (dateStr ? dateStr.toString().substring(0, 7) : '');
+      var createdStr = (r[10] instanceof Date) ? Utilities.formatDate(r[10], Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm') : r[10];
+
+      staticArchiveRows.push([
+        r[0],
+        dateStr,
+        monthStr,
+        r[3],
+        r[4],
+        r[5],
+        r[6],
+        Number(r[7]) || 0,
+        r[8] || '',
+        r[9] || '',
+        createdStr
+      ]);
+    }
+
+    archiveSheet.getRange(6, 1, staticArchiveRows.length, 11).setValues(staticArchiveRows);
+    archiveSheet.getRange(6, 8, staticArchiveRows.length, 1).setNumberFormat('Rp #,##0');
+    archiveSheet.setFrozenRows(5);
+
+    // --- TAHAP 3: TIMPA TRANSAKSI + BERSIHKAN EKOR ------------------------
+    // ARSIP sudah lengkap & valid pada tahap 2, sehingga aman menimpa.
+    var oldDataRows = Math.max(1, lastRow - 1);
+    if (newTransRows.length >= oldDataRows) {
+      transSheet.getRange(2, 1, newTransRows.length, 11).setValues(newTransRows);
+    } else {
+      transSheet.getRange(2, 1, oldDataRows, 11).clearContent();
+      transSheet.getRange(2, 1, newTransRows.length, 11).setValues(newTransRows);
+    }
     transSheet.getRange(2, 2, newTransRows.length, 1).setNumberFormat('yyyy-mm-dd');
     transSheet.getRange(2, 8, newTransRows.length, 1).setNumberFormat('Rp #,##0');
     transSheet.getRange(2, 11, newTransRows.length, 1).setNumberFormat('yyyy-mm-dd hh:mm');
@@ -678,6 +775,71 @@ function closeAndArchiveYear(targetYear) {
   } finally {
     lock.releaseLock();
   }
+}
+
+/**
+ * Lengkapi kategori preset dari riwayat transaksi (kompatibilitas mundur
+ * untuk sheet template lama yang belum punya kolom KATEGORI TOMBOL).
+ */
+function enrichPresetCategories_(presets, transactions) {
+  if (!presets || !presets.length) return presets;
+  var byName = {};
+  (transactions || []).forEach(function(tx) {
+    if (!tx || !tx.note || !tx.category) return;
+    var key = tx.note.toString().trim().toLowerCase();
+    if (!byName[key]) byName[key] = tx.category;
+  });
+  presets.forEach(function(p) {
+    if (p.category) return;
+    var key = (p.name || '').toString().trim().toLowerCase();
+    if (byName[key]) p.category = byName[key];
+  });
+  return presets;
+}
+
+/**
+ * ID transaksi unik. Sebelumnya dibuat inline dari 6 digit timestamp
+ * (risiko tabrakan saat 2 transaksi dibuat pada detik sama -> edit/hapus
+ * bisa mengenai baris yang salah).
+ */
+function generateTrxId() {
+  var ts = new Date().getTime().toString(36).toUpperCase();
+  var rand = Math.floor(Math.random() * 1296).toString(36).toUpperCase();
+  var uuid = '';
+  try {
+    uuid = Utilities.getUuid().replace(/[^0-9a-f]/gi, '').substring(0, 4).toUpperCase();
+  } catch (e) {
+    uuid = ts.substring(ts.length - 4);
+  }
+  return 'TRX-' + ts + '-' + rand + uuid;
+}
+
+/**
+ * Validasi input transaksi di sisi SERVER (TC-VAL-01 s/d TC-VAL-03).
+ * UI hanya lapisan kenyamanan; server tetap wajib menolak data rusak.
+ */
+function validateTransactionPayload_(payload) {
+  var p = payload || {};
+  var amount = Number(p.amount);
+  if (!isFinite(amount) || isNaN(amount)) return 'Nominal harus berupa angka yang valid.';
+  if (amount <= 0) return 'Nominal harus lebih dari 0 (TC-VAL-01/02).';
+
+  var allowedTypes = ['Pengeluaran', 'Pemasukan', 'Transfer'];
+  var type = (p.type || '').toString().trim();
+  if (allowedTypes.indexOf(type) === -1) return 'Tipe transaksi tidak dikenal: ' + type;
+
+  if (type !== 'Transfer') {
+    var category = (p.category || '').toString().trim();
+    var wallet = (p.wallet || '').toString().trim();
+    if (!category) return 'Kategori wajib dipilih.';
+    if (!wallet) return 'Sumber dompet wajib dipilih.';
+  }
+
+  var rawDate = p.date;
+  var d = rawDate instanceof Date ? rawDate : new Date(rawDate);
+  if (!rawDate || isNaN(d.getTime())) return 'Tanggal tidak valid (TC-VAL-03).';
+
+  return null;
 }
 
 function extractSmartPresets(transactions, defaultPresets, maxPresets) {
@@ -759,9 +921,15 @@ function submitTransaction(payload) {
       userEmail = payload.author || '';
     }
 
-    var trxId = 'TRX-' + (new Date().getTime().toString().slice(-6));
+    // Validasi di sisi server (bukan hanya UI): nominal, tanggal, tipe, kategori/dompet
+    var validationError = validateTransactionPayload_(payload);
+    if (validationError) {
+      return { success: false, message: validationError };
+    }
+
+    var trxId = generateTrxId();
     var rawDate = payload.date ? new Date(payload.date + 'T00:00:00') : new Date();
-    var amount = Number(payload.amount) || 0;
+    var amount = Number(payload.amount);
     var type = payload.type || 'Pengeluaran';
     var category = payload.category || 'Lain-lain';
     var scope = payload.scope || 'Kas Bersama';
@@ -902,13 +1070,39 @@ function updateTransaction(trxId, payload) {
       return { success: false, message: 'Transaksi ' + trxId + ' tidak ditemukan di sheet.' };
     }
 
-    var rawDate = payload.date ? new Date(payload.date + 'T00:00:00') : new Date();
-    var amount = Number(payload.amount) || 0;
-    var type = payload.type || 'Pengeluaran';
-    var category = payload.category || 'Lain-lain';
-    var scope = payload.scope || 'Kas Bersama';
-    var wallet = payload.wallet || '';
-    var note = payload.note || '';
+    // Validasi di sisi server (konsisten dengan submitTransaction).
+    // Payload edit bisa parsial -> lengkapi dengan nilai baris yang sudah ada.
+    var existingRow = transSheet.getRange(rowToUpdate, 1, 1, 11).getValues()[0];
+    var vPayload = {
+      type: (payload.type !== undefined && payload.type !== '') ? payload.type : existingRow[3],
+      category: (payload.category !== undefined && payload.category !== '') ? payload.category : existingRow[4],
+      scope: (payload.scope !== undefined && payload.scope !== '') ? payload.scope : existingRow[5],
+      wallet: (payload.wallet !== undefined && payload.wallet !== '') ? payload.wallet : existingRow[6],
+      amount: (payload.amount !== undefined && payload.amount !== '') ? payload.amount : existingRow[7],
+      date: (payload.date !== undefined && payload.date !== '') ? payload.date : existingRow[1],
+      note: (payload.note !== undefined) ? payload.note : existingRow[8]
+    };
+    var validationError = validateTransactionPayload_(vPayload);
+    if (validationError) {
+      return { success: false, message: validationError };
+    }
+
+    var rawDate = vPayload.date instanceof Date ? new Date(vPayload.date.getTime()) : new Date(vPayload.date + 'T00:00:00');
+    if (isNaN(rawDate.getTime())) rawDate = new Date();
+    var amount = Number(vPayload.amount);
+    var type = vPayload.type || 'Pengeluaran';
+    var category = vPayload.category || 'Lain-lain';
+    var scope = vPayload.scope || 'Kas Bersama';
+    var wallet = vPayload.wallet || '';
+    var note = vPayload.note || '';
+
+    // Identitas pengubah: catat email aktif (audit trail) + peran yang dikirim UI
+    var editorEmail = '';
+    try { editorEmail = Session.getActiveUser().getEmail(); } catch (e) {}
+    var prevAuthor = (transSheet.getRange(rowToUpdate, 10).getValue() || '').toString();
+    var authorString = payload.authorRole
+      ? (payload.authorRole + (editorEmail ? ' - ' + editorEmail : ''))
+      : (prevAuthor || (editorEmail || 'Anonim'));
 
     var updatedRow = [
       trxId,
@@ -920,7 +1114,7 @@ function updateTransaction(trxId, payload) {
       wallet,
       amount,
       note,
-      payload.authorRole || payload.author || transSheet.getRange(rowToUpdate, 10).getValue(),
+      authorString,
       new Date()
     ];
 
@@ -956,14 +1150,14 @@ function saveConfigData(payload) {
     var configSheet = ss.getSheetByName('CONFIG');
     if (!configSheet) return { success: false, message: 'Sheet CONFIG tidak ditemukan.' };
 
-    // Validasi Hak Akses RBAC: Hanya akun Master atau Spreadsheet Owner yang boleh mengubah
+    // Validasi Hak Akses RBAC (fail-closed): hanya Akun Master (CONFIG B6)
+    // atau pemilik spreadsheet yang boleh mengubah konfigurasi.
+    // TIDAK memakai getEffectiveUser() - pada mode USER_ACCESSING nilai itu
+    // selalu sama dengan pengguna aktif sehingga pemeriksaannya tidak pernah aktif.
     var activeEmail = '';
-    try { activeEmail = Session.getActiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
-    var effEmail = '';
-    try { effEmail = Session.getEffectiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
-    var currentMaster = (configSheet.getRange('B6').getValue() || '').toString().toLowerCase().trim();
+    try { activeEmail = Session.getActiveUser().getEmail(); } catch (e) {}
 
-    if (activeEmail && activeEmail !== effEmail && activeEmail !== currentMaster) {
+    if (!isMasterAccess_(ss, configSheet, activeEmail)) {
       return { success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat mengubah konfigurasi.' };
     }
 
@@ -1034,12 +1228,9 @@ function saveAccountSettings(payload) {
     if (!configSheet) return { success: false, message: 'Sheet CONFIG tidak ditemukan.' };
 
     var activeEmail = '';
-    try { activeEmail = Session.getActiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
-    var effEmail = '';
-    try { effEmail = Session.getEffectiveUser().getEmail().toLowerCase().trim(); } catch (e) {}
-    var currentMaster = (configSheet.getRange('B6').getValue() || '').toString().toLowerCase().trim();
+    try { activeEmail = Session.getActiveUser().getEmail(); } catch (e) {}
 
-    if (activeEmail && activeEmail !== effEmail && activeEmail !== currentMaster) {
+    if (!isMasterAccess_(ss, configSheet, activeEmail)) {
       return { success: false, message: 'Akses ditolak: Hanya Akun Master yang dapat mengubah akun keluarga.' };
     }
 
@@ -1128,7 +1319,12 @@ function getPeriodSummary(startDateStr, endDateStr) {
       }
     }
 
-    var operasionalBersama = Math.max(0, totalExpense - uangSakuAyah - uangSakuBunda);
+    // Pos Operasional = pengeluaran ber-scope "Kas Bersama" saja, dikurangi uang saku.
+    // Sebelumnya memakai totalExpense lintas scope -> pengeluaran pribadi
+    // (Suami/Istri) ikut terhitung ke operasional keluarga (meleset).
+    var jointExpense = byScope['Kas Bersama'] || 0;
+    var uangSakuTotal = uangSakuAyah + uangSakuBunda;
+    var operasionalBersama = Math.max(0, jointExpense - uangSakuTotal);
 
     var byCategory = [];
     for (var catName in catMap) {
