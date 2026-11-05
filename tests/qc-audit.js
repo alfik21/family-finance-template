@@ -701,8 +701,10 @@ check('QC-SEC-03', 'Manifest web app memaksa login Google (konsisten dengan READ
   if (manifest.webapp.executeAs !== 'USER_ACCESSING') {
     throw new Error('executeAs=' + manifest.webapp.executeAs + ' (README mewajibkan USER_ACCESSING)');
   }
-  if (manifest.webapp.access !== 'ANYONE_WITH_GOOGLE_ACCOUNT') {
-    throw new Error('access=' + manifest.webapp.access + ' -> pengguna anonim bisa memanggil skrip tanpa email');
+  // Dalam skema Google Apps Script manifest: ketika executeAs: USER_ACCESSING,
+  // enum yang valid untuk akun Google yang login adalah 'ANYONE'.
+  if (manifest.webapp.access !== 'ANYONE') {
+    throw new Error('access=' + manifest.webapp.access + ' -> diharapkan ANYONE untuk USER_ACCESSING');
   }
 });
 
