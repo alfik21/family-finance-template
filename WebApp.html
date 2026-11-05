@@ -61,6 +61,18 @@
   <!-- Responsive Container (Mobile centered max-w-lg, Desktop expands to max-w-6xl) -->
   <main class="mx-auto w-full max-w-lg lg:max-w-6xl px-4 pt-3 sm:px-6 lg:pt-6">
 
+    <div id="demoModeBanner" role="status" class="hidden mb-3 flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2">
+      <svg class="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <p class="text-[10px] leading-relaxed text-amber-800">
+        <span class="font-bold uppercase tracking-wider text-amber-900">Mode Demo</span> &middot;
+        Data contoh di browser, tanpa koneksi Google Sheets.
+      </p>
+    </div>
+
     <!-- Top Identity & Navigation Bar -->
     <header class="mb-5 flex flex-col md:flex-row md:items-center md:justify-between border-b border-borderline/80 pb-3 gap-3">
       <div class="flex items-center justify-between">
@@ -988,7 +1000,15 @@
       }
     });
 
+    function initDemoModeUI() {
+      var hasAppsScript = (typeof google !== 'undefined' && google.script && google.script.run);
+      if (hasAppsScript) return;
+      var banner = document.getElementById('demoModeBanner');
+      if (banner) banner.classList.remove('hidden');
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+      initDemoModeUI();
       initDefaultDate();
       loadCachedData();
       if (!appData.summary || !appData.summary.jointBalance) {
