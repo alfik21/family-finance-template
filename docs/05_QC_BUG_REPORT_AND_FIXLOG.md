@@ -286,8 +286,8 @@ Skala severity mengikuti `docs/02_PANDUAN_PENGUJIAN_PRODUK.md` bagian 4.
 - **Bukti:** Riwayat git (`package.json` versi lama, commit `cc12122`) memuat **deployment ID** web app:
   `AKfycbweiRpK0Y4TOYkAbKx8QAcOn8G25YQB_NVUl0MpcIi1Pb5Dm5AcS66Iiz2AfX02sSZO`.
   Berkas `.clasp.json` sendiri sudah benar: tidak ter-track & masuk `.gitignore` (ada staged deletion).
-- **Status:** **BELUM diperbaiki** (sengaja) - pembersihan riwayat git bersifat destruktif (force-push, memutus clone downstream) dan memerlukan izin pemilik repo.
-- **Rekomendasi (lihat §5):** putuskan antara (a) menerima risiko, lalu **rotasi/re-deploy** web app sehingga ID lama tidak berlaku, atau (b) rewrite riwayat dengan persetujuan pemilik.
+- **Status:** **DITERIMA sebagai risiko dengan mitigasi rotasi** - pembersihan riwayat git **tidak dilakukan** (destruktif: force-push + memutus clone downstream). **Keputusan (2026-11-05): rotasi / re-deploy web app** sehingga deployment ID lama tidak lagi berlaku.
+- **Rekomendasi (lihat §5):** putuskan antara (a) menerima risiko, lalu **rotasi/re-deploy** web app sehingga ID lama tidak berlaku, atau (b) rewrite riwayat dengan persetujuan pemilik repo.
 - **TC terkait:** TC-CPY-07.
 
 ---
@@ -329,15 +329,17 @@ Skala severity mengikuti `docs/02_PANDUAN_PENGUJIAN_PRODUK.md` bagian 4.
 |---|---|---|
 | DES-01 | `XFrameOptionsMode.ALLOWALL` dipertahankan di `doGet()` | Dihapus akan memecah `openWebAppModal` (dialog modal Google Sheets membutuhkannya). Risiko clickjacking termitigasi oleh kewajiban login Google (`ANYONE_WITH_GOOGLE_ACCOUNT`). **Low** - dipantau. |
 | DES-02 | `deleteTransaction` / `updateTransaction` tanpa guard RBAC | Konsisten dengan UI & `03_USER_GUIDE.md`: anggota diundang boleh mengelola transaksinya sendiri. Menambahkan guard akan memblokir fitur yang didokumentasikan. |
-| DES-03 | Deployment ID bocor di riwayat git (QC-SEC-04) | Rewrite riwayat destruktif & butuh izin -> menjadi rekomendasi (§3.9). |
+| DES-03 | Deployment ID bocor di riwayat git (QC-SEC-04) | Rewrite riwayat destruktif (force-push, memutus clone) -> **keputusan: rotasi / re-deploy web app** agar ID lama tidak berlaku; terdokumentasi di §3.9 & §6. |
 
 ---
 
 ## 6. Tindak Lanjut Sebelum Rilis
 
-1. **Commit & push seluruh perubahan** - pastikan `Code.gs` (termasuk `loadConfigData`, QC-ARCH-03), `WebApp.html`, `Setup.gs`, `appsscript.json`, `tests/qc-audit.js`, `docs/05_...` ini ikut terkirim. Jalankan `npm test` (wajib 35/35) lalu `npm run sync` agar `demo/*` identik.
+1. **Commit & push seluruh perubahan** - `npm test` (wajib 35/35) dan `npm run sync` dijalankan sebelum commit.
+   - [x] Commit lokal: `073905d fix(qc): perbaiki 29 temuan QA pra-rilis agar layak komersial` (19 berkas).
+   - [x] Push ke `origin/master` (`90aa68e..073905d`).
 2. **Redeploy web app** dengan manifest baru (`Anyone with Google account`) dan verifikasi `getInitialData().isMaster` benar untuk akun Master, anggota diundang, dan akun tanpa email.
-3. **Putuskan QC-SEC-04**: rotasi deployment (disarankan) atau rewrite riwayat git dengan izin pemilik.
+3. **QC-SEC-04 - KEPUTUSAN: rotasi / re-deploy** (riwayat git tidak di-rewrite). Lakankan pada langkah 2; setelah deploy baru, ID `AKfycb...` pada riwayat tidak lagi berlaku.
 4. **UAT manusia** terhadap `docs/02_PRODUCT_TESTING_CHECKLIST.md` (26 TC) - terutama TC-DSH-01..03 (visual) dan TC-CPY-04..05 (alur berbagi akses) yang tidak bisa dibuktikan otomatis.
 
 ---
