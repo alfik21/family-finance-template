@@ -194,6 +194,13 @@ Akses aplikasi dari smartphone layaknya aplikasi native tanpa perlu membuka komp
 ### Langkah 3: Berbagi Hak Akses dengan Pasangan
 Di Google Sheets komputer, klik tombol hijau **Bagikan (*Share*)** di kanan atas > masukkan email Google pasangan Anda > berikan izin sebagai **Editor** > Simpan. Kini suami dan istri dapat mencatat transaksi dari HP masing-masing secara bersamaan.
 
+### Langkah 4: Daftarkan Email yang Boleh Membuka Link Web App
+Link Web App hanya dapat dibuka oleh email yang terdaftar (pembatasan akses):
+1. Buka sheet **`CONFIG`** lalu isi **Email Suami** (`B3`), **Email Istri** (`B5`), dan **Email Master** (`B6`). Pemilik spreadsheet selalu diizinkan.
+2. Alternatif: buka **Project Settings > Script Properties** > tambahkan `ALLOWED_EMAILS` (dipisah koma).
+3. Email yang tidak terdaftar akan melihat halaman **"Akses Ditolak"** tanpa data apa pun. Perubahan langsung berlaku tanpa deploy ulang.
+4. Pastikan deployment memakai **Execute as: User accessing the web app**; bila *Execute as: Me*, semua pengunjung dianggap tanpa identitas dan ditolak (*fail-closed*).
+
 ---
 
 ## 8. Tutup Buku & Arsip Tahunan (1-Klik)
