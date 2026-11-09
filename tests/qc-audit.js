@@ -270,7 +270,32 @@ function makeSandbox() {
       getEffectiveUser: () => ({ getEmail: () => state.effEmail })
     },
     SpreadsheetApp: { getActiveSpreadsheet: () => ss, flush: () => {} },
-    LockService: { getScriptLock: () => ({ waitLock: () => {}, releaseLock: () => {} }) }
+    LockService: { getScriptLock: () => ({ waitLock: () => {}, releaseLock: () => {} }) },
+    // Mock HtmlService agar doGet() (gerbang akses Web App) bisa diuji.
+    HtmlService: {
+      XFrameOptionsMode: { ALLOWALL: 'ALLOWALL', DENY: 'DENY' },
+      createHtmlOutput(html) {
+        return {
+          __kind: 'denied',
+          html,
+          setTitle() { return this; },
+          addMetaTag() { return this; },
+          setXFrameOptionsMode() { return this; }
+        };
+      },
+      createTemplateFromFile(name) {
+        return {
+          evaluate() {
+            return {
+              __kind: 'app:' + name,
+              setTitle() { return this; },
+              addMetaTag() { return this; },
+              setXFrameOptionsMode() { return this; }
+            };
+          }
+        };
+      }
+    }
   };
 
   vm.createContext(sandbox);
@@ -299,7 +324,9 @@ const rbacEnv = makeSandbox();
 // Skenario deployment yang direkomendasikan README/appsscript.json:
 // executeAs: USER_ACCESSING -> Session.getActiveUser() === Session.getEffectiveUser()
 function rbacConfig(opts) {
-  setupEnv(rbacEnv, Object.assign({ masterEmail: 'master@x.com' }, opts));
+  // Pasangan yang diundang harus terdaftar di CONFIG (Email Istri) agar berstatus
+  // anggota, sesuai alur aplikasi: undangan -> didaftarkan di CONFIG -> masuk.
+  setupEnv(rbacEnv, Object.assign({ masterEmail: 'master@x.com', istriEmail: 'spouse@x.com' }, opts));
 }
 
 check('QC-RBAC-01', 'Anggota diundang (active === effective, bukan master) TIDAK boleh dianggap Master', () => {
@@ -375,6 +402,89 @@ check('QC-RBAC-08', 'Pemilik spreadsheet MASIH BISA mengubah konfigurasi (tidak 
   rbacEnv.state.effEmail = 'owner@x.com';
   const res = rbacEnv.sandbox.saveAccountSettings({ masterRole: 'Suami' });
   if (res.success !== true) throw new Error('Pemilik diblokir: ' + JSON.stringify(res));
+});
+
+// ---------------------------------------------------------------------------
+// MODUL A2: GERBANG AKSES WEB APP (hanya email terdaftar yang boleh buka link)
+// ---------------------------------------------------------------------------
+console.log('[A2] Modul Gerbang Akses Web App (whitelist email)');
+
+const accEnv = makeSandbox();
+
+function accConfig(opts) {
+  setupEnv(accEnv, Object.assign({
+    suamiEmail: 'suami@x.com',
+    istriEmail: 'istri@x.com',
+    masterEmail: 'master@x.com'
+  }, opts || {}));
+}
+
+check('QC-ACCESS-01', 'doGet MENOLAK pengunjung yang emailnya tidak terdaftar di CONFIG', () => {
+  accConfig();
+  accEnv.state.activeEmail = 'orangasing@x.com';
+  accEnv.state.effEmail = 'orangasing@x.com';
+  const out = accEnv.sandbox.doGet();
+  if (!out || out.__kind !== 'denied') {
+    throw new Error('doGet tidak menghalangi pengunjung asing (kind=' + (out && out.__kind) + ')');
+  }
+  if (!/Akses Ditolak/i.test(out.html || '')) throw new Error('halaman penolakan tidak ditampilkan');
+  if (!/orangasing@x\.com/.test(out.html || '')) throw new Error('email pengunjung tidak ditampilkan untuk penanganan');
+});
+
+check('QC-ACCESS-02', 'doGet MENOLAK pengunjung tanpa identitas email (deploy salah / anonim)', () => {
+  accConfig();
+  accEnv.state.activeEmail = '';
+  accEnv.state.effEmail = '';
+  const out = accEnv.sandbox.doGet();
+  if (!out || out.__kind !== 'denied') throw new Error('pengunjung anonim tetap bisa membuka aplikasi');
+});
+
+check('QC-ACCESS-03', 'doGet MEMBUKA aplikasi untuk email terdaftar (Suami, Istri, Master, Pemilik)', () => {
+  accConfig();
+  ['suami@x.com', 'istri@x.com', 'master@x.com', 'owner@x.com'].forEach((email) => {
+    accEnv.state.activeEmail = email;
+    accEnv.state.effEmail = email;
+    const out = accEnv.sandbox.doGet();
+    if (!out || out.__kind !== 'app:WebApp') {
+      throw new Error('email terdaftar justru ditolak: ' + email);
+    }
+  });
+});
+
+check('QC-ACCESS-04', 'getInitialData TIDAK mengirim data apa pun ke pengunjung tidak terdaftar', () => {
+  accConfig();
+  accEnv.state.activeEmail = 'orangasing@x.com';
+  const d = accEnv.sandbox.getInitialData();
+  if (!d.accessDenied) throw new Error('data tetap terkirim ke pengunjung asing');
+  if (d.categories || d.wallets || d.recent || d.summary) {
+    throw new Error('payload penolakan ikut membocorkan data');
+  }
+  if (d.isMaster !== false) throw new Error('pengunjung yang ditolak dianggap Master');
+});
+
+check('QC-ACCESS-05', 'Fungsi tulis DITOLAK untuk email tidak terdaftar (tanpa baris tersimpan)', () => {
+  accConfig();
+  accEnv.state.activeEmail = 'orangasing@x.com';
+  const res = accEnv.sandbox.submitTransaction({
+    type: 'Pengeluaran', amount: 50000, date: '2026-11-05',
+    category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama',
+    wallet: 'Rekening BCA Bersama [Kas Bersama]', note: 'Uji akses'
+  });
+  if (res.success !== false || !res.accessDenied) throw new Error(JSON.stringify(res));
+  const rows = accEnv.state.sheets.TRANSAKSI._data().slice(1);
+  if (rows.length > 0) throw new Error('transaksi asing ikut tersimpan: ' + JSON.stringify(rows));
+});
+
+check('QC-ACCESS-06', 'Anggota terdaftar TETAP BISA mencatat transaksi (tidak ikut terkunci)', () => {
+  accConfig();
+  accEnv.state.activeEmail = 'istri@x.com';
+  accEnv.state.effEmail = 'istri@x.com';
+  const res = accEnv.sandbox.submitTransaction({
+    type: 'Pengeluaran', amount: 25000, date: '2026-11-05',
+    category: 'Belanja Pasar & Dapur', scope: 'Kas Bersama',
+    wallet: 'Rekening BCA Bersama [Kas Bersama]', note: 'Belanja anggota'
+  });
+  if (res.success !== true) throw new Error('anggota terdaftar ikut diblokir: ' + JSON.stringify(res));
 });
 
 // ---------------------------------------------------------------------------
@@ -601,7 +711,7 @@ console.log('\n[G] Modul Validasi Input Server-Side');
 const valEnv = makeSandbox();
 
 function submitWith(payload) {
-  setupEnv(valEnv, {});
+  setupEnv(valEnv, { istriEmail: 'spouse@x.com' });
   valEnv.state.activeEmail = 'spouse@x.com';
   valEnv.state.effEmail = 'spouse@x.com';
   return valEnv.sandbox.submitTransaction(Object.assign({

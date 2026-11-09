@@ -68,6 +68,25 @@ Agar antarmuka web app bisa dibuka dari smartphone:
 4. Klik **Deploy**.
 5. Salin **Web app URL** yang muncul (simpan URL ini).
 
+### Pembatasan Akses: Hanya Email Keluarga yang Boleh Membuka Link
+
+Setting deployment Apps Script **tidak bisa** membatasi akses per-email
+(*Who has access* hanya menyediakan `Anyone with Google account` / `Anyone`).
+Karena itu aplikasi menyaring pengunjung di sisi server (`Code.gs` -> `doGet`):
+
+- **Email yang diizinkan**: `Email Suami` (CONFIG!B3), `Email Istri` (CONFIG!B5),
+  `Email Master` (CONFIG!B6), dan pemilik spreadsheet.
+- Email lain yang membuka link akan melihat halaman **"Akses Ditolak"** tanpa data apa pun,
+  dan seluruh fungsi server (`submitTransaction`, `saveConfigData`, `closeAndArchiveYear`, dll)
+  juga menolak permintaan dari email tersebut.
+- Email belum terdaftar? Daftarkan lewat tab **Akun > Pengaturan Akun Pasangan** (akun Master)
+  atau isi langsung sheet CONFIG (B3/B5/B6). Perubahan langsung berlaku karena daftar dibaca
+  setiap kali link dibuka - tidak perlu deploy ulang.
+
+**Catatan penting**: `Execute as` **wajib** `User accessing the web app`. Jika diset `Me (owner)`,
+identitas pengunjung tidak bisa dibaca sehingga semua orang (termasuk keluarga sendiri) akan
+ditolak dengan pesan *"Email Google Anda tidak terdeteksi"*.
+
 ---
 
 ## 4. Trik URL Sakti `/copy` untuk Pengiriman Otomatis ke Pembeli

@@ -4,6 +4,15 @@
  */
 
 function doGet(e) {
+  // Gerbang akses Web App (server-side): hanya email yang terdaftar di sheet CONFIG
+  // (Email Suami / Email Istri / Email Master) atau pemilik spreadsheet yang boleh
+  // membuka link ini. Setting deployment "Anyone with Google account" tidak bisa
+  // membatasi per-email, sehingga pembatasannya dilakukan di sini.
+  var access = getWebAppAccess_();
+  if (!access.allowed) {
+    return buildAccessDeniedOutput_(access);
+  }
+
   var template = HtmlService.createTemplateFromFile('WebApp');
   return template.evaluate()
     .setTitle('Family Finance Tracker')
@@ -43,7 +52,155 @@ function isMasterAccess_(ss, configSheet, activeEmailRaw) {
   return (master && active === master) || (owner && active === owner);
 }
 
+/**
+ * Email Google pengguna yang sedang membuka Web App.
+ * Kosong bila identitas tidak boleh diungkapkan (mis. deployment
+ * "Execute as: Me" untuk pengguna di luar domain).
+ */
+function getActiveEmail_() {
+  try {
+    return (Session.getActiveUser().getEmail() || '').toLowerCase().trim();
+  } catch (e) {
+    return '';
+  }
+}
+
+/**
+ * Daftar email yang diizinkan memakai Web App (fail-closed):
+ * - Email Suami  (CONFIG!B3)
+ * - Email Istri  (CONFIG!B5)
+ * - Email Master (CONFIG!B6)
+ * - Pemilik spreadsheet
+ */
+function getAllowedEmails_(ss, configSheet) {
+  var allowed = {};
+  var add = function(value) {
+    var email = (value || '').toString().toLowerCase().trim();
+    if (email) allowed[email] = true;
+  };
+
+  try {
+    if (configSheet) {
+      add(configSheet.getRange('B3').getValue());
+      add(configSheet.getRange('B5').getValue());
+      add(configSheet.getRange('B6').getValue());
+    }
+  } catch (e) {}
+
+  add(getSpreadsheetOwnerEmail_(ss));
+  return allowed;
+}
+
+/**
+ * Pemeriksaan akses Web App. Mengembalikan { allowed, email, code, message }.
+ * code: 'no-identity' | 'no-sheet-access' | 'not-registered'
+ */
+function getWebAppAccess_() {
+  var email = getActiveEmail_();
+  if (!email) {
+    return {
+      allowed: false,
+      email: '',
+      code: 'no-identity',
+      message: 'Email Google Anda tidak terdeteksi. Web App harus dideploy dengan ' +
+        'Execute as: User accessing the web app agar identitas pengunjung bisa dibaca.'
+    };
+  }
+
+  var ss = null;
+  var configSheet = null;
+  try {
+    ss = SpreadsheetApp.getActiveSpreadsheet();
+    configSheet = ss.getSheetByName('CONFIG');
+  } catch (err) {
+    return {
+      allowed: false,
+      email: email,
+      code: 'no-sheet-access',
+      message: 'Spreadsheet tidak dapat diakses oleh akun ' + email + '.'
+    };
+  }
+
+  var allowed = getAllowedEmails_(ss, configSheet);
+  if (!allowed[email]) {
+    return {
+      allowed: false,
+      email: email,
+      code: 'not-registered',
+      message: 'Email ' + email + ' belum terdaftar sebagai anggota keluarga.'
+    };
+  }
+
+  return { allowed: true, email: email, code: '', message: '' };
+}
+
+/** Respons standar untuk fungsi server ketika akses ditolak. */
+function accessDeniedResponse_(access) {
+  return {
+    success: false,
+    accessDenied: true,
+    code: access.code,
+    message: access.message
+  };
+}
+
+/** Halaman penolakan akses (tanpa data apa pun). */
+function buildAccessDeniedOutput_(access) {
+  var tips = '';
+  if (access.code === 'no-identity') {
+    tips = 'Buka <b>Deploy &gt; Manage deployments &gt; Edit</b>, ubah <b>Execute as</b> menjadi ' +
+      '<b>User accessing the web app</b>, lalu Deploy ulang sebagai <b>New version</b>.';
+  } else if (access.code === 'no-sheet-access') {
+    tips = 'Bagikan spreadsheet ini sebagai <b>Editor</b> kepada akun Anda melalui tombol ' +
+      '<b>Bagikan (Share)</b> di Google Sheets.';
+  } else {
+    tips = 'Daftarkan email tersebut pada sheet <b>CONFIG</b> (kolom <b>Email Suami</b>, ' +
+      '<b>Email Istri</b>, atau <b>Email Master</b>), atau minta akun Master mendaftarkannya ' +
+      'lewat tab <b>Akun &gt; Pengaturan Akun Pasangan</b>.';
+  }
+
+  var html = [
+    '<!DOCTYPE html>',
+    '<html lang="id"><head><base target="_top"><meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    '<title>Akses Ditolak - Family Finance Tracker</title>',
+    '<style>',
+    'body{margin:0;background:#f8faf9;font-family:Arial,Helvetica,sans-serif;color:#0f172a;',
+    'display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;}',
+    '.card{max-width:520px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;',
+    'padding:28px;box-shadow:0 10px 30px rgba(15,23,42,.08);}',
+    '.badge{display:inline-block;font-size:11px;font-weight:bold;letter-spacing:.08em;',
+    'text-transform:uppercase;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;',
+    'border-radius:999px;padding:4px 10px;margin-bottom:14px;}',
+    'h1{font-size:20px;margin:0 0 10px;}',
+    'p{font-size:14px;line-height:1.6;color:#475569;margin:0 0 12px;}',
+    '.box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;',
+    'font-size:13px;color:#334155;margin-bottom:14px;word-break:break-word;}',
+    '.foot{font-size:12px;color:#94a3b8;}',
+    '</style></head><body><div class="card">',
+    '<span class="badge">Akses Ditolak</span>',
+    '<h1>Anda tidak memiliki akses ke Family Finance Tracker</h1>',
+    '<div class="box"><b>Email terdeteksi:</b><br>' + (access.email || '(tidak terdeteksi)') + '</div>',
+    '<p>' + access.message + '</p>',
+    '<p><b>Solusi:</b> ' + tips + '</p>',
+    '<p class="foot">Link Web App ini hanya dapat dibuka oleh akun Google keluarga yang ' +
+    'terdaftar di spreadsheet.</p>',
+    '</div></body></html>'
+  ].join('');
+
+  return HtmlService.createHtmlOutput(html)
+    .setTitle('Akses Ditolak - Family Finance Tracker')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
 function getInitialData() {
+  var access = getWebAppAccess_();
+  if (!access.allowed) {
+    // Penolakan akses: tidak ada data yang dikirim, dan pengguna yang ditolak
+    // tidak pernah dianggap Master (fail-closed).
+    return { accessDenied: true, isMaster: false, code: access.code, message: access.message };
+  }
+
   var userEmail = '';
   try {
     userEmail = Session.getActiveUser().getEmail();
@@ -522,6 +679,9 @@ function loadConfigData(ss) {
 }
 
 function closeAndArchiveYear(targetYear) {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(15000);
@@ -900,6 +1060,9 @@ function extractSmartPresets(transactions, defaultPresets, maxPresets) {
 }
 
 function submitTransaction(payload) {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
@@ -990,6 +1153,9 @@ function submitTransaction(payload) {
 }
 
 function deleteTransaction(trxId) {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
@@ -1038,6 +1204,9 @@ function deleteTransaction(trxId) {
 }
 
 function updateTransaction(trxId, payload) {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
@@ -1138,6 +1307,9 @@ function updateTransaction(trxId, payload) {
 }
 
 function saveConfigData(payload) {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
@@ -1215,6 +1387,9 @@ function saveConfigData(payload) {
 }
 
 function saveAccountSettings(payload) {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
@@ -1251,6 +1426,9 @@ function saveAccountSettings(payload) {
 }
 
 function getPeriodSummary(startDateStr, endDateStr) {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var transSheet = ss.getSheetByName('TRANSAKSI');

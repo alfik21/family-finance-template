@@ -85,9 +85,9 @@
           <p id="userEmailBadge" class="text-xs text-muted">Memuat akun...</p>
         </div>
 
-        <!-- Quick Demo Switcher on Header -->
+        <!-- Quick Demo Switcher on Header (Hanya mode demo/preview) -->
         <div class="flex items-center gap-1.5">
-          <button type="button" onclick="toggleDemoRole()" title="Klik untuk beralih antara akun Suami dan Istri" class="touch-btn inline-flex items-center rounded-lg border border-sage-300 bg-white px-2.5 py-1 text-xs font-bold text-sage-900 shadow-2xs hover:bg-sage-50 transition-all">
+          <button type="button" id="roleBadgeBtn" onclick="toggleDemoRole()" title="Klik untuk beralih antara akun Suami dan Istri" class="touch-btn inline-flex items-center rounded-lg border border-sage-300 bg-white px-2.5 py-1 text-xs font-bold text-sage-900 shadow-2xs hover:bg-sage-50 transition-all">
             <span id="userRoleBadge">Suami (Ayah)</span>
           </button>
         </div>
@@ -647,8 +647,10 @@
           </div>
         </div>
 
-        <!-- Testing Simulation Toggle (Allows testing both perspectives easily) -->
-        <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+        <!-- Testing Simulation Toggle (Allows testing both perspectives easily)
+             Hanya tampil di mode demo/preview. Di Web App Apps Script asli panel ini disembunyikan,
+             sehingga akun anggota (mis. Bunda) tidak bisa mengubah perannya sendiri. -->
+        <div id="roleSimPanel" class="hidden rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-800">Simulasi Pengujian Hak Akses</span>
             <span class="text-[10px] text-slate-500">Uji tampilan pasangan</span>
@@ -859,8 +861,25 @@
         .replace(/'/g, '&#039;');
     }
 
+    // Deteksi runtime:
+    // - Aplikasi asli : disajikan oleh Google Apps Script (script.google.com /
+    //                   script.googleusercontent.com) dan memiliki google.script.host
+    // - Demo/preview  : preview.html menandai iframe-nya dengan __DEMO_PREVIEW__,
+    //                   atau halaman dibuka langsung dari lokal tanpa Apps Script.
+    // Fitur simulasi peran & cache role localStorage HANYA dipakai di mode demo.
+    function isDemoMode_() {
+      if (window.__DEMO_PREVIEW__ === true) return true;
+
+      var host = (location && location.hostname) ? location.hostname : '';
+      var onAppsScriptHost = /(^|\.)google\.com$|(^|\.)googleusercontent\.com$/.test(host);
+      var hasAppsScriptHost = (typeof google !== 'undefined' && google.script && !!google.script.host);
+      return !(onAppsScriptHost || hasAppsScriptHost);
+    }
+
     var appData = {
-      isMaster: true,
+      // Default fail-closed: di aplikasi asli status Master ditentukan data server,
+      // bukan asumsi bawaan (cegah anggota terbaca sebagai Master sebelum data datang).
+      isMaster: isDemoMode_(),
       userEmail: 'suami@keluarga.com',
       userRole: 'Suami (Ayah)',
       accounts: {
@@ -952,11 +971,15 @@
       appData.userEmail = resolvedEmail;
       appData.isMaster = resolvedIsMaster;
 
-      try {
-        localStorage.setItem('family_demo_role', resolvedRole);
-        localStorage.setItem('family_demo_email', resolvedEmail);
-        localStorage.setItem('family_demo_is_master', resolvedIsMaster ? '1' : '0');
-      } catch (e) {}
+      // Simpan peran demo hanya di mode demo; di aplikasi asli status master
+      // ditentukan oleh server (Code.gs isMasterAccess_), bukan localStorage.
+      if (isDemoMode_()) {
+        try {
+          localStorage.setItem('family_demo_role', resolvedRole);
+          localStorage.setItem('family_demo_email', resolvedEmail);
+          localStorage.setItem('family_demo_is_master', resolvedIsMaster ? '1' : '0');
+        } catch (e) {}
+      }
 
       renderSummary();
       renderAccountView();
@@ -980,6 +1003,10 @@
     }
 
     function toggleDemoRole() {
+      if (!isDemoMode_()) {
+        showToast('Ganti peran hanya tersedia di mode demo.', false);
+        return;
+      }
       var isSuami = (appData.userRole.indexOf('Suami') !== -1 || appData.userRole.indexOf('Ayah') !== -1);
       var targetRole = isSuami ? 'Istri' : 'Suami';
       switchAppRole(targetRole);
@@ -987,6 +1014,10 @@
     }
 
     function setSimulatedRole(isMaster, roleName) {
+      if (!isDemoMode_()) {
+        showToast('Simulasi hak akses hanya tersedia di mode demo.', false);
+        return;
+      }
       switchAppRole(roleName, isMaster);
       showToast('Mode diubah: ' + (appData.isMaster ? 'Akun Master' : 'Anggota Diundang'), true);
     }
@@ -1001,10 +1032,25 @@
     });
 
     function initDemoModeUI() {
-      var hasAppsScript = (typeof google !== 'undefined' && google.script && google.script.run);
-      if (hasAppsScript) return;
+      var demo = isDemoMode_();
+
+      // Panel simulasi peran: hanya di mode demo/preview.
+      var simPanel = document.getElementById('roleSimPanel');
+      if (simPanel) simPanel.classList.toggle('hidden', !demo);
+
+      // Badge peran di header: hanya bisa diklik untuk ganti peran di mode demo.
+      var badgeBtn = document.getElementById('roleBadgeBtn');
+      if (badgeBtn) {
+        badgeBtn.disabled = !demo;
+        badgeBtn.classList.toggle('cursor-not-allowed', !demo);
+        badgeBtn.classList.toggle('opacity-70', !demo);
+        badgeBtn.title = demo
+          ? 'Klik untuk beralih antara akun Suami dan Istri'
+          : 'Peran aktif (tidak dapat diganti di aplikasi asli)';
+      }
+
       var banner = document.getElementById('demoModeBanner');
-      if (banner) banner.classList.remove('hidden');
+      if (banner) banner.classList.toggle('hidden', !demo);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -2622,12 +2668,22 @@
     function loadCachedData() {
       try {
         var cached = localStorage.getItem('family_finance_cache');
-        var cachedRole = localStorage.getItem('family_demo_role');
-        var cachedMaster = localStorage.getItem('family_demo_is_master');
-        var cachedEmail = localStorage.getItem('family_demo_email');
-        if (cachedRole) appData.userRole = cachedRole;
-        if (cachedMaster !== null) appData.isMaster = (cachedMaster === '1');
-        if (cachedEmail) appData.userEmail = cachedEmail;
+        // Peran demo hanya dipakai di mode demo/preview. Di aplikasi asli,
+        // peran & hak akses master selalu datang dari server (Code.gs).
+        if (isDemoMode_()) {
+          var cachedRole = localStorage.getItem('family_demo_role');
+          var cachedMaster = localStorage.getItem('family_demo_is_master');
+          var cachedEmail = localStorage.getItem('family_demo_email');
+          if (cachedRole) appData.userRole = cachedRole;
+          if (cachedMaster !== null) appData.isMaster = (cachedMaster === '1');
+          if (cachedEmail) appData.userEmail = cachedEmail;
+        } else {
+          try {
+            localStorage.removeItem('family_demo_role');
+            localStorage.removeItem('family_demo_email');
+            localStorage.removeItem('family_demo_is_master');
+          } catch (e) {}
+        }
         if (cached) {
           var parsed = JSON.parse(cached);
           if (parsed.categories) appData.categories = parsed.categories;
@@ -2746,6 +2802,12 @@
         google.script.run
           .withSuccessHandler(function(data) {
             if (data) {
+              // Server menolak akses: tampilkan layar penolakan, jangan muat data apa pun.
+              if (data.accessDenied) {
+                showAccessDeniedScreen(data.message);
+                return;
+              }
+
               if (data.categories && data.categories.length) appData.categories = data.categories;
               if (data.wallets && data.wallets.length) appData.wallets = data.wallets;
               if (data.walletBalances) appData.walletBalances = data.walletBalances;
@@ -2948,6 +3010,43 @@
       document.getElementById('displayAmount').value = '';
       document.getElementById('txNote').value = '';
       initDefaultDate();
+    }
+
+    // Layar penolakan akses dari server (email tidak terdaftar / deployment salah).
+    function showAccessDeniedScreen(message) {
+      if (document.getElementById('accessDeniedOverlay')) return;
+
+      var overlay = document.createElement('div');
+      overlay.id = 'accessDeniedOverlay';
+      overlay.setAttribute('style',
+        'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;' +
+        'padding:24px;background:rgba(255,255,255,.96);backdrop-filter:blur(4px);');
+
+      var card = document.createElement('div');
+      card.setAttribute('style',
+        'max-width:460px;width:100%;background:#fff;border:1px solid #fecaca;border-radius:16px;' +
+        'padding:26px;box-shadow:0 12px 32px rgba(15,23,42,.12);text-align:center;' +
+        'font-family:Arial,Helvetica,sans-serif;');
+
+      var badge = document.createElement('div');
+      badge.textContent = 'AKSES DITOLAK';
+      badge.setAttribute('style',
+        'display:inline-block;font-size:11px;font-weight:bold;letter-spacing:.08em;color:#b91c1c;' +
+        'background:#fef2f2;border:1px solid #fecaca;border-radius:999px;padding:4px 10px;margin-bottom:12px;');
+
+      var title = document.createElement('h2');
+      title.textContent = 'Anda tidak memiliki akses';
+      title.setAttribute('style','margin:0 0 10px;font-size:18px;color:#0f172a;');
+
+      var body = document.createElement('p');
+      body.textContent = message || 'Akun Google ini tidak terdaftar sebagai anggota keluarga.';
+      body.setAttribute('style','margin:0;font-size:13px;line-height:1.6;color:#475569;');
+
+      card.appendChild(badge);
+      card.appendChild(title);
+      card.appendChild(body);
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
     }
 
     function showToast(msg, isSuccess) {

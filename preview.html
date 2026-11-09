@@ -529,6 +529,9 @@
       iframe.onload = function() {
         try {
           var iWin = iframe.contentWindow;
+          // Tandai iframe sebagai simulator demo lokal (WebApp memakai penanda ini
+          // untuk membedakan demo dari Web App Apps Script yang sesungguhnya).
+          iWin.__DEMO_PREVIEW__ = true;
           iWin.google = {
             script: {
               run: {
