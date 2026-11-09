@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  qc-and-artifacts:
+    name: Regresi QC + integritas artefak
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Tanpa langkah install: proyek ini tidak punya dependensi
+      # (devDependencies kosong, tanpa package-lock.json).
+
+      # Validasi struktur + QC audit (QC-DEMO-01, QC-DOC-01, dst.)
+      - name: Regresi QC (node tests/validate.js + tests/qc-audit.js)
+        run: npm test
+
+      # Berkas demo/ harus identik dengan sumber di root (QC-DEMO-01)
+      - name: Regenerasi artefak demo dan pastikan tidak ada drift
+        run: |
+          npm run sync
+          git diff --exit-code -- demo/preview.html demo/WebApp.html demo/vercel.json
