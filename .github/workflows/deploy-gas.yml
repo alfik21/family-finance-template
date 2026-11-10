@@ -41,7 +41,8 @@ jobs:
           fi
           printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
           printf '{\n  "scriptId": "%s",\n  "rootDir": "."\n}\n' "$SCRIPT_ID" > .clasp.json
-          npx @google/clasp@3 whoami
+          # `whoami` tidak ada di clasp 3.x; `list` membuktikan login berhasil
+          npx @google/clasp@3 list
 
       - name: Push kode ke Apps Script
         run: npx @google/clasp@3 push -f
