@@ -1,0 +1,53 @@
+name: Deploy Apps Script (manual)
+
+# Deploy ke Google Apps Script dijalankan MANUAL lewat tombol
+# "Run workflow" di tab Actions — tidak otomatis saat push.
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_webapp:
+        description: "Buat deployment Web App baru setelah push (URL Web App AKAN BERUBAH)"
+        type: boolean
+        default: false
+
+jobs:
+  deploy:
+    name: QC lalu push ke script
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Gerbang kualitas: 41 temuan QC (validate + qc-audit)
+      - name: Regresi QC sebelum deploy
+        run: npm test
+
+      # Dua GitHub Secrets (Settings > Secrets and variables > Actions):
+      #   CLASPRC_JSON = isi berkas ~/.clasprc.json hasil `npx clasp login`
+      #   SCRIPT_ID    = isi .clasp.json (scriptId) — berkas itu tidak ikut di-commit
+      - name: Siapkan kredensial & script ID clasp
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          SCRIPT_ID: ${{ secrets.SCRIPT_ID }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ]; then
+            echo "Secret CLASPRC_JSON belum diisi"; exit 1
+          fi
+          if [ -z "$SCRIPT_ID" ]; then
+            echo "Secret SCRIPT_ID belum diisi"; exit 1
+          fi
+          printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
+          printf '{\n  "scriptId": "%s",\n  "rootDir": "."\n}\n' "$SCRIPT_ID" > .clasp.json
+          npx @google/clasp@3 whoami
+
+      - name: Push kode ke Apps Script
+        run: npx @google/clasp@3 push -f
+
+      # `clasp deploy` tanpa `-i` membuat deployment BARU → URL Web App berubah,
+      # jadi hanya dijalankan bila dicentang saat klik Run workflow.
+      - name: Buat deployment Web App baru (opsional)
+        if: ${{ inputs.deploy_webapp }}
+        run: npx @google/clasp@3 deploy -d "Deploy dari GitHub Actions $(date -u +%Y-%m-%dT%H:%M:%SZ)"
