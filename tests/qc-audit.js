@@ -1,7 +1,7 @@
 /**
  * tests/qc-audit.js
  * ---------------------------------------------------------------------------
- * QC / Pre-Commercial Audit Suite - Family Finance Tracker
+ * QC / Pre-Commercial Audit Suite - Finance Tracker — Family Edition
  * ---------------------------------------------------------------------------
  * Suite ini menguji temuan QA pra-rilis secara OTOMATIS (reproducible):
  *   - Keamanan RBAC (Akun Master vs Anggota Diundang)
@@ -312,7 +312,7 @@ function setupEnv(env, cfgOpts, transRows) {
   env.state.sheets.DASHBOARD = makeDashboardStub(env.state.ops);
 }
 
-console.log('\n=== QC AUDIT: Family Finance Tracker (Pra-Komersial) ===\n');
+console.log('\n=== QC AUDIT: Finance Tracker — Family Edition (Pra-Komersial) ===\n');
 
 // ---------------------------------------------------------------------------
 // MODUL A: RBAC (Akun Master vs Anggota Diundang)

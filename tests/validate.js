@@ -1,7 +1,7 @@
 const fs = require('fs');
 const vm = require('vm');
 
-console.log('Running Family Finance Tracker Test Suite (v2.0 RBAC & Bottom Nav)...\n');
+console.log('Running Finance Tracker — Family Edition Test Suite (v2.0 RBAC & Bottom Nav)...\n');
 
 // 1. Syntax Check
 const files = ['Code.gs', 'Setup.gs'];

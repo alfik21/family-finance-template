@@ -1,5 +1,5 @@
 /**
- * Code.gs - Backend API Google Apps Script untuk Web App Family Finance Tracker
+ * Code.gs - Backend API Google Apps Script untuk Web App Finance Tracker — Family Edition
  * Mendukung RBAC Akun Master vs Anggota, Kepemilikan Dompet Eksplisit, dan Zero-Symbol UI.
  */
 
@@ -15,7 +15,7 @@ function doGet(e) {
 
   var template = HtmlService.createTemplateFromFile('WebApp');
   return template.evaluate()
-    .setTitle('Family Finance Tracker')
+    .setTitle('Finance Tracker — Family Edition')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -163,7 +163,7 @@ function buildAccessDeniedOutput_(access) {
     '<!DOCTYPE html>',
     '<html lang="id"><head><base target="_top"><meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
-    '<title>Akses Ditolak - Family Finance Tracker</title>',
+    '<title>Akses Ditolak - Finance Tracker — Family Edition</title>',
     '<style>',
     'body{margin:0;background:#f8faf9;font-family:Arial,Helvetica,sans-serif;color:#0f172a;',
     'display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;}',
@@ -179,7 +179,7 @@ function buildAccessDeniedOutput_(access) {
     '.foot{font-size:12px;color:#94a3b8;}',
     '</style></head><body><div class="card">',
     '<span class="badge">Akses Ditolak</span>',
-    '<h1>Anda tidak memiliki akses ke Family Finance Tracker</h1>',
+    '<h1>Anda tidak memiliki akses ke Finance Tracker — Family Edition</h1>',
     '<div class="box"><b>Email terdeteksi:</b><br>' + (access.email || '(tidak terdeteksi)') + '</div>',
     '<p>' + access.message + '</p>',
     '<p><b>Solusi:</b> ' + tips + '</p>',
@@ -189,7 +189,7 @@ function buildAccessDeniedOutput_(access) {
   ].join('');
 
   return HtmlService.createHtmlOutput(html)
-    .setTitle('Akses Ditolak - Family Finance Tracker')
+    .setTitle('Akses Ditolak - Finance Tracker — Family Edition')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 

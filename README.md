@@ -1,4 +1,4 @@
-# Family Finance Tracker (Couple & Family Edition)
+# Finance Tracker — Family Edition
 
 Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** dan **Google Apps Script Web App (PWA)** dengan model *Hybrid* (Kas Bersama + Dompet Pribadi Suami & Istri).
 
@@ -19,19 +19,23 @@ Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** da
 ## Struktur File & Folder
 
 ```text
-├── docs/
-│   ├── 01_PRODUCT_BRIEF_AND_REQUIREMENTS.docx # Dokumen Word/Docs Product Brief & spesifikasi produk
-│   ├── 01_PRODUCT_BRIEF_AND_REQUIREMENTS.md   # Format Markdown Product Brief & target market
-│   ├── 02_PANDUAN_PENGUJIAN_PRODUK.docx       # Dokumen Word/Docs SOP pengujian mutu produk
-│   ├── 02_PANDUAN_PENGUJIAN_PRODUK.md         # Format Markdown SOP pengujian mutu 2 fase
+├── docs/                         # Paket dokumentasi PEMBELI (dibagikan saat penjualan)
+│   ├── README.md                              # Indeks dokumen pembeli
+│   ├── 01_PANDUAN_PENGUJIAN_PRODUK.docx       # Dokumen Word/Docs SOP pengujian mutu produk
+│   ├── 01_PANDUAN_PENGUJIAN_PRODUK.md         # Format Markdown SOP pengujian mutu 2 fase
 │   ├── 02_PRODUCT_TESTING_CHECKLIST.xlsx      # Workbook Google Sheets/Excel 2-tab kosong untuk QA
 │   ├── 02_PRODUCT_TESTING_CHECKLIST.md        # Spesifikasi matriks kasus uji QA & UAT
 │   ├── 03_USER_GUIDE.docx                     # Dokumen Word/Docs panduan lengkap pembeli
 │   ├── 03_USER_GUIDE.md                       # Format Markdown panduan pengguna 4 halaman
 │   ├── 04_LICENSE_AND_TERMS_OF_USE.docx       # Dokumen Word/Docs surat perjanjian lisensi
-│   ├── 04_LICENSE_AND_TERMS_OF_USE.md         # Format Markdown lisensi komersial & terms of use
-│   ├── 05_QC_BUG_REPORT_AND_FIXLOG.md         # Laporan 29 temuan QA pra-rilis & catatan perbaikan
-│   └── README.md                              # Indeks katalog dokumentasi penjualan & operasional
+│   └── 04_LICENSE_AND_TERMS_OF_USE.md         # Format Markdown lisensi komersial & terms of use
+├── internal/                     # Dokumen INTERNAL PENJUAL (tidak dibagikan ke pembeli)
+│   ├── README.md                              # Indeks dokumen internal
+│   ├── BRIEF_PRODUK.docx                      # Dokumen Word/Docs Product Brief & spesifikasi produk
+│   ├── BRIEF_PRODUK.md                        # Format Markdown Product Brief & target market
+│   ├── LAPORAN_QC.md                          # Laporan 29 temuan QA pra-rilis & catatan perbaikan
+│   ├── RENCANA_RILIS.md                       # Rencana aksi peluncuran per fase (P0/P1/P2)
+│   └── DESIGN_SYSTEM.md                       # Sistem desain bersama payung Finance Tracker
 ├── scripts/
 │   ├── generate-docs-docx.js    # Generator otomatis berkas Word/Docs (.docx) siap baca
 │   └── generate-testing-xlsx.js # Generator otomatis berkas Google Sheets / Excel (.xlsx) QA
@@ -87,7 +91,7 @@ Sebelum menghubungkan ke Google Drive, Anda dapat langsung mencoba alur kerja ap
 1. Di halaman Apps Script, klik tombol biru **Deploy** (Terapkan) di pojok kanan atas > pilih **New deployment** (Penerapan baru).
 2. Klik tombol gerigi di sebelah *Select type* > pilih **Web app**.
 3. Isi konfigurasi berikut:
-   - **Description**: `Finance Tracker : Family Edition v3`
+   - **Description**: `Finance Tracker — Family Edition v3`
    - **Execute as**: `User accessing the web app` *(Penting: agar transaksi otomatis mendeteksi email Google pasangan yang sedang input)*
    - **Who has access**: `Anyone with Google account`
 4. Klik **Deploy** dan salin **Web app URL** yang muncul.
@@ -97,4 +101,4 @@ Kirimkan URL Web App tersebut ke WhatsApp pasangan Anda:
 - **Di iPhone (Safari)**: Buka link > tap ikon **Share** (kotak panah ke atas) > pilih **Add to Home Screen**.
 - **Di Android (Chrome)**: Buka link > tap menu titik tiga di pojok kanan atas > pilih **Add to Home screen** / **Install app**.
 
-Kini aplikasi Finance Tracker : Family Edition dapat diakses layaknya aplikasi native dari layar utama HP dalam 1 detik.
+Kini aplikasi Finance Tracker — Family Edition dapat diakses layaknya aplikasi native dari layar utama HP dalam 1 detik.

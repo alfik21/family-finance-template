@@ -1,18 +1,18 @@
 # Lembar Kerja Pengujian Produk (Product Testing Checklist - Blank Template)
-## Family Finance Tracker — Couple & Family Edition
+## Finance Tracker — Family Edition
 
 **Tipe Dokumen**: Lembar Kendali Mutu Pra-Peluncuran (Pre-Launch QA & UAT Checklist)  
 **Format Target**: Google Sheets (Struktur 2 Tab: `DASHBOARD_UJI` dan `MATRIKS_UJI`)  
-**Divisi Penanggung Jawab (PIC)**: Finance + Operations  
+**Divisi Penanggung Jawab (PIC)**: Tim Produk Finance Tracker  
 **Status Produk**: Baru Selesai Dikembangkan (Fresh Build) — Belum Diuji oleh Pengguna Asli  
-**Dokumen Panduan & SOP Uji**: [`docs/02_PANDUAN_PENGUJIAN_PRODUK.md`](file:///J:/Aplikasi/family-finance-template/docs/02_PANDUAN_PENGUJIAN_PRODUK.md)  
+**Dokumen Panduan & SOP Uji**: [`docs/01_PANDUAN_PENGUJIAN_PRODUK.md`](file:///J:/Aplikasi/family-finance-template/docs/01_PANDUAN_PENGUJIAN_PRODUK.md)  
 **Berkas Spreadsheet Lembar Kerja Uji (.xlsx)**: [`docs/02_PRODUCT_TESTING_CHECKLIST.xlsx`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.xlsx)  
 
 ---
 
 > [!IMPORTANT]
 > **Kondisi Berkas Pengujian**:  
-> Produk ini berada pada fase **baru selesai dikembangkan pada level koding**. Seluruh formulir pengujian berikut sengaja berstatus **PENDING** dan dikosongkan pada kolom hasil observasi (`Actual Result`) serta tanggal verifikasi agar tim internal (**Finance** dan **Operations**) bersama pasangan penguji asli (*pilot couple users*) dapat menguji dan mengisi data secara objektif.
+> Produk ini berada pada fase **baru selesai dikembangkan pada level koding**. Seluruh formulir pengujian berikut sengaja berstatus **PENDING** dan dikosongkan pada kolom hasil observasi (`Actual Result`) serta tanggal verifikasi agar tim produk bersama pasangan penguji asli (*pilot couple users*) dapat menguji dan mengisi data secara objektif.
 
 ---
 
@@ -94,7 +94,7 @@
 |---|---|---|---|---|---|---|---|---|
 | TC-CPY-01 | Distribusi | Akses Link Trik /copy | Tautan /copy menampilkan laman resmi Google Make a copy tanpa memerlukan izin akses dari pemilik. | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
 | TC-CPY-02 | Distribusi | Isolasi Berkas Pembeli | Berkas tersimpan mandiri di Drive pembeli; pengubahan data pembeli tidak berdampak pada Master Template. | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
-| TC-CPY-03 | Distribusi | Otorisasi Script Pengguna | Dialog otorisasi keamanan Google berjalan mulus via opsi Advanced > Go to Family Finance Tracker (unsafe). | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
+| TC-CPY-03 | Distribusi | Otorisasi Script Pengguna | Dialog otorisasi keamanan Google berjalan mulus via opsi Advanced > Go to Finance Tracker — Family Edition (unsafe). | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
 | TC-CPY-04 | Distribusi | Setup Otomatis Spreadsheet | Menjalankan setupFinanceTracker otomatis membentuk sheet CONFIG, TRANSAKSI, BUDGET & POS, dan DASHBOARD. | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
 | TC-CPY-05 | Distribusi | Deploy Web App Mandiri | Pembeli berhasil men-deploy Web App dengan setelan Execute as: User accessing dan dibuka lancar di browser HP. | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
 | TC-CPY-06 | Distribusi | Pasang ke Layar HP (PWA) | Add to Home Screen di Safari (iOS) dan Chrome (Android) menghasilkan shortcut layar penuh ramah jempol. | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
@@ -106,7 +106,7 @@
 
 1. Unduh berkas [`02_PRODUCT_TESTING_CHECKLIST.xlsx`](file:///J:/Aplikasi/family-finance-template/docs/02_PRODUCT_TESTING_CHECKLIST.xlsx).
 2. Unggah ke Google Sheets (`File > Open > Upload`).
-3. Jalankan pengujian Fase 1 (Internal QA) sesuai petunjuk di [`02_PANDUAN_PENGUJIAN_PRODUK.md`](file:///J:/Aplikasi/family-finance-template/docs/02_PANDUAN_PENGUJIAN_PRODUK.md).
+3. Jalankan pengujian Fase 1 (Verifikasi Fungsional / QA) sesuai petunjuk di [`01_PANDUAN_PENGUJIAN_PRODUK.md`](file:///J:/Aplikasi/family-finance-template/docs/01_PANDUAN_PENGUJIAN_PRODUK.md).
 4. Setelah seluruh 26 butir lulus (**PASS**), lakukan pengujian Fase 2 bersama 3–5 pasangan pengguna nyata (*pilot couples*).
 5. Isi kolom *Actual Result*, ubah status menjadi **PASS**, masukkan tanggal uji dan catatan temuan.
 6. Tanda tangani lembar persetujuan sign-off sebelum produk dipublikasikan untuk penjualan umum.

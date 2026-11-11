@@ -5,7 +5,7 @@
 
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu('Family Finance Tracker')
+    .createMenu('Finance Tracker')
     .addItem('Buka Aplikasi (Modal)', 'openWebAppModal')
     .addSeparator()
     .addItem('Jalankan Setup / Reset Template', 'setupFinanceTracker')
@@ -19,7 +19,7 @@ function openWebAppModal() {
     .evaluate()
     .setWidth(450)
     .setHeight(760);
-  SpreadsheetApp.getUi().showModalDialog(html, 'Family Finance Tracker');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Finance Tracker');
 }
 
 function menuShowMobileGuide() {
@@ -318,7 +318,7 @@ function createDashboardSheet(ss, palette) {
   sheet.setHiddenGridlines(false);
 
   sheet.getRange('A1:G1').merge()
-    .setValue('FAMILY FINANCE TRACKER — KAS RUMAH TANGGA')
+    .setValue('FINANCE TRACKER — FAMILY EDITION - KAS RUMAH TANGGA')
     .setBackground(palette.primaryDark)
     .setFontColor(palette.white)
     .setFontWeight('bold')

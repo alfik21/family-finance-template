@@ -1,9 +1,9 @@
 # Panduan & Prosedur Pengujian Produk (Product Testing Guide)
-## Family Finance Tracker — Couple & Family Edition
+## Finance Tracker — Family Edition
 
 **Tipe Dokumen**: Standar Operasional Prosedur (SOP) Pengujian Mutu  
 **Format Target**: Google Docs / PDF  
-**Divisi Penanggung Jawab (PIC)**: Finance + Operations  
+**Divisi Penanggung Jawab (PIC)**: Tim Produk Finance Tracker  
 **Konteks Produk**: Produk Baru Selesai Dikembangkan (Fresh Development) — Belum Diuji oleh Pengguna Asli  
 **Versi Berkas**: 1.2.0  
 **Tanggal Berlaku**: 26 Oktober 2026  
@@ -15,10 +15,10 @@
 
 ## 1. Latar Belakang dan Tujuan Pengujian
 
-Produk Family Finance Tracker ini **baru saja selesai dibangun dan selesai dikembangkan pada tingkat kode (*code freeze*)**. Seluruh fitur utama (Web App PWA mobile-first, model finansial hybrid, pemisahan pos belanja bersama vs dompet pribadi suami & istri, tombol cepat cerdas, transfer kas antar-dompet, dan modul tutup buku tahunan) telah selesai dikoding, **namun belum pernah diuji coba oleh pasangan pengguna nyata (*real couple end-users*)**.
+Produk Finance Tracker — Family Edition ini **baru saja selesai dibangun dan selesai dikembangkan pada tingkat kode (*code freeze*)**. Seluruh fitur utama (Web App PWA mobile-first, model finansial hybrid, pemisahan pos belanja bersama vs dompet pribadi suami & istri, tombol cepat cerdas, transfer kas antar-dompet, dan modul tutup buku tahunan) telah selesai dikoding, **namun belum pernah diuji coba oleh pasangan pengguna nyata (*real couple end-users*)**.
 
 Oleh karena itu, dokumen SOP ini menetapkan kerangka kerja pengujian bertahap:
-1. **Fase 1: Verifikasi Fungsional Internal (Internal QA)**: Dilakukan oleh tim internal **Finance** dan **Operations** untuk memverifikasi 26 kasus uji teknis.
+1. **Fase 1: Verifikasi Fungsional (QA)**: Dilakukan oleh tim produk untuk memverifikasi 26 kasus uji teknis.
 2. **Fase 2: Pengujian Penerimaan Pengguna Asli (User Acceptance Testing / UAT)**: Dilakukan bersama 3–5 pasangan suami-istri pengguna nyata untuk mengamati kemudahan navigasi, kebingungan bahasa, serta hambatan saat pertama kali menyalin dan memasang template di smartphone mereka.
 
 ---
@@ -27,7 +27,7 @@ Oleh karena itu, dokumen SOP ini menetapkan kerangka kerja pengujian bertahap:
 
 ```text
 +---------------------------------------------------------------------------------+
-| TAHAP 1: PENGUJIAN INTERNAL QA (FINANCE + OPERATIONS)                           |
+| TAHAP 1: VERIFIKASI FUNGSIONAL / QA                                             |
 | - Verifikasi 26 Butir Matriks Uji Fungsional Lengkap                           |
 | - Uji Stabilitas Rumus Dashboard & Rekonsiliasi Saldo Kas                      |
 | - Uji Alur Otorisasi Script & Error Handling Masukan Data                      |
@@ -57,7 +57,7 @@ Karena produk belum pernah disentuh oleh pengguna asli, pengujian wajib disimula
 1. **Gunakan Akun Google Uji Baru (Bukan Akun Pengembang)**:  
    Jangan gunakan akun Google yang memiliki akses developer ke repositori. Gunakan akun Gmail biasa yang belum pernah memberi izin (*OAuth consent*) pada skrip ini.
 2. **Uji Salinan Mandiri via Link `/copy`**:  
-   Buka tautan master berakhiran `/copy`. Pastikan muncul dialog Google resmi: *"Apakah Anda ingin membuat salinan dari Family Finance Tracker?"*.
+   Buka tautan master berakhiran `/copy`. Pastikan muncul dialog Google resmi: *"Apakah Anda ingin membuat salinan dari Finance Tracker — Family Edition?"*.
 3. **Simulasi Akses Smartphone Fisik**:  
    Penguji wajib menguji alur instalasi Web App pada perangkat smartphone fisik (iPhone via Safari dan Android via Chrome), bukan hanya simulator inspect browser di laptop.
 
@@ -94,13 +94,13 @@ Lakukan verifikasi pada lembar kerja kosong [`docs/02_PRODUCT_TESTING_CHECKLIST.
 - **TC-BAL-04**: Kartu Sisa Kas Berjalan di Dashboard menghitung tepat: `=A6-E6` (Total Pemasukan dikurangi Total Pengeluaran).
 - **TC-BAL-05**: Koreksi dan Hapus Transaksi me-rollback saldo dompet terkait ke posisi sebelum transaksi dicatat.
 
-### C. Modul Ringkasan & Siklus Waktu (PIC: Finance + Operations)
+### C. Modul Ringkasan & Siklus Waktu (PIC: Tim Produk)
 - **TC-SUM-01**: Ringkasan Transaksi Bulanan menampilkan data yang sesuai dengan bulan pantauan (`YYYY-MM`).
 - **TC-SUM-02**: Rekapitulasi Siklus Gajian (misal: tgl 25) menghitung mutasi dari tanggal 25 bulan berjalan hingga 24 bulan berikutnya.
 - **TC-SUM-03**: Navigasi Siklus Gajian Dua Arah (*Prev / Next Cycle*) di Web App berfungsi lancar.
 - **TC-SUM-04**: Ringkasan Peruntukan Belanja di Dashboard memisahkan total belanja Kas Bersama, Pribadi Suami, dan Pribadi Istri secara akurat.
 
-### D. Modul Visualisasi & Anggaran (PIC: Finance + Operations)
+### D. Modul Visualisasi & Anggaran (PIC: Tim Produk)
 - **TC-DSH-01**: Bilah Sparkline Anggaran menampilkan warna hijau selama realisasi pengeluaran di bawah limit pagu.
 - **TC-DSH-02**: Indikator Batas Merah (*Overbudget*) otomatis aktif saat pengeluaran melebihi plafon anggaran yang ditetapkan di sheet `BUDGET & POS`.
 - **TC-DSH-03**: Persentase pemakaian anggaran dihitung akurat (`Realisasi / Anggaran * 100`) tanpa pesan galat.
@@ -115,7 +115,7 @@ Lakukan verifikasi pada lembar kerja kosong [`docs/02_PRODUCT_TESTING_CHECKLIST.
 - **TC-CPY-01**: Tautan `/copy` menampilkan jendela resmi Google *Make a copy* bagi akun luar.
 - **TC-CPY-02**: Berkas Master milik penjual terlindungi dalam status *View Only* (Pelihat).
 - **TC-CPY-03**: Alur otorisasi keamanan script Google Apps Script berjalan mulus via opsi *Advanced > Go to unsafe > Allow*.
-- **TC-CPY-04**: Setup otomatis via menu kustom `Family Finance Tracker > Jalankan Setup / Reset Template` membentuk 4 sheet rapi.
+- **TC-CPY-04**: Setup otomatis via menu kustom `Finance Tracker > Jalankan Setup / Reset Template` membentuk 4 sheet rapi.
 - **TC-CPY-05**: Deployment Web App mandiri berhasil diakses lancar via smartphone.
 - **TC-CPY-06**: Pemasangan PWA di iOS (Safari Add to Home Screen) dan Android (Chrome Tambah ke Layar Utama) berjalan mulus.
 - **TC-CPY-07**: Fitur Tutup Buku & Arsip Tahunan (`closeAndArchiveYear`) memindahkan transaksi tahun lalu ke `ARSIP_YYYY` dan mengoper sisa kas sebagai saldo awal baru.

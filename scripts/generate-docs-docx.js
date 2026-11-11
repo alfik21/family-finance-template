@@ -188,8 +188,8 @@ function createDivider() {
 // =========================================================================
 async function buildDoc1() {
   const children = [
-    createTitle('Product Brief & Requirements: Family Finance Tracker'),
-    createSubtitle('Couple & Family Edition - Dokumen Spesifikasi Produk & Perencanaan Pengembangan'),
+    createTitle('Product Brief & Requirements: Finance Tracker — Family Edition'),
+    createSubtitle('Finance Tracker — Family Edition — Dokumen Spesifikasi Produk & Perencanaan Pengembangan'),
     createCallout('Fase Siklus Produk', 'Baru Selesai Pengembangan (Fresh Build) - Menuju Tahap Pengujian Internal & Pasangan Asli.'),
     createDivider(),
     createH1('Tabel Kontrol Dokumen'),
@@ -197,8 +197,8 @@ async function buildDoc1() {
       ['Parameter', 'Keterangan'],
       [
         ['ID Dokumen', 'DOC-OPS-PBR-2026-FFT'],
-        ['Judul Dokumen', 'Product Brief & Functional Requirements - Family Finance Tracker'],
-        ['Edisi Produk', 'Couple & Family Edition (Google Sheets & Mobile PWA Web App)'],
+        ['Judul Dokumen', 'Product Brief & Functional Requirements - Finance Tracker — Family Edition'],
+        ['Edisi Produk', 'Family Edition (Google Sheets Web App & Mobile)'],
         ['Versi Rilis', '1.2.0 (Build Perdana Pasca-Pengembangan)'],
         ['Tanggal Efektif', '26 Oktober 2026'],
         ['Klasifikasi Akses', 'Internal - Terbatas (Internal Confidential)'],
@@ -209,19 +209,19 @@ async function buildDoc1() {
     ),
     createDivider(),
     createH1('Ringkasan Eksekutif (Executive Summary)'),
-    createP('Family Finance Tracker adalah sistem pencatatan, penganggaran, dan evaluasi finansial rumah tangga yang menggabungkan keandalan basis data Google Sheets dengan kemudahan akses Web App PWA (Progressive Web App) berbasis Google Apps Script.'),
+    createP('Finance Tracker — Family Edition adalah sistem pencatatan, penganggaran, dan evaluasi finansial rumah tangga yang menggabungkan keandalan basis data Google Sheets dengan kemudahan akses Web App PWA (Progressive Web App) berbasis Google Apps Script.'),
     createP('Sistem ini baru saja selesai dibangun dan dikembangkan (freshly developed) oleh tim pengembang. Berbeda dengan aplikasi keuangan personal biasa, produk ini mengusung Model Finansial Hybrid yang membedakan secara tegas antara belanja Kas Bersama rumah tangga (dapur, tagihan listrik/air, sekolah anak, cicilan) dan dompet pribadi masing-masing pasangan (Suami & Istri) tanpa saling membatasi.'),
     createP('Sebelum produk dibuka untuk penjualan komersial publik, produk wajib melalui dua tahapan verifikasi kritis:'),
-    createBullet('Memastikan tidak ada galat rumus, rekonsiliasi saldo per dompet akurat, fitur transfer kas tepat, pembagian pagu anggaran berfungsi, dan validasi data berjalan normal.', '1. Pengujian Kendali Mutu Internal (Internal QA)'),
+    createBullet('Memastikan tidak ada galat rumus, rekonsiliasi saldo per dompet akurat, fitur transfer kas tepat, pembagian pagu anggaran berfungsi, dan validasi data berjalan normal.', '1. Pengujian Kendali Mutu (QA)'),
     createBullet('Menguji antarmuka, kenyamanan tombol cepat di kasir, dan kemudahan kolaborasi entri data oleh pasangan suami-istri pengguna riil pertama kali.', '2. Pengujian Pengguna Asli (Pilot Couple Testing / UAT)'),
     createH1('1. Identitas dan Deskripsi Produk'),
     createH2('1.1. Nama Produk'),
-    createBullet('Family Finance Tracker (Couple & Family Edition)', 'Nama Komersial'),
+    createBullet('Finance Tracker — Family Edition', 'Nama Komersial'),
     createBullet('family-finance-template', 'Nama Teknis Repositori'),
     createH2('1.2. Deskripsi Konseptual'),
     createP('Aplikasi web pencatatan keuangan keluarga berbasis peramban (PWA) yang terhubung langsung secara container-bound ke Google Sheets pribadi pengguna dengan 3 mode akses:'),
     createBullet('Berjalan mandiri dari layar utama ponsel (Add to Home Screen) melalui peramban Safari (iOS) atau Chrome (Android) dengan navigasi bawah (Bottom Navigation Bar) ramah jempol.', '1. Mode Smartphone (Mobile PWA)'),
-    createBullet('Antarmuka terintegrasi selebar 450x760px di Google Sheets desktop yang dapat dibuka melalui menu Family Finance Tracker > Buka Aplikasi (Modal).', '2. Mode Jendela Dialog (Modal Dialog)'),
+    createBullet('Antarmuka terintegrasi selebar 450x760px di Google Sheets desktop yang dapat dibuka melalui menu Finance Tracker > Buka Aplikasi (Modal).', '2. Mode Jendela Dialog (Modal Dialog)'),
     createBullet('Tampilan visual lembar kerja Google Sheets bertema Warm Sage Green dengan 4 tab utama (DASHBOARD, TRANSAKSI, BUDGET & POS, CONFIG).', '3. Mode Tabel Lembar Kerja (Spreadsheet View)'),
     createH1('2. Profil Target Pengguna Asli (Target Pilot & End Users)'),
     createH2('2.1. Pasangan Baru Menikah (Newlyweds)'),
@@ -265,7 +265,7 @@ async function buildDoc1() {
     createBullet('Pengkodean sistem telah selesai 100%, namun produk belum diuji oleh pengguna riil (real user test). Wajib melalui checklist pengujian fungsional dan pengujian keterpakaian pasangan sebelum rilis komersial.', '4. Kesiapan Produk Saat Ini'),
     createH1('6. Rencana Tahapan Rilis (Product Release Roadmap)'),
     createBullet('Koding Setup.gs, Code.gs, WebApp.html, dan test otomatis E2E.', 'Tahap 1: PENGEMBANGAN [STATUS: SELESAI]'),
-    createBullet('Internal QA Testing, UAT bersama 3-5 pasangan riil, uji alur /copy, dan evaluasi masukan.', 'Tahap 2: PENGUJIAN [STATUS: SEDANG BERJALAN]'),
+    createBullet('QA oleh tim produk, UAT bersama 3-5 pasangan riil, uji alur /copy, dan evaluasi masukan.', 'Tahap 2: PENGUJIAN [STATUS: SEDANG BERJALAN]'),
     createBullet('Buka toko digital (Lynk.id, Mayar, Shopee), distribusi link, kampanye edukasi, dan serah terima CS.', 'Tahap 3: PELUNCURAN [STATUS: MENDATANG]'),
     createH1('7. Model Penetapan Harga Target Sementara (Provisional Pricing)'),
     createTable(
@@ -275,7 +275,6 @@ async function buildDoc1() {
         ['Harga Referensi Normal (MSRP / Coret)', 'Rp 199.000'],
         ['Target Harga Jual Reguler', 'Rp 99.000'],
         ['Target Harga Promosi Peluncuran (Early Bird)', 'Rp 79.000'],
-        ['Paket Bundling Tambahan (Opsional)', 'Rp 129.000 (Termasuk Add-on Simulasi Dana Darurat & Investasi)'],
         ['Saluran Penjualan Rencana', 'Lynk.id, Mayar.id, Shopee Digital, Gumroad, WhatsApp Catalog']
       ]
     ),
@@ -295,9 +294,9 @@ async function buildDoc1() {
   });
 
   const buffer = await Packer.toBuffer(doc);
-  const outPath = path.join(__dirname, '..', 'docs', '01_PRODUCT_BRIEF_AND_REQUIREMENTS.docx');
+  const outPath = path.join(__dirname, '..', 'internal', 'BRIEF_PRODUK.docx');
   fs.writeFileSync(outPath, buffer);
-  console.log('01_PRODUCT_BRIEF_AND_REQUIREMENTS.docx berhasil dibuat di:', outPath);
+  console.log('internal/BRIEF_PRODUK.docx berhasil dibuat di:', outPath);
 }
 
 // =========================================================================
@@ -305,8 +304,8 @@ async function buildDoc1() {
 // =========================================================================
 async function buildDoc2() {
   const children = [
-    createTitle('Panduan & SOP Pengujian Produk: Family Finance Tracker'),
-    createSubtitle('Couple & Family Edition - Standard Operating Procedure (SOP) Pengujian Mutu 2 Fase'),
+    createTitle('Panduan & SOP Pengujian Produk: Finance Tracker — Family Edition'),
+    createSubtitle('Finance Tracker — Family Edition — Standard Operating Procedure (SOP) Pengujian Mutu 2 Fase'),
     createCallout('Konteks Produk', 'Produk Baru Selesai Dikembangkan (Fresh Development) - Belum Diuji oleh Pengguna Asli.'),
     createDivider(),
     createH1('Tabel Informasi Dokumen SOP'),
@@ -315,19 +314,19 @@ async function buildDoc2() {
       [
         ['ID Dokumen', 'SOP-QA-2026-FFT'],
         ['Versi Dokumen', '1.2.0'],
-        ['Divisi Penanggung Jawab', 'Finance + Operations Team'],
+        ['Divisi Penanggung Jawab', 'Tim Produk Finance Tracker'],
         ['Tanggal Berlaku', '26 Oktober 2026'],
         ['Berkas Lembar Uji Terkait', 'docs/02_PRODUCT_TESTING_CHECKLIST.xlsx (Template Kosong 2 Tab)']
       ]
     ),
     createH1('1. Latar Belakang dan Tujuan Pengujian'),
-    createP('Produk Family Finance Tracker ini baru saja selesai dibangun dan selesai dikembangkan pada tingkat kode (code freeze). Seluruh fitur utama (Web App PWA mobile-first, model finansial hybrid, pemisahan pos belanja bersama vs dompet pribadi suami & istri, tombol cepat cerdas, transfer kas antar-dompet, dan modul tutup buku tahunan) telah selesai dikoding, namun belum pernah diuji coba oleh pasangan pengguna nyata (real couple end-users).'),
+    createP('Produk Finance Tracker — Family Edition ini baru saja selesai dibangun dan selesai dikembangkan pada tingkat kode (code freeze). Seluruh fitur utama (Web App PWA mobile-first, model finansial hybrid, pemisahan pos belanja bersama vs dompet pribadi suami & istri, tombol cepat cerdas, transfer kas antar-dompet, dan modul tutup buku tahunan) telah selesai dikoding, namun belum pernah diuji coba oleh pasangan pengguna nyata (real couple end-users).'),
     createP('Oleh karena itu, dokumen SOP ini menetapkan kerangka kerja pengujian bertahap:'),
-    createBullet('Dilakukan oleh tim internal Finance dan Operations untuk memverifikasi 26 kasus uji teknis pada lembar kerja kosong.', 'Fase 1: Verifikasi Fungsional Internal (Internal QA)'),
+    createBullet('Dilakukan oleh tim produk untuk memverifikasi 26 kasus uji teknis pada lembar kerja kosong.', 'Fase 1: Verifikasi Fungsional (QA)'),
     createBullet('Dilakukan bersama 3-5 pasangan suami-istri pengguna nyata untuk mengamati kemudahan navigasi dan kemudahan kolaborasi entri data.', 'Fase 2: Pengujian Penerimaan Pengguna Asli (User Acceptance Testing / UAT)'),
     createH1('2. Persiapan Lingkungan Uji Bersih (Clean Test Environment)'),
     createBullet('Jangan gunakan akun Google yang memiliki hak developer. Gunakan akun Gmail biasa yang belum pernah memberi izin pada skrip ini.', '1. Gunakan Akun Google Uji Baru'),
-    createBullet('Buka tautan master berakhiran /copy. Pastikan muncul dialog Google resmi: Apakah Anda ingin membuat salinan dari Family Finance Tracker?.', '2. Uji Salinan Mandiri via Link /copy'),
+    createBullet('Buka tautan master berakhiran /copy. Pastikan muncul dialog Google resmi: Apakah Anda ingin membuat salinan dari Finance Tracker — Family Edition?.', '2. Uji Salinan Mandiri via Link /copy'),
     createBullet('Penguji wajib menguji alur instalasi Web App pada perangkat smartphone fisik (iPhone via Safari dan Android via Chrome).', '3. Simulasi Akses Smartphone Fisik'),
     createH1('3. Klasifikasi Tingkat Keparahan Bug (Severity Levels)'),
     createTable(
@@ -352,12 +351,12 @@ async function buildDoc2() {
     createBullet('Mutasi Transfer Antar-Dompet memotong dompet asal, menambah dompet tujuan, dan tidak dihitung sebagai belanja.', 'TC-BAL-03'),
     createBullet('Kartu Sisa Kas Berjalan di Dashboard menghitung akurat sesuai formula =A6-E6 (Pemasukan - Pengeluaran).', 'TC-BAL-04'),
     createBullet('Koreksi dan Hapus Transaksi me-rollback saldo dompet terkait ke posisi sebelum transaksi dicatat.', 'TC-BAL-05'),
-    createH2('C. Modul Ringkasan & Siklus Waktu (PIC: Finance + Operations)'),
+    createH2('C. Modul Ringkasan & Siklus Waktu (PIC: Tim Produk)'),
     createBullet('Ringkasan Transaksi Bulanan menyajikan data yang sesuai dengan filter bulan pantauan (YYYY-MM).', 'TC-SUM-01'),
     createBullet('Rekapitulasi Siklus Gajian (misal: tgl 25) mengelompokkan data dari tanggal 25 s/d 24 bulan berikutnya.', 'TC-SUM-02'),
     createBullet('Navigasi Siklus Gajian Dua Arah (Prev / Next Cycle) di Web App berfungsi lancar.', 'TC-SUM-03'),
     createBullet('Ringkasan Peruntukan Belanja di Dashboard memisahkan total belanja Kas Bersama, Pribadi Suami, dan Pribadi Istri.', 'TC-SUM-04'),
-    createH2('D. Modul Visualisasi & Anggaran Belanja (PIC: Finance + Operations)'),
+    createH2('D. Modul Visualisasi & Anggaran Belanja (PIC: Tim Produk)'),
     createBullet('Bilah Sparkline Anggaran menampilkan warna hijau selama realisasi pengeluaran di bawah limit pagu.', 'TC-DSH-01'),
     createBullet('Bilah progress bar otomatis berubah warna merah menyala saat belanja melebihi pagu anggaran kategori.', 'TC-DSH-02'),
     createBullet('Persentase pemakaian anggaran dihitung akurat (Realisasi / Anggaran * 100) tanpa pesan galat.', 'TC-DSH-03'),
@@ -369,7 +368,7 @@ async function buildDoc2() {
     createH2('F. Modul Verifikasi Salinan Template (PIC: Operations)'),
     createBullet('Tautan /copy menampilkan laman resmi Google Make a copy tanpa memerlukan izin akses.', 'TC-CPY-01'),
     createBullet('Berkas tersimpan mandiri di Drive pembeli; pengubahan data pembeli tidak berdampak pada Master Template.', 'TC-CPY-02'),
-    createBullet('Dialog otorisasi keamanan Google berjalan mulus via opsi Advanced > Go to Family Finance Tracker.', 'TC-CPY-03'),
+    createBullet('Dialog otorisasi keamanan Google berjalan mulus via opsi Advanced > Go to Finance Tracker — Family Edition.', 'TC-CPY-03'),
     createBullet('Menjalankan setupFinanceTracker otomatis membentuk sheet CONFIG, TRANSAKSI, BUDGET & POS, dan DASHBOARD.', 'TC-CPY-04'),
     createBullet('Pembeli berhasil men-deploy Web App dengan setelan Execute as: User accessing dan dibuka lancar di browser HP.', 'TC-CPY-05'),
     createBullet('Add to Home Screen di Safari (iOS) dan Chrome (Android) menghasilkan shortcut layar penuh ramah jempol.', 'TC-CPY-06'),
@@ -391,8 +390,8 @@ async function buildDoc2() {
       ]
     ),
     createH1('6. Syarat Ambang Batas Kelulusan (Release Gate Criteria)'),
-    createP('Produk Family Finance Tracker dinyatakan SELESAI DIUJI & LAYAK JUAL (READY TO SELL) apabila:'),
-    createBullet('26 dari 26 skenario fungsional berstatus PASS (100%).', '1. Fase 1 (Internal QA)'),
+    createP('Produk Finance Tracker — Family Edition dinyatakan SELESAI DIUJI & LAYAK JUAL (READY TO SELL) apabila:'),
+    createBullet('26 dari 26 skenario fungsional berstatus PASS (100%).', '1. Fase 1 (QA)'),
     createBullet('Minimal 80% pasangan penguji asli menyatakan dapat mengoperasikan aplikasi secara mandiri.', '2. Fase 2 (User Testing)'),
     createBullet('Tidak ada bug berkategori Critical atau High yang belum terselesaikan.', '3. Nol Temuan Blocker'),
     createBullet('Lembar sign-off ditandatangani oleh PIC Operations, PIC Finance, dan Product Lead.', '4. Persetujuan Lengkap')
@@ -403,9 +402,9 @@ async function buildDoc2() {
   });
 
   const buffer = await Packer.toBuffer(doc);
-  const outPath = path.join(__dirname, '..', 'docs', '02_PANDUAN_PENGUJIAN_PRODUK.docx');
+  const outPath = path.join(__dirname, '..', 'docs', '01_PANDUAN_PENGUJIAN_PRODUK.docx');
   fs.writeFileSync(outPath, buffer);
-  console.log('02_PANDUAN_PENGUJIAN_PRODUK.docx berhasil dibuat di:', outPath);
+  console.log('01_PANDUAN_PENGUJIAN_PRODUK.docx berhasil dibuat di:', outPath);
 }
 
 // =========================================================================
@@ -413,12 +412,12 @@ async function buildDoc2() {
 // =========================================================================
 async function buildDoc3() {
   const children = [
-    createTitle('Panduan Pengguna: Family Finance Tracker'),
-    createSubtitle('Couple & Family Edition - Edisi Rilis Perdana Pasca-Pengembangan'),
+    createTitle('Panduan Pengguna: Finance Tracker — Family Edition'),
+    createSubtitle('Finance Tracker — Family Edition — Edisi Rilis Perdana Pasca-Pengembangan'),
     createCallout('Format Dokumen', 'Panduan Pengguna Resmi untuk Pembeli & Pengguna Uji Coba (Versi 1.2.0).'),
     createDivider(),
-    createH1('1. Selamat Datang di Family Finance Tracker'),
-    createP('Selamat atas kepemilikan template Family Finance Tracker (Couple & Family Edition). Sistem ini dirancang khusus untuk membantu pasangan suami-istri mengelola keuangan keluarga secara harmonis, transparan, dan teratur dengan model finansial Hybrid (Kas Bersama + Dompet Pribadi Suami & Istri) tanpa biaya langganan bulanan (zero-subscription).'),
+    createH1('1. Selamat Datang di Finance Tracker — Family Edition'),
+    createP('Selamat atas kepemilikan template Finance Tracker — Family Edition. Sistem ini dirancang khusus untuk membantu pasangan suami-istri mengelola keuangan keluarga secara harmonis, transparan, dan teratur dengan model finansial Hybrid (Kas Bersama + Dompet Pribadi Suami & Istri) tanpa biaya langganan bulanan (zero-subscription).'),
     createBullet('Menyatukan pos belanja operasional rumah tangga bersama tanpa membatasi uang saku atau hobi pribadi masing-masing pasangan.', 'Model Finansial Hybrid'),
     createBullet('Seluruh data mutasi tersimpan di Google Drive pribadi Anda, bukan di server startup asing.', 'Privasi Terjamin 100%'),
     createBullet('Buka aplikasi langsung dari layar utama ponsel (Add to Home Screen) dalam 1-2 detik saat berada di kasir atau pasar.', 'Akses Cepat Smartphone (PWA)'),
@@ -427,18 +426,18 @@ async function buildDoc3() {
     createP('Untuk menggunakan template, Anda cukup menduplikasi berkas Master Template ke akun Google Drive Anda dalam satu langkah mudah via trik tautan /copy:'),
     createBullet('Pastikan Anda telah masuk (login) ke akun Google / Gmail pribadi di peramban komputer atau laptop.', 'Langkah 1'),
     createBullet('Buka tautan akses resmi yang Anda terima saat pembelian berakhiran /copy.', 'Langkah 2'),
-    createBullet('Peramban akan secara otomatis membuka jendela konfirmasi resmi dari Google: Apakah Anda ingin membuat salinan dari Family Finance Tracker?.', 'Langkah 3'),
+    createBullet('Peramban akan secara otomatis membuka jendela konfirmasi resmi dari Google: Apakah Anda ingin membuat salinan dari Finance Tracker — Family Edition?.', 'Langkah 3'),
     createBullet('Klik tombol biru bertuliskan Buat salinan (Make a copy).', 'Langkah 4'),
     createBullet('Seluruh struktur lembar kerja, rumus, dan skrip Google Apps Script akan diduplikasi secara utuh ke Google Drive Anda.', 'Langkah 5'),
     createH1('3. Otorisasi Keamanan Google Apps Script (Hanya 1 Kali)'),
     createP('Saat pertama kali menjalankan menu aplikasi di Google Sheets, Google mewajibkan konfirmasi izin keamanan standar:'),
     createBullet('Di tab Google Sheets Anda, segarkan halaman (refresh / tekan tombol F5).', 'Langkah 1'),
-    createBullet('Tunggu beberapa detik hingga muncul menu baru di bilah menu atas: Family Finance Tracker.', 'Langkah 2'),
-    createBullet('Klik menu Family Finance Tracker > pilih Jalankan Setup / Reset Template.', 'Langkah 3'),
+    createBullet('Tunggu beberapa detik hingga muncul menu baru di bilah menu atas: Finance Tracker — Family Edition.', 'Langkah 2'),
+    createBullet('Klik menu Finance Tracker > pilih Jalankan Setup / Reset Template.', 'Langkah 3'),
     createBullet('Muncul jendela peringatan bertuliskan Authorization Required, klik Continue (Lanjutkan).', 'Langkah 4'),
     createBullet('Pilih akun Google Anda.', 'Langkah 5'),
     createBullet('Saat muncul jendela Google hasnt verified this app, klik tautan teks kecil di kiri bawah: Advanced (Lanjutan).', 'Langkah 6'),
-    createBullet('Klik baris tulisan: Go to Family Finance Tracker (unsafe).', 'Langkah 7'),
+    createBullet('Klik baris tulisan: Go to Finance Tracker — Family Edition (unsafe).', 'Langkah 7'),
     createBullet('Gulir ke bawah lalu klik tombol biru Allow (Izinkan). Seluruh 4 tab sheet otomatis terbentuk rapi.', 'Langkah 8'),
     createH1('4. Pengaturan Awal Keluarga di Sheet CONFIG'),
     createH2('A. Pengaturan Identitas Keluarga (Kolom A & B)'),
@@ -466,12 +465,12 @@ async function buildDoc3() {
     createH2('Langkah 3: Berbagi Hak Akses dengan Pasangan'),
     createP('Di Google Sheets komputer, klik tombol hijau Bagikan (Share) di kanan atas > masukkan email Google pasangan Anda > berikan izin sebagai Editor > Simpan. Kini suami dan istri dapat mencatat transaksi dari HP masing-masing secara bersamaan.'),
     createH1('8. Tutup Buku & Arsip Tahunan (1-Klik)'),
-    createP('Di akhir tahun kalender, klik menu Family Finance Tracker pada bilah menu atas Google Sheets > pilih Tutup Buku & Arsipkan Tahun Lalu > masukkan tahun yang ingin diarsipkan (misal: 2025). Sistem secara otomatis memindahkan seluruh riwayat transaksi ke lembar baru ARSIP_2025 dan mengoper sisa saldo Kas Bersama ke tahun baru sebagai Saldo Awal.'),
+    createP('Di akhir tahun kalender, klik menu Finance Tracker — Family Edition pada bilah menu atas Google Sheets > pilih Tutup Buku & Arsipkan Tahun Lalu > masukkan tahun yang ingin diarsipkan (misal: 2025). Sistem secara otomatis memindahkan seluruh riwayat transaksi ke lembar baru ARSIP_2025 dan mengoper sisa saldo Kas Bersama ke tahun baru sebagai Saldo Awal.'),
     createH1('9. Solusi Masalah Umum (Troubleshooting FAQ)'),
     createTable(
       ['Kendala', 'Penyebab Umum', 'Solusi Cepat'],
       [
-        ['Muncul layar Google hasnt verified this app.', 'Prosedur keamanan pertama kali Google Apps Script.', 'Klik teks kecil Advanced di kiri bawah > klik Go to Family Finance Tracker > klik Allow.'],
+        ['Muncul layar Google hasnt verified this app.', 'Prosedur keamanan pertama kali Google Apps Script.', 'Klik teks kecil Advanced di kiri bawah > klik Go to Finance Tracker > klik Allow.'],
         ['Pasangan tidak bisa menginput Web App.', 'Email pasangan belum diberi akses edit spreadsheet.', 'Klik tombol hijau Bagikan di Google Sheets dan pastikan email pasangan terdaftar sebagai Editor.'],
         ['Salah memasukkan nominal atau kategori belanja.', 'Kesalahan input saat di kasir.', 'Buka tab Rekap di Web App HP, ketuk ikon pensil/tempat sampah. Atau langsung ubah di sheet TRANSAKSI.'],
         ['Ingin menambah rekening bank atau e-wallet baru.', 'Kebutuhan dompet baru di tengah jalan.', 'Tambahkan nama dompet baru di baris kosong sheet CONFIG. Form otomatis mengenalinya.']
@@ -501,13 +500,13 @@ async function buildDoc3() {
 async function buildDoc4() {
   const children = [
     createTitle('Surat Perjanjian Lisensi & Ketentuan Penggunaan'),
-    createSubtitle('Family Finance Tracker - Couple & Family Edition (Edisi Rilis Perdana)'),
+    createSubtitle('Finance Tracker — Family Edition (Edisi Rilis Perdana)'),
     createCallout('Nomor Registrasi Lisensi', 'LIC-OPS-FIN-2026-FFT-V120 | Tanggal Berlaku Efektif: 26 Oktober 2026.'),
     createDivider(),
-    createP('PEMBERITAHUAN HUKUM: DENGAN MEMBELI, MENYALIN, MENGUNDUH, MENGAKSES, ATAU MENGGUNAKAN TEMPLATE FAMILY FINANCE TRACKER, ANDA SECARA SADAR DAN SUKARELA MENYATAKAN TELAH MEMBACA, MEMAHAMI, DAN SETUJU UNTUK TERIKAT OLEH SELURUH SYARAT DAN KETENTUAN DALAM PERJANJIAN INI.'),
+    createP('PEMBERITAHUAN HUKUM: DENGAN MEMBELI, MENYALIN, MENGUNDUH, MENGAKSES, ATAU MENGGUNAKAN TEMPLATE "FINANCE TRACKER — FAMILY EDITION", ANDA SECARA SADAR DAN SUKARELA MENYATAKAN TELAH MEMBACA, MEMAHAMI, DAN SETUJU UNTUK TERIKAT OLEH SELURUH SYARAT DAN KETENTUAN DALAM PERJANJIAN INI.'),
     createH1('Pasal 1: Pemberian Lisensi Penggunaan (Grant of License)'),
     createBullet('Pemilik Hak Cipta memberikan kepada Pembeli suatu lisensi non-eksklusif, berlaku seumur hidup (perpetual), tidak dapat dipindahtangankan, dan terbatas untuk penggunaan 1 unit keluarga inti (Single Household Standard License).', '1.1. Sifat Lisensi'),
-    createBullet('Pembeli berhak menggunakan salinan Family Finance Tracker untuk mencatat, mengelola, dan memantau keuangan rumah tangga internal keluarga Pembeli (suami, istri, dan anak) pada Google Drive pribadi.', '1.2. Lingkup Hak Pakai'),
+    createBullet('Pembeli berhak menggunakan salinan Finance Tracker — Family Edition untuk mencatat, mengelola, dan memantau keuangan rumah tangga internal keluarga Pembeli (suami, istri, dan anak) pada Google Drive pribadi.', '1.2. Lingkup Hak Pakai'),
     createH1('Pasal 2: Hak Modifikasi dan Tanggung Jawab Teknis'),
     createBullet('Pembeli diberikan hak penuh untuk mengubah formula spreadsheet, menambah kategori pengeluaran baru, mendaftarkan rekening bank/e-wallet baru, atau membuat sheet tambahan untuk kebutuhan internal keluarga.', '2.1. Hak Modifikasi'),
     createBullet('Segala bentuk kerusakan formula, terhapusnya skrip bawaan Google Apps Script (Code.gs atau Setup.gs), atau kegagalan kalkulasi saldo yang timbul akibat modifikasi mandiri merupakan tanggung jawab penuh Pembeli.', '2.2. Batasan Tanggung Jawab Modifikasi'),

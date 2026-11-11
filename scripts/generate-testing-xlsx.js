@@ -51,9 +51,9 @@ async function createBlankTestingWorkbook() {
   // Metadata
   dashSheet.addRow([]);
   dashSheet.addRow(['Status Siklus Produk', 'Baru Selesai Koding (Menunggu Uji Internal & Pasangan Asli)']);
-  dashSheet.addRow(['Versi Target Rilis', '1.2.0 (Couple & Family Edition)']);
+  dashSheet.addRow(['Versi Target Rilis', '1.2.0 (Family Edition)']);
   dashSheet.addRow(['Divisi Penguji (PIC)', 'Finance + Operations + Pilot Couples']);
-  dashSheet.addRow(['Dokumen Panduan SOP', 'docs/02_PANDUAN_PENGUJIAN_PRODUK.md']);
+  dashSheet.addRow(['Dokumen Panduan SOP', 'docs/01_PANDUAN_PENGUJIAN_PRODUK.md']);
 
   for (let r = 3; r <= 6; r++) {
     dashSheet.getCell(`A${r}`).font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF475569' } };
@@ -173,7 +173,7 @@ async function createBlankTestingWorkbook() {
     ['TC-VAL-04', 'Validasi', 'Proteksi Konkurensi Pasangan', 'Suami dan istri input transaksi bersamaan via smartphone masing-masing; kedua baris tersimpan lengkap (LockService).', '', 'PENDING', 'Operations', '', ''],
     ['TC-CPY-01', 'Distribusi', 'Akses Link Trik /copy', 'Tautan /copy menampilkan laman resmi Google Make a copy tanpa memerlukan izin akses dari pemilik.', '', 'PENDING', 'Operations', '', ''],
     ['TC-CPY-02', 'Distribusi', 'Isolasi Berkas Pembeli', 'Berkas tersimpan mandiri di Drive pembeli; pengubahan data pembeli tidak berdampak pada Master Template.', '', 'PENDING', 'Operations', '', ''],
-    ['TC-CPY-03', 'Distribusi', 'Otorisasi Script Pengguna', 'Dialog otorisasi keamanan Google berjalan mulus via opsi Advanced > Go to Family Finance Tracker (unsafe).', '', 'PENDING', 'Operations', '', ''],
+    ['TC-CPY-03', 'Distribusi', 'Otorisasi Script Pengguna', 'Dialog otorisasi keamanan Google berjalan mulus via opsi Advanced > Go to Finance Tracker — Family Edition (unsafe).', '', 'PENDING', 'Operations', '', ''],
     ['TC-CPY-04', 'Distribusi', 'Setup Otomatis Spreadsheet', 'Menjalankan setupFinanceTracker otomatis membentuk sheet CONFIG, TRANSAKSI, BUDGET & POS, dan DASHBOARD.', '', 'PENDING', 'Operations', '', ''],
     ['TC-CPY-05', 'Distribusi', 'Deploy Web App Mandiri', 'Pembeli berhasil men-deploy Web App dengan setelan Execute as: User accessing dan dibuka lancar di browser HP.', '', 'PENDING', 'Operations', '', ''],
     ['TC-CPY-06', 'Distribusi', 'Pasang ke Layar HP (PWA)', 'Add to Home Screen di Safari (iOS) dan Chrome (Android) menghasilkan shortcut layar penuh ramah jempol.', '', 'PENDING', 'Operations', '', ''],

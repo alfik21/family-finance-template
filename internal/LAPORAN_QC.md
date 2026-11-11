@@ -1,6 +1,6 @@
 # 05 - Laporan Bug QC & Catatan Perbaikan (Pra-Komersial)
 
-**Produk:** Family Finance Tracker - Google Sheets + Apps Script PWA
+**Produk:** Finance Tracker — Family Edition - Google Sheets + Apps Script PWA
 **Tanggal pengujian:** 2026-11-05
 **Penguji:** QC / Pre-Commercial Audit (otomatis + verifikasi browser)
 **Status akhir:** **LULUS QC** - 35/35 temuan otomatis diperbaiki, siap lanjut ke UAT pilot couples.
@@ -61,7 +61,7 @@ Verifikasi browser (tanpa error console):
 | **Low** | 6 | QC-SCOPE-05, QC-SYNC-03, QC-PRESET-02, QC-PRESET-03, QC-DOC-01, QC-SEC-04 |
 | **Total** | **29** | 28 dari suite + 1 temuan audit git (QC-SEC-04) |
 
-Skala severity mengikuti `docs/02_PANDUAN_PENGUJIAN_PRODUK.md` bagian 4.
+Skala severity mengikuti `docs/01_PANDUAN_PENGUJIAN_PRODUK.md` bagian 4.
 
 ---
 

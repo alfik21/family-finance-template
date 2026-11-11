@@ -1,5 +1,5 @@
 # Panduan Pengguna (User Guide)
-## Family Finance Tracker — Couple & Family Edition
+## Finance Tracker — Family Edition
 
 **Tipe Dokumen**: Panduan Pengguna & Serah Terima Pembeli (Edisi Rilis Perdana)  
 **Format Target**: PDF (Tata Letak Standar 4 Halaman Siap Cetak / Print-Ready)  
@@ -12,11 +12,11 @@
 <!-- HALAMAN 1 DARI 4                                                        -->
 <!-- ======================================================================= -->
 
-### Dokumen: Family Finance Tracker User Guide | Halaman 1 dari 4 | Pengenalan & Duplikasi
+### Dokumen: Finance Tracker — Family Edition User Guide | Halaman 1 dari 4 | Pengenalan & Duplikasi
 
-## 1. Selamat Datang di Family Finance Tracker
+## 1. Selamat Datang di Finance Tracker — Family Edition
 
-Selamat atas kepemilikan sistem **Family Finance Tracker (Couple & Family Edition)**. Template ini dirancang khusus untuk membantu pasangan suami-istri mengelola keuangan keluarga secara harmonis, transparan, dan teratur dengan model finansial *Hybrid* (Kas Bersama + Dompet Pribadi Suami & Istri) tanpa biaya langganan bulanan (*zero-subscription*).
+Selamat atas kepemilikan sistem **Finance Tracker — Family Edition**. Template ini dirancang khusus untuk membantu pasangan suami-istri mengelola keuangan keluarga secara harmonis, transparan, dan teratur dengan model finansial *Hybrid* (Kas Bersama + Dompet Pribadi Suami & Istri) tanpa biaya langganan bulanan (*zero-subscription*).
 
 ### Nilai Utama Produk:
 - **Model Finansial Hybrid**: Menyatukan pos belanja operasional rumah tangga bersama tanpa membatasi uang saku atau hobi pribadi masing-masing pasangan.
@@ -35,7 +35,7 @@ Untuk menggunakan template, Anda cukup menduplikasi berkas Master Template ke ak
 2. Buka tautan akses resmi yang Anda terima saat pembelian:  
    `https://docs.google.com/spreadsheets/d/.../copy`
 3. Peramban akan secara otomatis membuka jendela konfirmasi resmi dari Google:  
-   **"Salin dokumen — Apakah Anda ingin membuat salinan dari Family Finance Tracker?"**
+   **"Salin dokumen — Apakah Anda ingin membuat salinan dari Finance Tracker — Family Edition?"**
 4. Klik tombol biru bertuliskan **"Buat salinan"** (*Make a copy*).
 5. Seluruh struktur lembar kerja, rumus, dan skrip Google Apps Script akan diduplikasi secara utuh ke Google Drive Anda.
 6. Berkas baru ini sekarang menjadi milik pribadi keluarga Anda. Ganti nama berkas di pojok kiri atas sesuai nama keluarga Anda (misal: *Keuangan Keluarga Kami 2026*).
@@ -48,7 +48,7 @@ Untuk menggunakan template, Anda cukup menduplikasi berkas Master Template ke ak
 |                                                                                   |
 |  [ Logo Google Sheets ]                                                          |
 |  Salin dokumen                                                                    |
-|  Apakah Anda ingin membuat salinan dari Family Finance Tracker - Master?          |
+|  Apakah Anda ingin membuat salinan dari Finance Tracker — Family Edition — Master?          |
 |                                                                                   |
 |                             [  Buat salinan  ]                                    |
 +-----------------------------------------------------------------------------------+
@@ -60,7 +60,7 @@ Untuk menggunakan template, Anda cukup menduplikasi berkas Master Template ke ak
 <!-- HALAMAN 2 DARI 4                                                        -->
 <!-- ======================================================================= -->
 
-### Dokumen: Family Finance Tracker User Guide | Halaman 2 dari 4 | Otorisasi & Konfigurasi CONFIG
+### Dokumen: Finance Tracker — Family Edition User Guide | Halaman 2 dari 4 | Otorisasi & Konfigurasi CONFIG
 
 ## 3. Otorisasi Keamanan Google Apps Script (Hanya 1 Kali)
 
@@ -68,12 +68,12 @@ Saat pertama kali menjalankan menu aplikasi di Google Sheets, Google mewajibkan 
 
 ### Panduan Otorisasi Langkah demi Langkah:
 1. Di tab Google Sheets Anda, segarkan halaman (*refresh* / tekan tombol F5).
-2. Tunggu beberapa detik hingga muncul menu baru di bilah menu atas: **`Family Finance Tracker`**.
-3. Klik menu **`Family Finance Tracker`** > pilih **"Jalankan Setup / Reset Template"**.
+2. Tunggu beberapa detik hingga muncul menu baru di bilah menu atas: **`Finance Tracker`**.
+3. Klik menu **`Finance Tracker`** > pilih **"Jalankan Setup / Reset Template"**.
 4. Muncul jendela peringatan bertuliskan *"Authorization Required"*, klik **"Continue"** (*Lanjutkan*).
 5. Pilih akun Google Anda.
 6. Saat muncul jendela *"Google hasn't verified this app"*, klik tautan teks kecil di kiri bawah: **"Advanced"** (*Lanjutan*).
-7. Klik baris tulisan: **"Go to Family Finance Tracker (unsafe)"**.
+7. Klik baris tulisan: **"Go to Finance Tracker — Family Edition (unsafe)"**.
 8. Gulir ke bawah lalu klik tombol biru **"Allow"** (*Izinkan*).
 9. Seluruh 4 tab utama (`DASHBOARD`, `TRANSAKSI`, `BUDGET & POS`, `CONFIG`) dengan tema warna Sage Green akan otomatis terformat rapi.
 
@@ -81,7 +81,7 @@ Saat pertama kali menjalankan menu aplikasi di Google Sheets, Google mewajibkan 
 +-----------------------------------------------------------------------------------+
 | TANGKAPAN LAYAR 02: ALUR OTORISASI KEAMANAN APPS SCRIPT                           |
 | Lokasi: Jendela modal Google OAuth Consent Screen                                 |
-| Dimensi Rekomendasi: 16:9 | Fokus: Klik 'Advanced' lalu 'Go to Family Finance...'  |
+| Dimensi Rekomendasi: 16:9 | Fokus: Klik 'Advanced' lalu 'Go to <nama proyek>...' |
 +-----------------------------------------------------------------------------------+
 ```
 
@@ -116,7 +116,7 @@ Sebelum mulai mencatat, buka tab **`CONFIG`** pada Google Spreadsheet Anda untuk
 <!-- HALAMAN 3 DARI 4                                                        -->
 <!-- ======================================================================= -->
 
-### Dokumen: Family Finance Tracker User Guide | Halaman 3 dari 4 | Transaksi & Dashboard Anggaran
+### Dokumen: Finance Tracker — Family Edition User Guide | Halaman 3 dari 4 | Transaksi & Dashboard Anggaran
 
 ## 5. Cara Memasukkan Transaksi
 
@@ -173,7 +173,7 @@ Antarmuka Web App dirancang ramah jempol dengan 3 jenis transaksi yang dapat dip
 <!-- HALAMAN 4 DARI 4                                                        -->
 <!-- ======================================================================= -->
 
-### Dokumen: Family Finance Tracker User Guide | Halaman 4 dari 4 | PWA Smartphone, Tutup Buku, & Bantuan
+### Dokumen: Finance Tracker — Family Edition User Guide | Halaman 4 dari 4 | PWA Smartphone, Tutup Buku, & Bantuan
 
 ## 7. Memasang di Layar Utama Smartphone & Kolaborasi Pasangan
 
@@ -206,7 +206,7 @@ Link Web App hanya dapat dibuka oleh email yang terdaftar (pembatasan akses):
 ## 8. Tutup Buku & Arsip Tahunan (1-Klik)
 
 Agar spreadsheet Anda tidak lambat setelah ribuan baris mutasi:
-1. Di akhir tahun kalender, klik menu **`Family Finance Tracker`** pada bilah menu atas Google Sheets.
+1. Di akhir tahun kalender, klik menu **`Finance Tracker`** pada bilah menu atas Google Sheets.
 2. Pilih **"Tutup Buku & Arsipkan Tahun Lalu"** > masukkan tahun yang ingin diarsipkan (misal: `2025`).
 3. Sistem secara otomatis memindahkan seluruh riwayat transaksi tahun tersebut ke lembar baru `ARSIP_2025` dan mengoper sisa saldo Kas Bersama ke tahun baru sebagai **Saldo Awal**. Sheet aktif Anda kembali ringan dan siap pakai!
 
@@ -216,7 +216,7 @@ Agar spreadsheet Anda tidak lambat setelah ribuan baris mutasi:
 
 | Gejala Kendala | Penyebab Umum | Langkah Solusi Cepat |
 |---|---|---|
-| Muncul layar "Google hasn't verified this app". | Prosedur keamanan pertama kali Google Apps Script. | Klik teks kecil **Advanced** di kiri bawah > klik **Go to Family Finance Tracker (unsafe)** > klik **Allow**. |
+| Muncul layar "Google hasn't verified this app". | Prosedur keamanan pertama kali Google Apps Script. | Klik teks kecil **Advanced** di kiri bawah > klik **Go to Finance Tracker — Family Edition (unsafe)** > klik **Allow**. |
 | Pasangan tidak bisa menginput atau membuka Web App. | Email pasangan belum diberi akses edit spreadsheet. | Klik tombol hijau **Bagikan** di Google Sheets dan pastikan email pasangan terdaftar sebagai **Editor**. |
 | Salah memasukkan nominal atau kategori belanja. | Kesalahan input saat di kasir. | Buka tab **Rekap** di Web App HP, ketuk ikon pensil/tempat sampah. Atau langsung ubah baris terkait di sheet `TRANSAKSI`. |
 | Ingin menambah rekening bank atau e-wallet baru. | Kebutuhan dompet baru di tengah jalan. | Tambahkan nama dompet baru di baris kosong sheet `CONFIG`. Dropdown formulir akan otomatis mengenalinya. |
@@ -231,4 +231,4 @@ Sebagai produk rilis perdana pasca-pengembangan, kami berkomitmen mendampingi pe
 - **Kanal Masukan & Saran Fitur**: Tautan formulir evaluasi pengguna (*Feedback Form*) pada portal pembelian
 - **Waktu Tanggap Layanan**: Maksimal 1 x 24 jam kerja
 
-*Hak Cipta 2026 Family Finance Tracker Operations Team. Seluruh hak dilindungi undang-undang.*
+*Hak Cipta 2026 Tim Operations Finance Tracker. Seluruh hak dilindungi undang-undang.*

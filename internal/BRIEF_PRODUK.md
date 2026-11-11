@@ -1,4 +1,4 @@
-# Product Brief & Requirements: Family Finance Tracker (Couple & Family Edition)
+# Product Brief & Requirements: Finance Tracker — Family Edition
 
 **Tipe Dokumen**: Dokumen Spesifikasi Produk & Perencanaan Pengembangan  
 **Format Target**: Google Docs  
@@ -12,8 +12,8 @@
 | Parameter | Keterangan |
 |---|---|
 | ID Dokumen | DOC-OPS-PBR-2026-FFT |
-| Judul Dokumen | Product Brief & Functional Requirements — Family Finance Tracker |
-| Edisi Produk | Couple & Family Edition (Google Sheets & Mobile PWA Web App) |
+| Judul Dokumen | Product Brief & Functional Requirements — Finance Tracker — Family Edition |
+| Edisi Produk | Family Edition (Google Sheets Web App & Mobile) |
 | Versi Rilis | 1.2.0 (Build Perdana Pasca-Pengembangan) |
 | Tanggal Efektif | 26 Oktober 2026 |
 | Klasifikasi Akses | Internal — Terbatas (Internal Confidential) |
@@ -25,7 +25,7 @@
 
 ## Ringkasan Eksekutif (Executive Summary)
 
-Family Finance Tracker adalah sistem pencatatan, penganggaran, dan evaluasi finansial rumah tangga yang menggabungkan keandalan basis data **Google Sheets** dengan kemudahan akses **Web App PWA (Progressive Web App)** berbasis **Google Apps Script**. 
+Finance Tracker — Family Edition adalah sistem pencatatan, penganggaran, dan evaluasi finansial rumah tangga yang menggabungkan keandalan basis data **Google Sheets** dengan kemudahan akses **Web App PWA (Progressive Web App)** berbasis **Google Apps Script**. 
 
 Sistem ini **baru saja selesai dibangun dan dikembangkan (*freshly developed*)** oleh tim pengembang. Berbeda dengan aplikasi keuangan personal biasa, produk ini mengusung **Model Finansial Hybrid** yang membedakan secara tegas antara belanja Kas Bersama rumah tangga (dapur, tagihan listrik/air, sekolah anak, cicilan) dan dompet pribadi masing-masing pasangan (Suami & Istri) tanpa saling membatasi.
 
@@ -38,13 +38,13 @@ Sebelum produk ini dibuka untuk penjualan komersial publik, produk wajib melalui
 ## 1. Identitas dan Deskripsi Produk
 
 ### 1.1. Nama Produk
-- **Nama Komersial**: Family Finance Tracker (Couple & Family Edition)
+- **Nama Komersial**: Finance Tracker — Family Edition
 - **Nama Teknis Repositori**: `family-finance-template`
 
 ### 1.2. Deskripsi Konseptual
 Aplikasi web pencatatan keuangan keluarga berbasis peramban (PWA) yang terhubung langsung secara *container-bound* ke Google Sheets pribadi pengguna. Menghilangkan kebutuhan instalasi aplikasi dari Play Store/App Store dengan 3 mode akses:
 1. **Mode Smartphone (Mobile PWA)**: Berjalan mandiri dari layar utama ponsel (*Add to Home Screen*) melalui peramban Safari (iOS) atau Chrome (Android) dengan navigasi bawah (*Bottom Navigation Bar*) ramah jempol.
-2. **Mode Jendela Dialog (Modal Dialog)**: Antarmuka terintegrasi selebar 450x760px di Google Sheets desktop yang dapat dibuka melalui menu `Family Finance Tracker > Buka Aplikasi (Modal)`.
+2. **Mode Jendela Dialog (Modal Dialog)**: Antarmuka terintegrasi selebar 450x760px di Google Sheets desktop yang dapat dibuka melalui menu `Finance Tracker > Buka Aplikasi (Modal)`.
 3. **Mode Tabel Lembar Kerja (Spreadsheet View)**: Tampilan visual lembar kerja Google Sheets bertema *Warm Sage Green* dengan 4 tab utama (`DASHBOARD`, `TRANSAKSI`, `BUDGET & POS`, `CONFIG`).
 
 ---
@@ -131,7 +131,6 @@ Profil pengguna yang ditargetkan untuk pengujian awal dan penjualan komersial:
 | Harga Referensi Normal (MSRP / Coret) | Rp 199.000 |
 | Target Harga Jual Reguler | Rp 99.000 |
 | Target Harga Promosi Peluncuran (Early Bird) | Rp 79.000 |
-| Paket Bundling Tambahan (Opsional) | Rp 129.000 (Termasuk Add-on Simulasi Dana Darurat & Investasi) |
 | Saluran Penjualan Rencana | Lynk.id, Mayar.id, Shopee Digital, Gumroad, WhatsApp Catalog |
 
 ---

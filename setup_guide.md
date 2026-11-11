@@ -1,4 +1,4 @@
-# Panduan Lengkap: Menyiapkan, Mendistribusikan, & Menjual "Family Finance Tracker"
+# Panduan Lengkap: Menyiapkan, Mendistribusikan, & Menjual "Finance Tracker — Family Edition"
 
 Panduan ini disusun khusus untuk membantu Anda menyiapkan **Master Google Spreadsheet**, mengemas antarmuka Web App, menggunakan **`preview.html`** untuk promosi interaktif, dan membagikan template ke pembeli menggunakan teknik duplikasi otomatis (`/copy`).
 
@@ -26,7 +26,7 @@ Sebagai penjual, Anda cukup membuat **1 Master Spreadsheet** sekali saja. Pembel
 ### A. Buat Spreadsheet Baru
 1. Buka browser dan kunjungi [sheets.new](https://sheets.new).
 2. Beri nama file:  
-   `Family Finance Tracker - Master Template`
+   `Finance Tracker — Family Edition — Master Template`
 
 ### B. Pasang Kode Skrip Google Apps Script
 1. Di menu atas Google Sheets, klik **Ekstensi** (*Extensions*) > **Apps Script**.
@@ -40,12 +40,12 @@ Sebagai penjual, Anda cukup membuat **1 Master Spreadsheet** sekali saja. Pembel
 ### C. Jalankan Setup Otomatis Template
 1. Kembali ke tab Google Sheets, lalu lakukan **Refresh halaman (F5)**.
 2. Tunggu beberapa detik hingga muncul menu baru di toolbar atas:  
-   **`[ Family Finance Tracker ]`**
-3. Klik menu **Family Finance Tracker** > pilih **Jalankan Setup / Reset Template**.
+   **`[ Finance Tracker — Family Edition ]`**
+3. Klik menu **Finance Tracker** > pilih **Jalankan Setup / Reset Template**.
 4. Saat pertama kali dijalankan, Google akan memunculkan popup *"Authorization Required"* (Izin Diperlukan):
    * Klik **Lanjutkan / Continue**.
    * Pilih akun Google Anda.
-   * Klik **Advanced (Lanjutan)** > Klik **Go to Family Finance Tracker (unsafe)**.
+   * Klik **Advanced (Lanjutan)** > Klik **Go to Finance Tracker — Family Edition (unsafe)**.
    * Klik **Allow / Izinkan**.
 5. Sheet akan otomatis memformat 4 tab utama bertema *Sage Green*:
    * **`CONFIG`**: Pengaturan nama panggilan pasangan (Ayah/Bunda), tanggal gajian, daftar kategori, dompet, dan preset cepat.
@@ -62,7 +62,7 @@ Agar antarmuka web app bisa dibuka dari smartphone:
 1. Di halaman Apps Script master Anda, klik tombol biru **Deploy** (Terapkan) di kanan atas > pilih **New deployment** (Penerapan baru).
 2. Klik tombol gerigi di samping *Select type* > pilih **Web app**.
 3. Atur konfigurasi:
-   * **Description**: `Family Finance Tracker v1.0`
+   * **Description**: `Finance Tracker — Family Edition v1.0`
    * **Execute as**: `User accessing the web app` *(Sangat penting: agar sistem otomatis mendeteksi email Google suami atau istri yang sedang mencatat)*
    * **Who has access**: `Anyone with Google account` *(Wajib - sesuai `appsscript.json`; `Anyone` akan membuat pengguna tanpa email dan RBAC jadi tidak berlaku)*
 4. Klik **Deploy**.
@@ -163,12 +163,12 @@ File [`preview.html`](file:///J:/Aplikasi/family-finance-template/preview.html) 
 Anda bisa menyalin teks promosi ini untuk deskripsi produk di Lynk.id, Mayar, Shopee, atau caption media sosial:
 
 > **Judul Produk:**  
-> Family Finance Tracker — Template Kas Rumah Tangga Kolaboratif Pasangan (Google Sheets + Web App)
+> Finance Tracker — Family Edition — Template Kas Rumah Tangga Kolaboratif Pasangan (Google Sheets + Web App)
 >
 > **Deskripsi:**  
 > Sering bingung memisahkan antara uang belanja dapur, cicilan keluarga, dan uang jajan pribadi masing-masing? Atau bosan pakai aplikasi keuangan yang harus langganan bulanan mahal?
 >
-> Kenalkan **Family Finance Tracker**, solusi pencatatan keuangan rumah tangga berbasis Google Sheets & Web App yang dirancang khusus untuk pasangan suami-istri modern.
+> Kenalkan **Finance Tracker**, solusi pencatatan keuangan rumah tangga berbasis Google Sheets & Web App yang dirancang khusus untuk pasangan suami-istri modern.
 >
 > **Fitur Unggulan:**  
 > - **Akses Kolaboratif Suami-Istri**: Akun Master mengatur pos anggaran, pasangan bisa input transaksi bersama secara realtime.  

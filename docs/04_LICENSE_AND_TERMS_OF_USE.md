@@ -1,5 +1,5 @@
 # Surat Perjanjian Lisensi & Ketentuan Penggunaan
-## Family Finance Tracker — Couple & Family Edition
+## Finance Tracker — Family Edition
 
 **Tipe Dokumen**: Perjanjian Lisensi Produk Digital & Syarat Layanan Hukum  
 **Format Target**: PDF (Dokumen Hukum Formal 2 Halaman Siap Cetak / Legal PDF)  
@@ -13,9 +13,9 @@
 <!-- HALAMAN 1 DARI 2                                                        -->
 <!-- ======================================================================= -->
 
-### Perjanjian Lisensi Family Finance Tracker | Halaman 1 dari 2 | Ketentuan Hak & Batasan
+### Perjanjian Lisensi Finance Tracker — Family Edition | Halaman 1 dari 2 | Ketentuan Hak & Batasan
 
-PEMBERITAHUAN HUKUM: DENGAN MEMBELI, MENYALIN, MENGUNDUH, MENGAKSES, ATAU MENGGUNAKAN TEMPLATE "FAMILY FINANCE TRACKER", ANDA ("PEMBELI" ATAU "PENGGUNA") SECARA SADAR DAN SUKARELA MENYATAKAN TELAH MEMBACA, MEMAHAMI, DAN SETUJU UNTUK TERIKAT OLEH SELURUH SYARAT DAN KETENTUAN DALAM PERJANJIAN INI.
+PEMBERITAHUAN HUKUM: DENGAN MEMBELI, MENYALIN, MENGUNDUH, MENGAKSES, ATAU MENGGUNAKAN TEMPLATE "FINANCE TRACKER — FAMILY EDITION", ANDA ("PEMBELI" ATAU "PENGGUNA") SECARA SADAR DAN SUKARELA MENYATAKAN TELAH MEMBACA, MEMAHAMI, DAN SETUJU UNTUK TERIKAT OLEH SELURUH SYARAT DAN KETENTUAN DALAM PERJANJIAN INI.
 
 ---
 
@@ -23,7 +23,7 @@ PEMBERITAHUAN HUKUM: DENGAN MEMBELI, MENYALIN, MENGUNDUH, MENGAKSES, ATAU MENGGU
 
 1.1. **Sifat Lisensi**: Pemilik Hak Cipta memberikan kepada Pembeli suatu lisensi non-eksklusif, berlaku seumur hidup (*perpetual*), tidak dapat dipindahtangankan (*non-transferable*), dan terbatas untuk penggunaan 1 unit keluarga inti (*Single Household Standard License*).  
 1.2. **Lingkup Hak Pakai**:
-- Pembeli berhak menggunakan salinan Family Finance Tracker untuk mencatat, mengelola, dan memantau keuangan rumah tangga internal keluarga Pembeli (suami, istri, dan tanggungan anak).
+- Pembeli berhak menggunakan salinan Finance Tracker — Family Edition untuk mencatat, mengelola, dan memantau keuangan rumah tangga internal keluarga Pembeli (suami, istri, dan tanggungan anak).
 - Berkas template diizinkan untuk disimpan pada akun Google Drive pribadi Pembeli dan diakses secara kolaboratif melalui perangkat pribadi suami dan istri (smartphone iOS/Android, tablet, laptop, dan komputer kerja).
 
 ---
@@ -49,7 +49,7 @@ Pembeli dilarang keras untuk melakukan hal-hal berikut tanpa persetujuan tertuli
 <!-- HALAMAN 2 DARI 2                                                        -->
 <!-- ======================================================================= -->
 
-### Perjanjian Lisensi Family Finance Tracker | Halaman 2 dari 2 | Bantuan, Pengembalian, & Disclaimer
+### Perjanjian Lisensi Finance Tracker — Family Edition | Halaman 2 dari 2 | Bantuan, Pengembalian, & Disclaimer
 
 ---
 
@@ -63,7 +63,7 @@ Pembeli dilarang keras untuk melakukan hal-hal berikut tanpa persetujuan tertuli
 
 ### Pasal 5: Kebijakan Pengembalian Dana (Refund Policy)
 
-5.1. **Sifat Barang Digital Seketika**: Mengingat Family Finance Tracker merupakan produk berbasis perangkat lunak digital yang diserahkan dan digandakan secara seketika (*instant irrevocable digital download*), seluruh transaksi pembelian bersifat **final dan tidak dapat dibatalkan atau dikembalikan dananya (*non-refundable*)**.  
+5.1. **Sifat Barang Digital Seketika**: Mengingat Finance Tracker — Family Edition merupakan produk berbasis perangkat lunak digital yang diserahkan dan digandakan secara seketika (*instant irrevocable digital download*), seluruh transaksi pembelian bersifat **final dan tidak dapat dibatalkan atau dikembalikan dananya (*non-refundable*)**.  
 5.2. **Garansi Fungsional Kerusakan Permanen**: Pengembalian dana penuh (100%) hanya dapat diproses apabila memenuhi syarat kumulatif berikut:
 - Tautan Master Template yang diterima pembeli terbukti rusak permanen, tidak dapat dibuka, atau berkas korup sejak pertama kali diterima.
 - Tim teknis Operations + Finance tidak mampu memberikan tautan pengganti atau berkas cadangan yang berfungsi normal dalam kurun waktu 3 x 24 jam kerja sejak laporan resmi diajukan.
@@ -72,7 +72,7 @@ Pembeli dilarang keras untuk melakukan hal-hal berikut tanpa persetujuan tertuli
 
 ### Pasal 6: Batasan Tanggung Jawab & Sanggahan Finansial (Disclaimer)
 
-6.1. **Bukan Nasihat Finansial Resmi**: Family Finance Tracker berfungsi murni sebagai alat bantu pencatatan administratif dan pemantauan arus kas keluarga (*household bookkeeping tool*). Pembuat produk bukan penasihat keuangan bersertifikasi (*Certified Financial Planner*) maupun kantor akuntan publik. Seluruh ringkasan kas, grafik, dan proyeksi anggaran tidak boleh ditafsirkan sebagai nasihat investasi atau opini audit formal.  
+6.1. **Bukan Nasihat Finansial Resmi**: Finance Tracker — Family Edition berfungsi murni sebagai alat bantu pencatatan administratif dan pemantauan arus kas keluarga (*household bookkeeping tool*). Pembuat produk bukan penasihat keuangan bersertifikasi (*Certified Financial Planner*) maupun kantor akuntan publik. Seluruh ringkasan kas, grafik, dan proyeksi anggaran tidak boleh ditafsirkan sebagai nasihat investasi atau opini audit formal.  
 6.2. **Akurasi Data**: Tanggung jawab atas ketepatan angka saldo riil dan mutasi transaksi berada sepenuhnya di tangan pengguna yang memasukkan data. Pembuat produk tidak bertanggung jawab atas kerugian finansial atau selisih kas fisik yang disebabkan oleh kelalaian input pengguna.  
 6.3. **Ketergantungan Layanan Google**: Sistem beroperasi di atas platform Google Workspace (Google Sheets dan Google Apps Script). Pemilik produk dibebaskan dari tuntutan atas gangguan operasional server (*downtime*), perubahan batasan kuota API, atau perubahan kebijakan keamanan sepihak oleh Google LLC.
 
@@ -87,4 +87,4 @@ Perjanjian ini berlaku mengikat sejak detik pertama Pembeli menerima tautan akse
 | Manajer Operasional Produk | Operations Team | Disahkan Sah (Legally Validated) |
 | Manajer Kepatuhan & Keuangan | Finance Team | Disahkan Sah (Financially Approved) |
 
-*Dokumen Resmi Diterbitkan oleh Divisi Operations & Finance — Family Finance Tracker 2026.*
+*Dokumen Resmi Diterbitkan oleh Divisi Operations & Finance — Finance Tracker — Family Edition 2026.*
