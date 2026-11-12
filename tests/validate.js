@@ -66,6 +66,34 @@ if (
   throw new Error('Mobile Bottom Nav elements missing in WebApp.html');
 }
 
+// 4b. Regression: exactly 5 tabs per navigation surface, FAB hanya Catat,
+// dan tab Riwayat membaca jendela 100 transaksi (bukan 6 baris `recent`).
+const navTabCount = (webAppHtml.match(/data-nav-tab="/g) || []).length;
+if (navTabCount !== 10) {
+  throw new Error('Expected 10 data-nav-tab attributes (5 desktop + 5 mobile), got ' + navTabCount);
+}
+const mobileNavIds = ['Summary', 'History', 'Record', 'Manage', 'Account'];
+mobileNavIds.forEach((name) => {
+  if (!webAppHtml.includes('id="mobileNavTab' + name + '"')) {
+    throw new Error('Mobile nav tab missing: mobileNavTab' + name);
+  }
+  if (!webAppHtml.includes('id="desktopNavTab' + name + '"')) {
+    throw new Error('Desktop nav tab missing: desktopNavTab' + name);
+  }
+});
+if ((webAppHtml.match(/data-nav-fab[\s>]/g) || []).length !== 1) {
+  throw new Error('Expected exactly one central Catat FAB (data-nav-fab)');
+}
+if (!webAppHtml.includes('nav-safe') || !webAppHtml.includes('id="historyCountLabel"')) {
+  throw new Error('nav-safe padding or history count label missing');
+}
+if (!webAppHtml.includes('function getHistoryWindow') ||
+    !/renderRecent[\s\S]{0,800}getHistoryWindow\(\)/.test(webAppHtml) ||
+    !/appData\.recentWindow/.test(webAppHtml)) {
+  throw new Error('History view is not sourced from recentWindow (max 100 rows)');
+}
+console.log('✔ Nav regression: 5+5 tabs, single Catat FAB, history uses recentWindow');
+
 // 5. Feature Verification: RBAC & Account Management
 if (webAppHtml.includes('viewAccount') && webAppHtml.includes('accMasterRole') && webAppHtml.includes('manageRbacWarning')) {
   console.log('✔ RBAC & Account Settings: Verified (View 4, master toggle, restricted member lock)');

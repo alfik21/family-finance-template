@@ -318,7 +318,8 @@
         { name: 'Bensin Motor', amount: 35000, category: 'Transportasi & Bensin', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]' },
         { name: 'Galon & Gas', amount: 45000, category: 'Listrik & Utilitas', scope: 'Kas Bersama', wallet: 'Kas Tunai Rumah [Kas Bersama]' }
       ],
-      salaryDate: 25
+      salaryDate: 25,
+      budgets: []
     };
 
     function calculateSummary() {
@@ -547,18 +548,31 @@
                     },
                     getInitialData: function() {
                       setTimeout(function() {
+                        var historyNewestFirst = mockDatabase.transactions.slice().reverse();
+                        var currentYear = new Date().getFullYear();
+                        var pendingYearsMap = {};
+                        historyNewestFirst.forEach(function(tx) {
+                          var yr = new Date(tx.date + 'T00:00:00').getFullYear();
+                          if (!isNaN(yr) && yr < currentYear) pendingYearsMap[yr] = true;
+                        });
+                        var pendingYears = Object.keys(pendingYearsMap).map(Number).sort();
                         onSuccess({
                           userEmail: currentUser.email,
                           userRole: currentUser.role,
                           isMaster: currentUser.isMaster,
                           accounts: mockDatabase.accounts,
                           categories: mockDatabase.categories,
+                          incomeCategories: mockDatabase.incomeCategories,
                           wallets: mockDatabase.wallets,
                           presets: mockDatabase.presets,
+                          defaultPresets: mockDatabase.presets,
                           salaryDate: mockDatabase.salaryDate,
                           summary: calculateSummary(),
                           walletBalances: calculateSummary().walletBalances,
-                          recent: mockDatabase.transactions.slice().reverse()
+                          recent: historyNewestFirst.slice(0, 6),
+                          recentWindow: historyNewestFirst.slice(0, 100),
+                          budgets: mockDatabase.budgets || [],
+                          pendingArchive: { hasPending: pendingYears.length > 0, pendingYears: pendingYears }
                         });
                       }, 100);
                     },
@@ -654,6 +668,60 @@
                         if (payload.masterRole) mockDatabase.accounts.masterRole = payload.masterRole;
                         onSuccess({ success: true, message: 'Pengaturan akun keluarga berhasil disimpan' });
                       }, 150);
+                    },
+                    getBudgets: function() {
+                      setTimeout(function() {
+                        onSuccess({ success: true, budgets: mockDatabase.budgets || [] });
+                      }, 100);
+                    },
+                    saveBudget: function(payload) {
+                      setTimeout(function() {
+                        if (!currentUser.isMaster) {
+                          onSuccess({ success: false, message: 'Hanya Akun Master yang dapat mengatur batas anggaran.' });
+                          return;
+                        }
+                        var category = (payload && payload.category ? payload.category : '').toString().trim();
+                        var limit = Math.round(Number(payload && payload.limit) || 0);
+                        if (!category) {
+                          onSuccess({ success: false, message: 'Kategori anggaran wajib dipilih.' });
+                          return;
+                        }
+                        if (limit <= 0) {
+                          onSuccess({ success: false, message: 'Nominal batas harus lebih dari 0.' });
+                          return;
+                        }
+                        if (!mockDatabase.budgets) mockDatabase.budgets = [];
+                        var existing = mockDatabase.budgets.findIndex(function(b) {
+                          return (b.category || '').toString().trim().toLowerCase() === category.toLowerCase();
+                        });
+                        if (existing !== -1) {
+                          mockDatabase.budgets[existing] = { category: category, limit: limit };
+                        } else {
+                          mockDatabase.budgets.push({ category: category, limit: limit });
+                        }
+                        onSuccess({
+                          success: true,
+                          message: 'Batas anggaran "' + category + '" disimpan (simulasi).',
+                          budgets: mockDatabase.budgets
+                        });
+                      }, 120);
+                    },
+                    deleteBudget: function(categoryName) {
+                      setTimeout(function() {
+                        if (!currentUser.isMaster) {
+                          onSuccess({ success: false, message: 'Hanya Akun Master yang dapat menghapus batas anggaran.' });
+                          return;
+                        }
+                        var target = (categoryName || '').toString().trim().toLowerCase();
+                        mockDatabase.budgets = (mockDatabase.budgets || []).filter(function(b) {
+                          return (b.category || '').toString().trim().toLowerCase() !== target;
+                        });
+                        onSuccess({
+                          success: true,
+                          message: 'Batas anggaran "' + categoryName + '" dihapus (simulasi).',
+                          budgets: mockDatabase.budgets
+                        });
+                      }, 120);
                     },
                     checkPendingArchive: function() {
                       setTimeout(function() {
@@ -791,7 +859,9 @@
                           }
                         });
 
-                        var operasionalBersama = Math.max(0, totalExp - uangSakuAyah - uangSakuBunda);
+                        // Pos Operasional = pengeluaran scope "Kas Bersama" saja,
+                        // dikurangi uang saku (sama dengan Code.gs & WebApp).
+                        var operasionalBersama = Math.max(0, (scopes['Kas Bersama'] || 0) - uangSakuAyah - uangSakuBunda);
 
                         var cats = [];
                         for (var c in catMap) {

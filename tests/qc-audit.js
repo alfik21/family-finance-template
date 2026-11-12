@@ -640,6 +640,27 @@ check('QC-PRESET-03', 'renderPresets tidak mengarang kategori "Lain-lain" untuk 
   }
 });
 
+check('QC-PRESET-04', 'Tombol cepat membawa dompet asal (tidak jatuh ke dompet pertama)', () => {
+  const src = extractFunction(webAppHtml, 'renderPresets');
+  if (!/wallet:\s*\(p\.wallet\s*\|\|\s*''\)/.test(src)) {
+    throw new Error('renderPresets membuang p.wallet -> preset memilih dompet pertama');
+  }
+  const smart = extractFunction(webAppHtml, 'extractSmartPresets');
+  if (!/wallet:\s*tx\.wallet/.test(smart)) {
+    throw new Error('extractSmartPresets tidak membawa wallet dari transaksi');
+  }
+});
+
+check('QC-PERIOD-01', 'Tanggal kustom menampilkan badge/label Rentang Kustom (bukan Siklus Berjalan)', () => {
+  const src = extractFunction(webAppHtml, 'fetchCustomPeriodSummary');
+  if (!/isCustom/.test(src) || !/Rentang Kustom/.test(src)) {
+    throw new Error('fetchCustomPeriodSummary tidak menandai rentang kustom');
+  }
+  if (!/onchange="fetchCustomPeriodSummary\(true\)"/.test(webAppHtml)) {
+    throw new Error('input tanggal tidak memanggil fetchCustomPeriodSummary(true)');
+  }
+});
+
 // ---------------------------------------------------------------------------
 // MODUL F: KEAMANAN DATA TUTUP BUKU
 // ---------------------------------------------------------------------------
@@ -851,6 +872,40 @@ check('QC-DOC-01', 'Field Peruntukan pada User Guide kini benar-benar ada di apl
   const guide = read('docs/03_USER_GUIDE.md');
   if (guide.includes('Peruntukan   : [') && !webAppHtml.includes('id="scopeSelect"')) {
     throw new Error('User Guide mendokumentasikan field Peruntukan yang tidak ada di aplikasi');
+  }
+});
+
+check('QC-DEMO-02', 'preview.html mock menyediakan API anggaran & payload getInitialData yang lengkap', () => {
+  const preview = read('preview.html');
+  ['getBudgets', 'saveBudget', 'deleteBudget'].forEach((fn) => {
+    if (!new RegExp('\\b' + fn + '\\s*:\\s*function').test(preview)) {
+      throw new Error('mock google.script.run tidak memiliki ' + fn + '()');
+    }
+  });
+  ['recentWindow', 'budgets', 'incomeCategories', 'defaultPresets', 'pendingArchive'].forEach((key) => {
+    if (!new RegExp('\\b' + key + '\\s*:').test(preview)) {
+      throw new Error('mock getInitialData tidak mengirim ' + key);
+    }
+  });
+  if (!/operasionalBersama\s*=\s*Math\.max\(0,\s*\(scopes\[['"]Kas Bersama['"]\]/.test(preview)) {
+    throw new Error('mock getPeriodSummary masih memakai totalExpense lintas scope');
+  }
+});
+
+check('QC-DEMO-03', 'Riwayat demo memakai recentWindow dan cache menyimpan budgets', () => {
+  if (!/function getHistoryWindow/.test(webAppHtml) || !/appData\.recentWindow/.test(webAppHtml)) {
+    throw new Error('WebApp.html tidak memakai recentWindow untuk riwayat');
+  }
+  const saveSrc = extractFunction(webAppHtml, 'saveCachedData');
+  if (!/budgets:\s*appData\.budgets/.test(saveSrc)) {
+    throw new Error('saveCachedData tidak menyimpan budgets -> anggaran hilang setelah reload');
+  }
+  const loadSrc = extractFunction(webAppHtml, 'loadCachedData');
+  if (!/parsed\.budgets/.test(loadSrc)) {
+    throw new Error('loadCachedData tidak memuat budgets dari cache');
+  }
+  if (!/function addHistoryTransaction/.test(webAppHtml) || !/addHistoryTransaction\(newTx\)/.test(webAppHtml)) {
+    throw new Error('mutasi demo tidak memakai addHistoryTransaction (rawan duplikasi recent/recentWindow)');
   }
 });
 

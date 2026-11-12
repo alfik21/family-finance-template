@@ -416,11 +416,11 @@
               <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-borderline/60">
                 <div>
                   <label class="block text-[10px] font-semibold text-muted mb-1">Mulai</label>
-                  <input type="date" id="summaryStartDate" onchange="fetchCustomPeriodSummary()" class="w-full rounded-xl border border-borderline bg-white p-2 font-medium text-ink focus:outline-none focus:border-sage-700">
+                  <input type="date" id="summaryStartDate" onchange="fetchCustomPeriodSummary(true)" class="w-full rounded-xl border border-borderline bg-white p-2 font-medium text-ink focus:outline-none focus:border-sage-700">
                 </div>
                 <div>
                   <label class="block text-[10px] font-semibold text-muted mb-1">Sampai</label>
-                  <input type="date" id="summaryEndDate" onchange="fetchCustomPeriodSummary()" class="w-full rounded-xl border border-borderline bg-white p-2 font-medium text-ink focus:outline-none focus:border-sage-700">
+                  <input type="date" id="summaryEndDate" onchange="fetchCustomPeriodSummary(true)" class="w-full rounded-xl border border-borderline bg-white p-2 font-medium text-ink focus:outline-none focus:border-sage-700">
                 </div>
               </div>
             </details>
@@ -1065,6 +1065,8 @@
       renderSummary();
       renderAccountView();
       renderManageItems();
+      renderBudgetPanel();
+      renderBudgetManage();
       updateDynamicUI();
 
       // Notify parent preview window if running inside iframe
@@ -1467,6 +1469,8 @@
             amount: Number(tx.amount),
             category: tx.category || 'Lain-lain',
             scope: tx.scope || 'Kas Bersama',
+            // Pertahankan dompet asal agar tombol cepat tidak jatuh ke dompet pertama.
+            wallet: tx.wallet || '',
             count: 0
           };
         }
@@ -1508,8 +1512,9 @@
       container.innerHTML = '';
       
       var activePresets = appData.presets;
-      if (appData.presetMode !== 'manual' && appData.recent && appData.recent.length > 0) {
-        activePresets = extractSmartPresets(appData.recent, appData.defaultPresets || appData.presets, 6);
+      var presetSource = getHistoryWindow();
+      if (appData.presetMode !== 'manual' && presetSource.length > 0) {
+        activePresets = extractSmartPresets(presetSource, appData.defaultPresets || appData.presets, 6);
       } else if (appData.defaultPresets && appData.defaultPresets.length > 0) {
         activePresets = appData.defaultPresets.slice(0, 6);
       }
@@ -1535,6 +1540,7 @@
             // tidak menjejalkan kategori palsu ke form (lihat QC-PRESET-03).
             category: (p.category || '').toString().trim(),
             scope: p.scope || '',
+            wallet: (p.wallet || '').toString().trim(),
             count: p.count || 0
           });
         }
@@ -1702,11 +1708,36 @@
       renderWalletBalances();
     }
 
+    /**
+     * Sumber riwayat untuk tab Riwayat, pencarian, preset, dan edit.
+     * Server mengirim `recent` hanya 6 baris; `recentWindow` berisi hingga 100
+     * transaksi terbaru. Fallback ke `recent` untuk cache/demo lama.
+     */
+    function getHistoryWindow() {
+      if (appData.recentWindow && appData.recentWindow.length) return appData.recentWindow;
+      return appData.recent || [];
+    }
+
+    /**
+     * Tambah transaksi ke `recent` dan `recentWindow` tanpa duplikasi.
+     * Di mode demo kedua koleksi bisa menunjuk array yang sama.
+     */
+    function addHistoryTransaction(tx) {
+      (appData.recent = appData.recent || []).unshift(tx);
+      if (appData.recentWindow && appData.recentWindow !== appData.recent) {
+        appData.recentWindow.unshift(tx);
+        appData.recentWindow = appData.recentWindow.slice(0, 100);
+      } else {
+        appData.recent = appData.recentWindow = appData.recent.slice(0, 100);
+      }
+    }
+
     function renderRecent() {
       var container = document.getElementById('recentTxContainer');
       var countEl = document.getElementById('historyCountLabel');
       if (!container) return;
-      if (!appData.recent || appData.recent.length === 0) {
+      var historySource = getHistoryWindow();
+      if (!historySource.length) {
         if (countEl) countEl.textContent = '0 transaksi';
         container.innerHTML = '<div class="rounded-xl border border-borderline bg-white p-4 text-center text-xs text-muted">Belum ada transaksi tercatat.</div>';
         return;
@@ -1715,11 +1746,23 @@
       // Pencarian: kategori, catatan, dompet, peran, atau nominal.
       var searchEl = document.getElementById('txSearchInput');
       var q = searchEl ? (searchEl.value || '').toString().toLowerCase().trim() : '';
-      var list = appData.recent.filter(function(tx) {
+      var list = historySource.filter(function(tx) {
         if (!q) return true;
         var hay = [tx.category, tx.note, tx.wallet, tx.scope, tx.authorRole, tx.type, tx.amount]
           .join(' ').toLowerCase();
         return hay.indexOf(q) !== -1;
+      });
+
+      // Tampilkan terbaru lebih dulu. Tie-break ID menurun agar urutan demo
+      // (array lama -> baru) tetap konsisten dengan urutan server.
+      list = list.slice().sort(function(a, b) {
+        var da = (a.date || '').toString();
+        var db = (b.date || '').toString();
+        if (da !== db) return da < db ? 1 : -1;
+        var ia = (a.id || '').toString();
+        var ib = (b.id || '').toString();
+        if (ia !== ib) return ia < ib ? 1 : -1;
+        return 0;
       });
 
       if (list.length === 0) {
@@ -1967,6 +2010,7 @@ function submitNewBudget() {
           showToast(res.message, true);
           renderBudgetManage();
           renderBudgetPanel();
+          saveCachedData();
         } else {
           showToast('Gagal: ' + (res ? res.message : 'Error tidak diketahui'), false);
         }
@@ -1984,6 +2028,7 @@ function submitNewBudget() {
     showToast('Batas anggaran "' + category + '" disimpan (demo).', true);
     renderBudgetManage();
     renderBudgetPanel();
+    saveCachedData();
   }
 }
 
@@ -2002,6 +2047,7 @@ function removeBudget(categoryName) {
           showToast(res.message, true);
           renderBudgetManage();
           renderBudgetPanel();
+          saveCachedData();
         } else {
           showToast('Gagal: ' + (res ? res.message : 'Error tidak diketahui'), false);
         }
@@ -2016,6 +2062,7 @@ function removeBudget(categoryName) {
     showToast('Batas anggaran "' + categoryName + '" dihapus (demo).', true);
     renderBudgetManage();
     renderBudgetPanel();
+    saveCachedData();
   }
 }
 
@@ -2044,14 +2091,19 @@ function confirmDeleteTx(trxId) {
         setTimeout(function() {
           setLoading(false);
           var removed = null;
-          appData.recent = (appData.recent || []).filter(function(x) {
+          var keep = function(x) {
             if (x.id === trxId) { removed = x; return false; }
             return true;
-          });
+          };
+          appData.recent = (appData.recent || []).filter(keep);
+          if (appData.recentWindow) appData.recentWindow = appData.recentWindow.filter(keep);
           if (removed) {
             recalculateLocalBalances();
             renderSummary();
             renderRecent();
+            renderPresets();
+            renderCategoryDonut();
+            renderBudgetPanel();
             saveCachedData();
             showToast('Transaksi ' + trxId + ' berhasil dihapus (Mode Demo).', true);
           }
@@ -2060,7 +2112,12 @@ function confirmDeleteTx(trxId) {
     }
 
     function startEditTransaction(trxId) {
-      var tx = (appData.recent || []).find(function(t) { return t.id === trxId; });
+      // Cari di seluruh jendela riwayat (hingga 100 baris), bukan hanya 6
+      // transaksi pada appData.recent.
+      var tx = getHistoryWindow().find(function(t) { return t.id === trxId; });
+      if (!tx) {
+        tx = (appData.recent || []).find(function(t) { return t.id === trxId; });
+      }
       if (!tx) {
         showToast('Transaksi ' + trxId + ' tidak ditemukan.', false);
         return;
@@ -2275,10 +2332,38 @@ function confirmDeleteTx(trxId) {
       fetchCustomPeriodSummary();
     }
 
-    function fetchCustomPeriodSummary() {
+    function fetchCustomPeriodSummary(isCustom) {
       var sDate = document.getElementById('summaryStartDate').value;
       var eDate = document.getElementById('summaryEndDate').value;
       if (!sDate || !eDate) return;
+
+      var rangeStart = new Date(sDate + 'T00:00:00');
+      var rangeEnd = new Date(eDate + 'T00:00:00');
+      if (isNaN(rangeStart.getTime()) || isNaN(rangeEnd.getTime())) return;
+      if (rangeStart > rangeEnd) {
+        showToast('Tanggal mulai tidak boleh melebihi tanggal akhir.', false);
+        return;
+      }
+
+      // Saat pengguna memilih tanggal manual, indikator siklus harus jujur
+      // menyebut rentang kustom (bukan tetap "Siklus Berjalan").
+      if (isCustom) {
+        var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        var fmtRange = function(d) {
+          return d.getDate() + ' ' + monthNames[d.getMonth()] + ' ' + d.getFullYear();
+        };
+        var rangeEl = document.getElementById('textActiveCycleRange');
+        if (rangeEl) rangeEl.textContent = fmtRange(rangeStart) + ' - ' + fmtRange(rangeEnd);
+        var badge = document.getElementById('labelActiveCycleBadge');
+        if (badge) {
+          badge.textContent = 'Rentang Kustom';
+          badge.className = 'rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900 border border-amber-200';
+        }
+        var btnReset = document.getElementById('btnResetToCurrentCycle');
+        if (btnReset) btnReset.classList.remove('hidden');
+        var btnNext = document.getElementById('btnPeriodNextCycle');
+        if (btnNext) btnNext.disabled = true;
+      }
 
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
@@ -2643,7 +2728,7 @@ function confirmDeleteTx(trxId) {
           if (typeof google !== 'undefined' && google.script && google.script.run) {
             google.script.run.submitTransaction(initTx);
           }
-          (appData.recent = appData.recent || []).unshift(initTx);
+          addHistoryTransaction(initTx);
         }
 
         input.value = '';
@@ -2653,6 +2738,8 @@ function confirmDeleteTx(trxId) {
         renderOptions();
         renderSummary();
         renderRecent();
+        renderCategoryDonut();
+        renderBudgetPanel();
         saveCachedData();
         showToast('Dompet ' + val + ' (' + owner + ') berhasil ditambahkan' + (initBal > 0 ? ' dengan saldo awal ' + formatRupiah(initBal) : '') + '.', true);
       } else {
@@ -2955,10 +3042,13 @@ function confirmDeleteTx(trxId) {
           }
 
           appData.recent = remaining;
+          appData.recentWindow = remaining.slice(0, 100);
           recalculateLocalBalances();
           renderSummary();
           renderRecent();
           renderPresets();
+          renderCategoryDonut();
+          renderBudgetPanel();
           saveCachedData();
           showToast('Tutup buku tahun ' + yr + ' berhasil (Mode Demo). Saldo masing-masing dompet tetap dipertahankan.', true);
         }, 500);
@@ -3057,6 +3147,8 @@ function confirmDeleteTx(trxId) {
           if (parsed.salaryDate) appData.salaryDate = parsed.salaryDate;
           if (parsed.summary) appData.summary = parsed.summary;
           if (parsed.recent) appData.recent = parsed.recent;
+          if (parsed.recentWindow) appData.recentWindow = parsed.recentWindow;
+          if (parsed.budgets) appData.budgets = parsed.budgets;
           if (parsed.accounts) appData.accounts = parsed.accounts;
           renderSummary();
           renderRecent();
@@ -3074,6 +3166,8 @@ function confirmDeleteTx(trxId) {
           salaryDate: appData.salaryDate,
           summary: appData.summary,
           recent: appData.recent,
+          recentWindow: appData.recentWindow,
+          budgets: appData.budgets,
           accounts: appData.accounts
         }));
       } catch (e) {}
@@ -3302,13 +3396,21 @@ function confirmDeleteTx(trxId) {
         } else {
           setTimeout(function() {
             setLoading(false);
-            var idx = (appData.recent || []).findIndex(function(t) { return t.id === editingId; });
-            if (idx !== -1) {
-              appData.recent[idx] = Object.assign({}, appData.recent[idx], payload, { id: editingId });
-            }
+            var updated = Object.assign({}, payload);
+            var applyUpdate = function(list) {
+              if (!list) return list;
+              return list.map(function(t) {
+                return t.id === editingId ? Object.assign({}, t, updated, { id: editingId }) : t;
+              });
+            };
+            appData.recent = applyUpdate(appData.recent || []);
+            if (appData.recentWindow) appData.recentWindow = applyUpdate(appData.recentWindow);
             recalculateLocalBalances();
             renderSummary();
             renderRecent();
+            renderPresets();
+            renderCategoryDonut();
+            renderBudgetPanel();
             saveCachedData();
             showToast('Transaksi ' + editingId + ' berhasil diperbarui (Mode Demo Lokal)', true);
             cancelEditTransaction();
@@ -3337,7 +3439,7 @@ function confirmDeleteTx(trxId) {
       } else {
         setTimeout(function() {
           setLoading(false);
-          appData.recent.unshift({
+          var newTx = {
             id: 'TRX-' + Math.floor(100000 + Math.random() * 900000),
             date: payload.date,
             type: payload.type,
@@ -3348,10 +3450,14 @@ function confirmDeleteTx(trxId) {
             note: payload.note,
             author: appData.userEmail || 'Local Demo',
             authorRole: appData.userRole
-          });
+          };
+          addHistoryTransaction(newTx);
           recalculateLocalBalances();
           renderSummary();
           renderRecent();
+          renderPresets();
+          renderCategoryDonut();
+          renderBudgetPanel();
           saveCachedData();
           showToast('Transaksi disimpan (Mode Demo Lokal)', true);
           resetForm();
