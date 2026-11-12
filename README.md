@@ -7,7 +7,7 @@ Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** da
 ## Fitur Utama
 
 - **Model Hybrid**: Membedakan pos Kas Bersama rumah tangga (dapur, tagihan, sekolah anak, cicilan) dan pengeluaran pribadi masing-masing tanpa saling membatasi.
-- **Mobile Bottom Navigation**: Navigasi bawah ramah ibu jari pada layar smartphone (Catat, Rekap, Kelola, Akun) dan otomatis beralih ke header atas pada desktop.
+- **Mobile Bottom Navigation**: Navigasi bawah ramah ibu jari pada layar smartphone (Rekap, Riwayat, Catat, Kelola, Akun) dengan tombol Catat di tengah dan otomatis beralih ke header atas pada desktop.
 - **Sistem Akun Master & RBAC**: Akun Google pertama pembuat spreadsheet otomatis menjadi Akun Master dengan kontrol penuh; akun pasangan yang diundang berfokus mencatat transaksi dan memantau rekap keuangan.
 - **Batasan RBAC (penting)**: RBAC ditegakkan di lapisan Web App, bukan di lapisan berbagi Google Sheets. Akun Master ditentukan oleh `CONFIG!B6` **atau** kepemilikan spreadsheet (Master bisa saja bukan pemilik file). Pengguna yang punya akses edit spreadsheet tetap dapat mengubah sheet `CONFIG` langsung (proteksinya *warning-only* karena aplikasi menulis CONFIG via `saveConfigData`); karena itu daftarkan/ubah email hanya lewat tab **Pengaturan** di aplikasi dan jangan membagikan akses edit spreadsheet ke orang yang tidak Anda percaya.
 - **Kepemilikan Dompet Eksplisit**: Setiap rekening/dompet memiliki status kepemilikan yang jelas (Kas Bersama, Suami, atau Istri) dengan rute transfer dana yang transparan.

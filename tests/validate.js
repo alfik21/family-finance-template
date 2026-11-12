@@ -51,10 +51,17 @@ if (!emojiDetected) {
   throw new Error('Policy violation: Unicode emojis found in project files.');
 }
 
-// 4. Feature Verification: Mobile Bottom Navigation
+// 4. Feature Verification: Mobile Bottom Navigation (5 slot, Catat di tengah)
 const webAppHtml = fs.readFileSync('WebApp.html', 'utf8');
-if (webAppHtml.includes('mobileNavTabRecord') && webAppHtml.includes('mobileNavTabAccount') && webAppHtml.includes('fixed bottom-0')) {
-  console.log('✔ Mobile Bottom Nav: Verified (Thumb-reachable container & 4 tabs)');
+if (
+  webAppHtml.includes('mobileNavTabRecord') &&
+  webAppHtml.includes('mobileNavTabAccount') &&
+  webAppHtml.includes('mobileNavTabHistory') &&
+  webAppHtml.includes('id="viewHistory"') &&
+  webAppHtml.includes('grid-cols-5') &&
+  webAppHtml.includes('fixed bottom-0')
+) {
+  console.log('✔ Mobile Bottom Nav: Verified (Thumb-reachable container & 5 tabs, Catat center)');
 } else {
   throw new Error('Mobile Bottom Nav elements missing in WebApp.html');
 }

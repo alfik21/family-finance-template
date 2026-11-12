@@ -220,7 +220,7 @@ Agar spreadsheet Anda tidak lambat setelah ribuan baris mutasi:
 |---|---|---|
 | Muncul layar "Google hasn't verified this app". | Prosedur keamanan pertama kali Google Apps Script. | Klik teks kecil **Advanced** di kiri bawah > klik **Go to Finance Tracker — Family Edition (unsafe)** > klik **Allow**. |
 | Pasangan tidak bisa menginput atau membuka Web App. | Email pasangan belum diberi akses edit spreadsheet. | Klik tombol hijau **Bagikan** di Google Sheets dan pastikan email pasangan terdaftar sebagai **Editor**. |
-| Salah memasukkan nominal atau kategori belanja. | Kesalahan input saat di kasir. | Buka tab **Rekap** di Web App HP, ketuk ikon pensil/tempat sampah. Atau langsung ubah baris terkait di sheet `TRANSAKSI`. |
+| Salah memasukkan nominal atau kategori belanja. | Kesalahan input saat di kasir. | Buka tab **Riwayat** di Web App HP, ketuk ikon pensil/tempat sampah. Atau langsung ubah baris terkait di sheet `TRANSAKSI`. |
 | Ingin menambah rekening bank atau e-wallet baru. | Kebutuhan dompet baru di tengah jalan. | Tambahkan nama dompet baru di baris kosong sheet `CONFIG`. Dropdown formulir akan otomatis mengenalinya. |
 
 ---
