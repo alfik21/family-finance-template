@@ -469,6 +469,8 @@ function getInitialData() {
     defaultPresets: presets,
     salaryDate: salaryDate,
     recent: recent,
+    recentWindow: allTxForPresets.slice(0, 100),
+    budgets: loadBudgets_(ss),
     summary: summary,
     pendingArchive: checkPendingArchive()
   };
@@ -1534,5 +1536,130 @@ function getPeriodSummary(startDateStr, endDateStr) {
     };
   } catch (err) {
     return { success: false, message: err.toString() };
+  }
+}
+/* ==========================================================================
+ * ANGGARAN (FASE 2 / P1): sheet BUDGET + API master-only
+ * - BUDGET: [KATEGORI, LIMIT_NOMINAL, PERIODE]
+ * - saveBudget / deleteBudget hanya untuk Akun Master (RBAC, fail-closed).
+ * - getBudgets terbuka untuk semua pengguna terdaftar (tampilan progres).
+ * ========================================================================== */
+
+function getBudgetSheet_(ss) {
+  var sheet = ss.getSheetByName('BUDGET');
+  if (!sheet) {
+    sheet = ss.insertSheet('BUDGET');
+    sheet.setTabColor('#2d6a4f');
+    sheet.getRange(1, 1, 1, 3).setValues([['KATEGORI', 'LIMIT_NOMINAL', 'PERIODE']])
+      .setFontWeight('bold').setBackground('#e8f0ec').setFontColor('#1b4332');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function loadBudgets_(ss) {
+  var sheet = ss.getSheetByName('BUDGET');
+  var out = [];
+  if (sheet) {
+    var lastRow = sheet.getLastRow();
+    if (lastRow > 1) {
+      var rows = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+      for (var i = 0; i < rows.length; i++) {
+        var cat = (rows[i][0] || '').toString().trim();
+        var limit = Number(rows[i][1]) || 0;
+        if (cat && limit > 0) out.push({ category: cat, limit: limit });
+      }
+    }
+  }
+  return out;
+}
+
+function getBudgets() {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  return { success: true, budgets: loadBudgets_(ss) };
+}
+
+function saveBudget(payload) {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var configSheet = ss.getSheetByName('CONFIG');
+  var activeEmail = getActiveEmail_();
+  if (!isMasterAccess_(ss, configSheet, activeEmail)) {
+    return { success: false, message: 'Hanya Akun Master yang dapat mengatur batas anggaran.' };
+  }
+
+  var category = (payload && payload.category ? payload.category : '').toString().trim();
+  var limit = Math.round(Number(payload && payload.limit) || 0);
+  if (!category) return { success: false, message: 'Kategori anggaran wajib dipilih.' };
+  if (limit <= 0) return { success: false, message: 'Nominal batas harus lebih dari 0.' };
+
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+  } catch (e) {
+    return { success: false, message: 'Server sedang sibuk, coba beberapa saat lagi.' };
+  }
+  try {
+    var sheet = getBudgetSheet_(ss);
+    var lastRow = sheet.getLastRow();
+    var found = false;
+    if (lastRow > 1) {
+      var rows = sheet.getRange(2, 1, lastRow - 1, 2).getValues();
+      for (var i = 0; i < rows.length; i++) {
+        if ((rows[i][0] || '').toString().trim().toLowerCase() === category.toLowerCase()) {
+          sheet.getRange(2 + i, 2).setValue(limit);
+          found = true;
+          break;
+        }
+      }
+    }
+    if (!found) sheet.appendRow([category, limit, '']);
+    return { success: true, message: 'Batas anggaran "' + category + '" disimpan.', budgets: loadBudgets_(ss) };
+  } catch (err) {
+    return { success: false, message: err.toString() };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
+  }
+}
+
+function deleteBudget(categoryName) {
+  var access = getWebAppAccess_();
+  if (!access.allowed) return accessDeniedResponse_(access);
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var configSheet = ss.getSheetByName('CONFIG');
+  var activeEmail = getActiveEmail_();
+  if (!isMasterAccess_(ss, configSheet, activeEmail)) {
+    return { success: false, message: 'Hanya Akun Master yang dapat menghapus batas anggaran.' };
+  }
+
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+  } catch (e) {
+    return { success: false, message: 'Server sedang sibuk, coba beberapa saat lagi.' };
+  }
+  try {
+    var sheet = ss.getSheetByName('BUDGET');
+    if (!sheet) return { success: true, message: 'Belum ada sheet BUDGET.', budgets: [] };
+    var lastRow = sheet.getLastRow();
+    if (lastRow > 1) {
+      var rows = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+      for (var i = rows.length - 1; i >= 0; i--) {
+        if ((rows[i][0] || '').toString().trim().toLowerCase() === (categoryName || '').toString().trim().toLowerCase()) {
+          sheet.deleteRow(2 + i);
+          break;
+        }
+      }
+    }
+    return { success: true, message: 'Batas anggaran "' + categoryName + '" dihapus.', budgets: loadBudgets_(ss) };
+  } catch (err) {
+    return { success: false, message: err.toString() };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
   }
 }

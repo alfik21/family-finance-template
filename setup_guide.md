@@ -14,7 +14,7 @@ Panduan ini disusun khusus untuk membantu Anda menyiapkan **Master Google Spread
    - 100% hemat seumur hidup, tanpa batasan jumlah transaksi.
 3. **Privasi 100% Terjamin di Google Drive Pribadi**:
    - Data keuangan keluarga tidak disimpan di server pihak ketiga atau startup yang rawan bocor/tutup. Data berada 100% di akun Google milik pembeli sendiri.
-4. **Akses Cepat di Smartphone (PWA Native-Like)**:
+4. **Akses Cepat di Smartphone (Pintasan Layar Utama)**:
    - Dapat ditambahkan ke Layar Utama (*Add to Home Screen*) di iOS (Safari) maupun Android (Chrome). Membuka aplikasi hanya butuh 1 detik pas di kasir atau pasar.
 
 ---

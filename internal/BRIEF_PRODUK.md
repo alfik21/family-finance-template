@@ -25,7 +25,7 @@
 
 ## Ringkasan Eksekutif (Executive Summary)
 
-Finance Tracker — Family Edition adalah sistem pencatatan, penganggaran, dan evaluasi finansial rumah tangga yang menggabungkan keandalan basis data **Google Sheets** dengan kemudahan akses **Web App PWA (Progressive Web App)** berbasis **Google Apps Script**. 
+Finance Tracker — Family Edition adalah sistem pencatatan, penganggaran, dan evaluasi finansial rumah tangga yang menggabungkan keandalan basis data **Google Sheets** dengan kemudahan akses **Web App (pintasan layar utama / Add to Home Screen)** berbasis **Google Apps Script**. 
 
 Sistem ini **baru saja selesai dibangun dan dikembangkan (*freshly developed*)** oleh tim pengembang. Berbeda dengan aplikasi keuangan personal biasa, produk ini mengusung **Model Finansial Hybrid** yang membedakan secara tegas antara belanja Kas Bersama rumah tangga (dapur, tagihan listrik/air, sekolah anak, cicilan) dan dompet pribadi masing-masing pasangan (Suami & Istri) tanpa saling membatasi.
 
@@ -42,8 +42,8 @@ Sebelum produk ini dibuka untuk penjualan komersial publik, produk wajib melalui
 - **Nama Teknis Repositori**: `family-finance-template`
 
 ### 1.2. Deskripsi Konseptual
-Aplikasi web pencatatan keuangan keluarga berbasis peramban (PWA) yang terhubung langsung secara *container-bound* ke Google Sheets pribadi pengguna. Menghilangkan kebutuhan instalasi aplikasi dari Play Store/App Store dengan 3 mode akses:
-1. **Mode Smartphone (Mobile PWA)**: Berjalan mandiri dari layar utama ponsel (*Add to Home Screen*) melalui peramban Safari (iOS) atau Chrome (Android) dengan navigasi bawah (*Bottom Navigation Bar*) ramah jempol.
+Aplikasi web pencatatan keuangan keluarga berbasis peramban (Web App) yang terhubung langsung secara *container-bound* ke Google Sheets pribadi pengguna. Menghilangkan kebutuhan instalasi aplikasi dari Play Store/App Store dengan 3 mode akses:
+1. **Mode Smartphone (Pintasan Layar Utama)**: Berjalan mandiri dari layar utama ponsel (*Add to Home Screen*) melalui peramban Safari (iOS) atau Chrome (Android) dengan navigasi bawah (*Bottom Navigation Bar*) ramah jempol.
 2. **Mode Jendela Dialog (Modal Dialog)**: Antarmuka terintegrasi selebar 450x760px di Google Sheets desktop yang dapat dibuka melalui menu `Finance Tracker > Buka Aplikasi (Modal)`.
 3. **Mode Tabel Lembar Kerja (Spreadsheet View)**: Tampilan visual lembar kerja Google Sheets bertema *Warm Sage Green* dengan 4 tab utama (`DASHBOARD`, `TRANSAKSI`, `BUDGET & POS`, `CONFIG`).
 
@@ -76,7 +76,7 @@ Profil pengguna yang ditargetkan untuk pengujian awal dan penjualan komersial:
 | Masalah Finansial Keluarga Saat Ini | Solusi yang Selesai Dikembangkan |
 |---|---|
 | **Tercampurnya Kas Bersama & Dompet Pribadi**: Kebingungan membedakan uang belanja operasional rumah tangga vs uang hobi/kebutuhan personal. | **Model Finansial Hybrid**: Pemisahan tegas pos *Kas Bersama*, *Pribadi Suami*, dan *Pribadi Istri* dalam satu dashboard terpadu. |
-| **Malas Mencatat Akibat Entri Ponsel Lambat**: Membuka aplikasi Google Sheets biasa di layar kecil HP saat di kasir terasa lambat dan merepotkan. | **Web App PWA Ramah Jempol**: Akses 1–2 detik dari layar utama HP lengkap dengan tombol cepat cerdas 1-ketuk (*Smart Presets*). |
+| **Malas Mencatat Akibat Entri Ponsel Lambat**: Membuka aplikasi Google Sheets biasa di layar kecil HP saat di kasir terasa lambat dan merepotkan. | **Web App Ramah Jempol (Pintasan Layar Utama)**: Akses 1–2 detik dari layar utama HP lengkap dengan tombol cepat cerdas 1-ketuk (*Smart Presets*). |
 | **Subscription Fatigue**: Beban biaya langganan bulanan software keuangan keluarga yang berulang dan boros. | **Sekali Bayar Seumur Hidup (*Lifetime Access*)**: Tanpa biaya langganan, tanpa iklan, dan tanpa batasan transaksi. |
 | **Risiko Privasi Data Bocor**: Ketakutan data mutasi keluarga disimpan di database pihak ketiga yang rawan peretasan. | **100% Kepemilikan Data di Google Drive**: Template diduplikasi ke Drive pribadi pengguna; pengembang tidak memiliki akses ke berkas. |
 | **Spreadsheet Lemot Akibat Baris Menumpuk**: File spreadsheet menjadi berat setelah ribuan baris transaksi tersimpan bertahun-tahun. | **Fitur Tutup Buku & Arsip 1-Klik**: Memindahkan riwayat tahun lalu ke sheet statis `ARSIP_YYYY` dan mengoper sisa saldo kas ke tahun baru otomatis. |

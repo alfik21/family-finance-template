@@ -1,6 +1,6 @@
 # Finance Tracker — Family Edition
 
-Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** dan **Google Apps Script Web App (PWA)** dengan model *Hybrid* (Kas Bersama + Dompet Pribadi Suami & Istri).
+Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** dan **Google Apps Script Web App + pintasan layar utama (Add to Home Screen)** dengan model *Hybrid* (Kas Bersama + Dompet Pribadi Suami & Istri).
 
 ---
 
@@ -9,6 +9,7 @@ Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** da
 - **Model Hybrid**: Membedakan pos Kas Bersama rumah tangga (dapur, tagihan, sekolah anak, cicilan) dan pengeluaran pribadi masing-masing tanpa saling membatasi.
 - **Mobile Bottom Navigation**: Navigasi bawah ramah ibu jari pada layar smartphone (Catat, Rekap, Kelola, Akun) dan otomatis beralih ke header atas pada desktop.
 - **Sistem Akun Master & RBAC**: Akun Google pertama pembuat spreadsheet otomatis menjadi Akun Master dengan kontrol penuh; akun pasangan yang diundang berfokus mencatat transaksi dan memantau rekap keuangan.
+- **Batasan RBAC (penting)**: RBAC ditegakkan di lapisan Web App, bukan di lapisan berbagi Google Sheets. Akun Master ditentukan oleh `CONFIG!B6` **atau** kepemilikan spreadsheet (Master bisa saja bukan pemilik file). Pengguna yang punya akses edit spreadsheet tetap dapat mengubah sheet `CONFIG` langsung (proteksinya *warning-only* karena aplikasi menulis CONFIG via `saveConfigData`); karena itu daftarkan/ubah email hanya lewat tab **Pengaturan** di aplikasi dan jangan membagikan akses edit spreadsheet ke orang yang tidak Anda percaya.
 - **Kepemilikan Dompet Eksplisit**: Setiap rekening/dompet memiliki status kepemilikan yang jelas (Kas Bersama, Suami, atau Istri) dengan rute transfer dana yang transparan.
 - **Tombol Cepat Cerdas (Smart Habit-Based Presets)**: Menganalisis kebiasaan belanja berulang dan otomatis memunculkannya sebagai tombol cepat di formulir pencatatan.
 - **Tutup Buku & Arsip Tahunan**: Menjaga sheet transaksi aktif selalu ramping (< 2.000 baris/tahun) dengan memindahkan riwayat tahun lampau ke tab ARSIP_YYYY statis dan mengoper sisa saldo Kas Bersama ke tahun baru.
@@ -44,7 +45,7 @@ Sistem pencatatan dan pemantauan keuangan keluarga berbasis **Google Sheets** da
 │   └── qc-audit.js    # Suite QC pra-komersial: RBAC, scope, arsip, validasi, keamanan
 ├── Setup.gs          # Generator otomatis struktur Google Sheets & menu tutup buku
 ├── Code.gs           # Backend API Google Apps Script (RBAC, mutasi, arsip, smart presets)
-├── WebApp.html       # Antarmuka PWA Mobile-First responsif
+├── WebApp.html       # Antarmuka Mobile-First responsif
 ├── test-runner.html  # Simulator browser lokal untuk user testing sebelum deploy
 ├── preview.html      # Pratinjau interaktif aplikasi untuk promosi/demo
 ├── setup_guide.md    # Panduan lengkap penjual: Master sheet, trik URL /copy, & deployment

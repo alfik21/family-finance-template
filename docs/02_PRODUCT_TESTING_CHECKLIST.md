@@ -97,7 +97,7 @@
 | TC-CPY-03 | Distribusi | Otorisasi Script Pengguna | Dialog otorisasi keamanan Google berjalan mulus via opsi Advanced > Go to Finance Tracker — Family Edition (unsafe). | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
 | TC-CPY-04 | Distribusi | Setup Otomatis Spreadsheet | Menjalankan setupFinanceTracker otomatis membentuk sheet CONFIG, TRANSAKSI, BUDGET & POS, dan DASHBOARD. | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
 | TC-CPY-05 | Distribusi | Deploy Web App Mandiri | Pembeli berhasil men-deploy Web App dengan setelan Execute as: User accessing dan dibuka lancar di browser HP. | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
-| TC-CPY-06 | Distribusi | Pasang ke Layar HP (PWA) | Add to Home Screen di Safari (iOS) dan Chrome (Android) menghasilkan shortcut layar penuh ramah jempol. | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
+| TC-CPY-06 | Distribusi | Pasang ke Layar HP (Pintasan) | Add to Home Screen di Safari (iOS) dan Chrome (Android) menghasilkan shortcut layar penuh ramah jempol. | [Kosong] | PENDING | Operations | [Kosong] | [Kosong] |
 | TC-CPY-07 | Distribusi | Tutup Buku & Arsip Tahunan | Menu Tutup Buku & Arsipkan Tahun Lalu berhasil memindahkan data lampau ke ARSIP_YYYY dan mengoper saldo awal. | [Kosong] | PENDING | Finance | [Kosong] | [Kosong] |
 
 ---

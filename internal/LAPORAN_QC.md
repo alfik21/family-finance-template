@@ -1,6 +1,6 @@
 # 05 - Laporan Bug QC & Catatan Perbaikan (Pra-Komersial)
 
-**Produk:** Finance Tracker — Family Edition - Google Sheets + Apps Script PWA
+**Produk:** Finance Tracker - Family Edition - Google Sheets + Apps Script Web App
 **Tanggal pengujian:** 2026-11-05
 **Penguji:** QC / Pre-Commercial Audit (otomatis + verifikasi browser)
 **Status akhir:** **LULUS QC** - 35/35 temuan otomatis diperbaiki, siap lanjut ke UAT pilot couples.

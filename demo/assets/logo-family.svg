@@ -1,0 +1,16 @@
+<svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo Finance Tracker Family Edition">
+  <defs>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2d6a4f"/>
+      <stop offset="1" stop-color="#40916c"/>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="22" fill="url(#lg)"/>
+  <!-- Atap rumah keluarga -->
+  <path d="M48 16 L72 34 M48 16 L24 34" stroke="#95d5b2" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <!-- Dua anggota keluarga -->
+  <circle cx="36" cy="44" r="5" fill="#ffffff" opacity="0.85"/>
+  <circle cx="60" cy="44" r="5" fill="#ffffff" opacity="0.85"/>
+  <!-- Monogram FT -->
+  <text x="48" y="78" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1">FT</text>
+</svg>

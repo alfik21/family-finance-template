@@ -21,7 +21,7 @@ Selamat atas kepemilikan sistem **Finance Tracker — Family Edition**. Template
 ### Nilai Utama Produk:
 - **Model Finansial Hybrid**: Menyatukan pos belanja operasional rumah tangga bersama tanpa membatasi uang saku atau hobi pribadi masing-masing pasangan.
 - **Privasi Terjamin 100%**: Seluruh data mutasi tersimpan di Google Drive pribadi Anda, bukan di server startup asing.
-- **Akses Cepat Smartphone (PWA)**: Buka aplikasi langsung dari layar utama ponsel (*Add to Home Screen*) dalam 1–2 detik saat berada di kasir atau pasar.
+- **Akses Cepat Smartphone (Pintasan)**: Buka aplikasi langsung dari layar utama ponsel (*Add to Home Screen*) dalam 1–2 detik saat berada di kasir atau pasar.
 - **Bebas Biaya Langganan Seumur Hidup**: Cukup satu kali beli, dapat digunakan seterusnya tanpa batas baris transaksi.
 
 ---
@@ -173,7 +173,7 @@ Antarmuka Web App dirancang ramah jempol dengan 3 jenis transaksi yang dapat dip
 <!-- HALAMAN 4 DARI 4                                                        -->
 <!-- ======================================================================= -->
 
-### Dokumen: Finance Tracker — Family Edition User Guide | Halaman 4 dari 4 | PWA Smartphone, Tutup Buku, & Bantuan
+### Dokumen: Finance Tracker — Family Edition User Guide | Halaman 4 dari 4 | Pintasan HP, Tutup Buku, & Bantuan
 
 ## 7. Memasang di Layar Utama Smartphone & Kolaborasi Pasangan
 
@@ -200,6 +200,8 @@ Link Web App hanya dapat dibuka oleh email yang terdaftar (pembatasan akses):
 2. Alternatif: buka **Project Settings > Script Properties** > tambahkan `ALLOWED_EMAILS` (dipisah koma).
 3. Email yang tidak terdaftar akan melihat halaman **"Akses Ditolak"** tanpa data apa pun. Perubahan langsung berlaku tanpa deploy ulang.
 4. Pastikan deployment memakai **Execute as: User accessing the web app**; bila *Execute as: Me*, semua pengunjung dianggap tanpa identitas dan ditolak (*fail-closed*).
+
+> **Catatan Batasan Keamanan (penting)**: Pembatasan peran (RBAC) ditegakkan di lapisan Web App, bukan di lapisan berbagi Google Sheets. Akun Master ditentukan oleh `CONFIG!B6` **atau** kepemilikan spreadsheet — Master bisa saja bukan pemilik file. Karena aplikasi menulis sheet `CONFIG` melalui fitur Pengaturan, proteksi CONFIG hanya berupa *peringatan* (*warning-only*); orang yang Anda beri izin **Editor** di spreadsheet dapat mengubah `CONFIG` langsung melewati aplikasi. Karena itu: ubah email/peran **hanya lewat tab Pengaturan di aplikasi**, dan berikan izin Editor spreadsheet hanya kepada orang yang Anda percaya penuh (pasangan rumah tangga).
 
 ---
 

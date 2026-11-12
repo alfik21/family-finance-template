@@ -15,7 +15,7 @@
 
 ## 1. Latar Belakang dan Tujuan Pengujian
 
-Produk Finance Tracker — Family Edition ini **baru saja selesai dibangun dan selesai dikembangkan pada tingkat kode (*code freeze*)**. Seluruh fitur utama (Web App PWA mobile-first, model finansial hybrid, pemisahan pos belanja bersama vs dompet pribadi suami & istri, tombol cepat cerdas, transfer kas antar-dompet, dan modul tutup buku tahunan) telah selesai dikoding, **namun belum pernah diuji coba oleh pasangan pengguna nyata (*real couple end-users*)**.
+Produk Finance Tracker — Family Edition ini **baru saja selesai dibangun dan selesai dikembangkan pada tingkat kode (*code freeze*)**. Seluruh fitur utama (Web App mobile-first, model finansial hybrid, pemisahan pos belanja bersama vs dompet pribadi suami & istri, tombol cepat cerdas, transfer kas antar-dompet, dan modul tutup buku tahunan) telah selesai dikoding, **namun belum pernah diuji coba oleh pasangan pengguna nyata (*real couple end-users*)**.
 
 Oleh karena itu, dokumen SOP ini menetapkan kerangka kerja pengujian bertahap:
 1. **Fase 1: Verifikasi Fungsional (QA)**: Dilakukan oleh tim produk untuk memverifikasi 26 kasus uji teknis.
@@ -37,7 +37,7 @@ Oleh karena itu, dokumen SOP ini menetapkan kerangka kerja pengujian bertahap:
 +---------------------------------------------------------------------------------+
 | TAHAP 2: PENGUJIAN PENGGUNA ASLI / PILOT COUPLE TESTING (UAT)                   |
 | - Libatkan 3-5 Pasangan Suami-Istri Calon Pengguna Riil                         |
-| - Pengguna Mencoba Mandiri: Akses Link /copy > Setup CONFIG > Pasang PWA di HP  |
+| - Pengguna Mencoba Mandiri: Akses Link /copy > Setup CONFIG > Pasang Pintasan di HP  |
 | - Uji Input Transaksi Bersamaan (Simulasi Kasir & Pasar)                        |
 | - Pengumpulan Masukan (Feedback) Kenyamanan & Keterbacaan Bahasa               |
 +---------------------------------------------------------------------------------+
@@ -117,7 +117,7 @@ Lakukan verifikasi pada lembar kerja kosong [`docs/02_PRODUCT_TESTING_CHECKLIST.
 - **TC-CPY-03**: Alur otorisasi keamanan script Google Apps Script berjalan mulus via opsi *Advanced > Go to unsafe > Allow*.
 - **TC-CPY-04**: Setup otomatis via menu kustom `Finance Tracker > Jalankan Setup / Reset Template` membentuk 4 sheet rapi.
 - **TC-CPY-05**: Deployment Web App mandiri berhasil diakses lancar via smartphone.
-- **TC-CPY-06**: Pemasangan PWA di iOS (Safari Add to Home Screen) dan Android (Chrome Tambah ke Layar Utama) berjalan mulus.
+- **TC-CPY-06**: Pemasangan pintasan (Add to Home Screen) di iOS (Safari) dan Android (Chrome) berjalan mulus.
 - **TC-CPY-07**: Fitur Tutup Buku & Arsip Tahunan (`closeAndArchiveYear`) memindahkan transaksi tahun lalu ke `ARSIP_YYYY` dan mengoper sisa kas sebagai saldo awal baru.
 
 ---

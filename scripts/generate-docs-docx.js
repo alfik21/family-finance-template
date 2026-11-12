@@ -209,7 +209,7 @@ async function buildDoc1() {
     ),
     createDivider(),
     createH1('Ringkasan Eksekutif (Executive Summary)'),
-    createP('Finance Tracker — Family Edition adalah sistem pencatatan, penganggaran, dan evaluasi finansial rumah tangga yang menggabungkan keandalan basis data Google Sheets dengan kemudahan akses Web App PWA (Progressive Web App) berbasis Google Apps Script.'),
+    createP('Finance Tracker — Family Edition adalah sistem pencatatan, penganggaran, dan evaluasi finansial rumah tangga yang menggabungkan keandalan basis data Google Sheets dengan kemudahan akses Web App (pintasan layar utama / Add to Home Screen) berbasis Google Apps Script.'),
     createP('Sistem ini baru saja selesai dibangun dan dikembangkan (freshly developed) oleh tim pengembang. Berbeda dengan aplikasi keuangan personal biasa, produk ini mengusung Model Finansial Hybrid yang membedakan secara tegas antara belanja Kas Bersama rumah tangga (dapur, tagihan listrik/air, sekolah anak, cicilan) dan dompet pribadi masing-masing pasangan (Suami & Istri) tanpa saling membatasi.'),
     createP('Sebelum produk dibuka untuk penjualan komersial publik, produk wajib melalui dua tahapan verifikasi kritis:'),
     createBullet('Memastikan tidak ada galat rumus, rekonsiliasi saldo per dompet akurat, fitur transfer kas tepat, pembagian pagu anggaran berfungsi, dan validasi data berjalan normal.', '1. Pengujian Kendali Mutu (QA)'),
@@ -219,8 +219,8 @@ async function buildDoc1() {
     createBullet('Finance Tracker — Family Edition', 'Nama Komersial'),
     createBullet('family-finance-template', 'Nama Teknis Repositori'),
     createH2('1.2. Deskripsi Konseptual'),
-    createP('Aplikasi web pencatatan keuangan keluarga berbasis peramban (PWA) yang terhubung langsung secara container-bound ke Google Sheets pribadi pengguna dengan 3 mode akses:'),
-    createBullet('Berjalan mandiri dari layar utama ponsel (Add to Home Screen) melalui peramban Safari (iOS) atau Chrome (Android) dengan navigasi bawah (Bottom Navigation Bar) ramah jempol.', '1. Mode Smartphone (Mobile PWA)'),
+    createP('Aplikasi web pencatatan keuangan keluarga berbasis peramban (Web App) yang terhubung langsung secara container-bound ke Google Sheets pribadi pengguna dengan 3 mode akses:'),
+    createBullet('Berjalan sebagai pintasan dari layar utama ponsel (Add to Home Screen) melalui peramban Safari (iOS) atau Chrome (Android) dengan navigasi bawah (Bottom Navigation Bar) ramah jempol.', '1. Mode Smartphone (Mobile PWA)'),
     createBullet('Antarmuka terintegrasi selebar 450x760px di Google Sheets desktop yang dapat dibuka melalui menu Finance Tracker > Buka Aplikasi (Modal).', '2. Mode Jendela Dialog (Modal Dialog)'),
     createBullet('Tampilan visual lembar kerja Google Sheets bertema Warm Sage Green dengan 4 tab utama (DASHBOARD, TRANSAKSI, BUDGET & POS, CONFIG).', '3. Mode Tabel Lembar Kerja (Spreadsheet View)'),
     createH1('2. Profil Target Pengguna Asli (Target Pilot & End Users)'),
@@ -241,7 +241,7 @@ async function buildDoc1() {
       ['Masalah Finansial Keluarga Saat Ini', 'Solusi yang Selesai Dikembangkan'],
       [
         ['Tercampurnya Kas Bersama & Dompet Pribadi: Kebingungan membedakan uang belanja operasional vs uang personal.', 'Model Finansial Hybrid: Pemisahan tegas pos Kas Bersama, Pribadi Suami, dan Pribadi Istri dalam satu dashboard terpadu.'],
-        ['Malas Mencatat Akibat Entri Ponsel Lambat: Membuka sheet di layar HP saat di kasir terasa lambat dan merepotkan.', 'Web App PWA Ramah Jempol: Akses 1-2 detik dari layar utama HP lengkap dengan tombol cepat cerdas 1-ketuk (Smart Presets).'],
+        ['Malas Mencatat Akibat Entri Ponsel Lambat: Membuka sheet di layar HP saat di kasir terasa lambat dan merepotkan.', 'Web App Ramah Jempol: Akses 1-2 detik dari layar utama HP lengkap dengan tombol cepat cerdas 1-ketuk (Smart Presets).'],
         ['Subscription Fatigue: Beban biaya langganan bulanan software keuangan keluarga yang berulang dan boros.', 'Sekali Bayar Seumur Hidup (Lifetime Access): Tanpa biaya langganan, tanpa iklan, dan tanpa batasan transaksi.'],
         ['Risiko Privasi Data Bocor: Ketakutan data mutasi keluarga disimpan di database pihak ketiga yang rawan peretasan.', '100% Kepemilikan Data di Google Drive: Template diduplikasi ke Drive pribadi pengguna; developer tidak memiliki akses.'],
         ['Spreadsheet Lemot Akibat Baris Menumpuk: File spreadsheet menjadi berat setelah ribuan baris tersimpan bertahun-tahun.', 'Fitur Tutup Buku & Arsip 1-Klik: Memindahkan riwayat tahun lalu ke sheet statis ARSIP_YYYY dan mengoper sisa saldo kas ke tahun baru otomatis.']
@@ -320,7 +320,7 @@ async function buildDoc2() {
       ]
     ),
     createH1('1. Latar Belakang dan Tujuan Pengujian'),
-    createP('Produk Finance Tracker — Family Edition ini baru saja selesai dibangun dan selesai dikembangkan pada tingkat kode (code freeze). Seluruh fitur utama (Web App PWA mobile-first, model finansial hybrid, pemisahan pos belanja bersama vs dompet pribadi suami & istri, tombol cepat cerdas, transfer kas antar-dompet, dan modul tutup buku tahunan) telah selesai dikoding, namun belum pernah diuji coba oleh pasangan pengguna nyata (real couple end-users).'),
+    createP('Produk Finance Tracker - Family Edition ini baru saja selesai dibangun dan selesai dikembangkan pada tingkat kode (code freeze). Seluruh fitur utama (Web App mobile-first, model finansial hybrid, pemisahan pos belanja bersama vs dompet pribadi suami & istri, tombol cepat cerdas, transfer kas antar-dompet, dan modul tutup buku tahunan) telah selesai dikoding, namun belum pernah diuji coba oleh pasangan pengguna nyata (real couple end-users).'),
     createP('Oleh karena itu, dokumen SOP ini menetapkan kerangka kerja pengujian bertahap:'),
     createBullet('Dilakukan oleh tim produk untuk memverifikasi 26 kasus uji teknis pada lembar kerja kosong.', 'Fase 1: Verifikasi Fungsional (QA)'),
     createBullet('Dilakukan bersama 3-5 pasangan suami-istri pengguna nyata untuk mengamati kemudahan navigasi dan kemudahan kolaborasi entri data.', 'Fase 2: Pengujian Penerimaan Pengguna Asli (User Acceptance Testing / UAT)'),
@@ -333,7 +333,7 @@ async function buildDoc2() {
       ['Tingkat Keparahan', 'Kriteria & Dampak', 'Tindakan Operasional'],
       [
         ['Critical (Blocker)', 'Rumus spreadsheet rusak, saldo tidak sinkron, aplikasi tidak terbuka, otorisasi gagal.', 'Rilis DIBLOKIR. Pengembang wajib memperbaiki sebelum lanjut ke UAT.'],
-        ['High (Major)', 'Fitur transfer kas salah hitung, validasi data tembus (angka 0/minus tersimpan), tombol PWA macet.', 'Wajib diperbaiki dan diuji ulang.'],
+        ['High (Major)', 'Fitur transfer kas salah hitung, validasi data tembus (angka 0/minus tersimpan), tombol pintasan macet.', 'Wajib diperbaiki dan diuji ulang.'],
         ['Medium (Minor)', 'Teks label membingungkan pasangan awam, tata letak bergeser pada layar kecil.', 'Diperbaiki dalam siklus perbaikan rilis perdana.'],
         ['Low (Trivial)', 'Saran perbaikan warna latar, redaksi panduan kurang jelas, permintaan fitur tambahan.', 'Dicatat dalam dokumen Product Backlog.']
       ]
@@ -461,9 +461,10 @@ async function buildDoc3() {
     createP('Di spreadsheet komputer, klik Ekstensi > Apps Script > tombol Deploy > New deployment > jenis Web app. Set Execute as = User accessing the web app, Who has access = Anyone with Google account. Klik Deploy dan salin URL Web App yang dihasilkan ke WhatsApp pasangan.'),
     createH2('Langkah 2: Pasang di Layar Utama Smartphone'),
     createBullet('Buka tautan di Safari > ketuk tombol Share (kotak panah atas) > pilih Add to Home Screen.', 'Pengguna iPhone (Safari)'),
-    createBullet('Buka tautan di Chrome > ketuk Menu Titik Tiga > pilih Add to Home screen / Install app.', 'Pengguna Android (Chrome)'),
+    createBullet('Buka tautan di Chrome > ketuk Menu Titik Tiga > pilih Add to Home screen.', 'Pengguna Android (Chrome)'),
     createH2('Langkah 3: Berbagi Hak Akses dengan Pasangan'),
     createP('Di Google Sheets komputer, klik tombol hijau Bagikan (Share) di kanan atas > masukkan email Google pasangan Anda > berikan izin sebagai Editor > Simpan. Kini suami dan istri dapat mencatat transaksi dari HP masing-masing secara bersamaan.'),
+    createP('Catatan Batasan Keamanan: pembatasan peran (RBAC) ditegakkan di lapisan Web App, bukan di lapisan berbagi Google Sheets. Akun Master ditentukan oleh CONFIG!B6 atau kepemilikan spreadsheet. Karena aplikasi menulis sheet CONFIG melalui fitur Pengaturan, proteksi CONFIG hanya berupa peringatan (warning-only); orang yang Anda beri izin Editor di spreadsheet dapat mengubah CONFIG langsung melewati aplikasi. Ubah email/peran hanya lewat tab Pengaturan di aplikasi, dan berikan izin Editor spreadsheet hanya kepada orang yang Anda percaya penuh (pasangan rumah tangga).'),
     createH1('8. Tutup Buku & Arsip Tahunan (1-Klik)'),
     createP('Di akhir tahun kalender, klik menu Finance Tracker — Family Edition pada bilah menu atas Google Sheets > pilih Tutup Buku & Arsipkan Tahun Lalu > masukkan tahun yang ingin diarsipkan (misal: 2025). Sistem secara otomatis memindahkan seluruh riwayat transaksi ke lembar baru ARSIP_2025 dan mengoper sisa saldo Kas Bersama ke tahun baru sebagai Saldo Awal.'),
     createH1('9. Solusi Masalah Umum (Troubleshooting FAQ)'),
@@ -521,6 +522,8 @@ async function buildDoc4() {
     createH1('Pasal 5: Kebijakan Pengembalian Dana (Refund Policy)'),
     createBullet('Mengingat produk merupakan perangkat lunak digital instan yang diserahkan seketika (instant irrevocable digital download), seluruh transaksi bersifat final dan non-refundable.', '5.1. Sifat Barang Digital Seketika'),
     createBullet('Pengembalian dana penuh hanya diproses jika tautan master terbukti rusak permanen dan tim teknis tidak mampu memberikan tautan pengganti dalam 3 x 24 jam kerja.', '5.2. Garansi Kerusakan Permanen'),
+    createBullet('Klaim diajukan lewat kanal dukungan resmi dengan bukti pembelian dan tangkapan layar kendala; verifikasi maksimal 3 x 24 jam kerja dan keputusan disampaikan tertulis.', '5.3. Prosedur Klaim'),
+    createBullet('Pengembalian dana tidak berlaku untuk kendala kuota/izin akun Google pembeli, kesalahan input atau penyalahgunaan formula, ketidakcocikan fitur setelah berkas berfungsi sesuai deskripsi, serta produk yang dimodifikasi di luar panduan resmi.', '5.4. Pengecualian Garansi'),
     createH1('Pasal 6: Batasan Tanggung Jawab & Sanggahan Finansial (Disclaimer)'),
     createBullet('Produk berfungsi murni sebagai alat bantu pencatatan administratif arus kas keluarga, bukan penasihat keuangan bersertifikasi (Certified Financial Planner) atau akuntan publik.', '6.1. Bukan Nasihat Finansial Resmi'),
     createBullet('Tanggung jawab atas ketepatan angka saldo riil dan mutasi transaksi berada sepenuhnya di tangan pengguna yang memasukkan data.', '6.2. Akurasi Data Input'),

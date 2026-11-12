@@ -823,8 +823,23 @@ check('QC-SEC-03', 'Manifest web app memaksa login Google (konsisten dengan READ
 // ---------------------------------------------------------------------------
 console.log('\n[J] Modul Sinkronisasi Demo & Konsistensi');
 
-check('QC-DEMO-01', 'Berkas demo/ identik dengan sumber (preview, WebApp, vercel)', () => {
-  const pairs = [['preview.html', 'demo/preview.html'], ['WebApp.html', 'demo/WebApp.html'], ['vercel.json', 'demo/vercel.json']];
+check('QC-CDN-01', 'Tailwind tidak lagi memuat Play CDN (dikompilasi inline / dipaket lokal)', () => {
+  const offenders = [];
+  ['WebApp.html', 'preview.html'].forEach((f) => {
+    const c = read(f);
+    if (c.includes('cdn.tailwindcss.com')) offenders.push(f + ': masih memuat CDN');
+  });
+  if (!read('WebApp.html').includes('dikompilasi inline')) {
+    offenders.push('WebApp.html: CSS kompilasi belum ditanam (jalankan npm run css:build)');
+  }
+  if (!fs.existsSync(path.join(ROOT, 'assets', 'tailwindcss.js'))) {
+    offenders.push('assets/tailwindcss.js: paket lokal hilang');
+  }
+  if (offenders.length) throw new Error(offenders.join(', '));
+});
+
+check('QC-DEMO-01', 'Berkas demo/ identik dengan sumber (preview, WebApp, vercel, tailwind lokal)', () => {
+  const pairs = [['preview.html', 'demo/preview.html'], ['WebApp.html', 'demo/WebApp.html'], ['vercel.json', 'demo/vercel.json'], ['assets/tailwindcss.js', 'demo/assets/tailwindcss.js'], ['assets/og-cover.png', 'demo/assets/og-cover.png'], ['assets/logo-family.svg', 'demo/assets/logo-family.svg']];
   const diff = pairs.filter(([a, b]) => {
     try { return fs.readFileSync(path.join(ROOT, a), 'utf8') !== fs.readFileSync(path.join(ROOT, b), 'utf8'); }
     catch (e) { return true; }

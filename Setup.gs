@@ -10,7 +10,7 @@ function onOpen() {
     .addSeparator()
     .addItem('Jalankan Setup / Reset Template', 'setupFinanceTracker')
     .addItem('Tutup Buku & Arsipkan Tahun Lalu', 'menuCloseYearArchive')
-    .addItem('Petunjuk Pasang di HP (PWA)', 'menuShowMobileGuide')
+    .addItem('Petunjuk Pasang di HP (Pintasan)', 'menuShowMobileGuide')
     .addToUi();
 }
 
@@ -161,6 +161,26 @@ function createConfigSheet(ss, palette) {
   sheet.setColumnWidth(8, 140);
   sheet.setColumnWidth(9, 180);
   sheet.setColumnWidth(10, 200);
+
+  // Proteksi warning-only: pengguna tetap bisa mengedit CONFIG (dengan
+  // peringatan), karena aplikasi sendiri menulis CONFIG via saveConfigData
+  // dan Master bisa saja bukan pemilik spreadsheet. Proteksi keras akan
+  // memblokir aplikasi, jadi sengaja tidak dipakai di sini.
+  applyConfigWarningProtection_(sheet);
+}
+
+function applyConfigWarningProtection_(sheet) {
+  try {
+    var existing = sheet.getProtections(SpreadsheetApp.ProtectionType.SHEET);
+    if (existing && existing.length > 0) return;
+    var prot = sheet.protect().setDescription(
+      'Finance Tracker - Family Edition: sheet konfigurasi dipakai oleh aplikasi. ' +
+      'Edit hanya via aplikasi (tab Pengaturan) agar validasi & RBAC tetap jalan.'
+    );
+    if (prot.setWarningOnly) prot.setWarningOnly(true);
+  } catch (e) {
+    // Proteksi bersifat best-effort; jangan menjatuhkan setup.
+  }
 }
 
 function createTransactionsSheet(ss, palette) {
